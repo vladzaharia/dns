@@ -16,12 +16,12 @@ jobs:
       id-token: write
     steps:
       - name: Download DNSControl binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: lib
           path: lib
       - name: Download compiled JS
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: out
           path: out
