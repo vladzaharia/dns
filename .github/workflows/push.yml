@@ -36,7 +36,6 @@ jobs:
           role: dns
           path: github
           method: jwt
-          jwtGithubAudience: sigstore
           secrets: |
             /ci-cd/dns/cloudflare/push CF_API
       - name: Generate and push records
