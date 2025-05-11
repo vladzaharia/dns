@@ -1,4 +1,4 @@
-import { Record } from "../../utils/record";
+import { Record } from "../utils/record";
 
 /**
  * Media services

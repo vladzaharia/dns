@@ -1,8 +1,7 @@
 import { CloudflareDns } from "../providers/cloudflare";
 import { NoRegistrar } from "../providers/noregistrar";
-import { CreateFastmailRecords } from "../records/mail/fastmail";
-// import { BetterUptimeRecords } from "../records/services/betteruptime";
-import { NetlifyVladGGRecords } from "../records/services/netlify-vladgg";
+import { CreateFastmailRecords } from "../services/mail/fastmail";
+import { NetlifyVladGGRecords } from "../services/external/netlify-vladgg";
 import { CreateRecord, CreateRecords } from "../utils/record";
 
 const BASE_DOMAIN = "vlad.gg";
@@ -12,6 +11,8 @@ D(
   BASE_DOMAIN,
   NoRegistrar,
   DnsProvider(CloudflareDns),
+  DefaultTTL(1),
+
   /* Basic records */
   ...CreateRecords(BASE_DOMAIN, NetlifyVladGGRecords),
   CreateRecord({ name: "bb", target: "bb-vlad-gg.netlify.app." }),
@@ -21,9 +22,6 @@ D(
 
   // CF-managed
   IGNORE_NAME("status", "A,CNAME,AAAA"),
-
-  /* BetterUptime status */
-  // ...CreateRecords("status.vlad.gg", BetterUptimeRecords),
 
   /* Mail records */
   ...CreateFastmailRecords(BASE_DOMAIN),
@@ -58,6 +56,6 @@ D(
     "@",
     "google-site-verification=KcgCGo0bX44Bv2_u1ylo0QBQJ9yF9SimfZxp7t-RNlk"
   ),
-  TXT("@","openai-domain-verification=dv-yx38yZ1KFGSTvjqQ52TSN9EA"),
+  TXT("@", "openai-domain-verification=dv-yx38yZ1KFGSTvjqQ52TSN9EA"),
   TXT("_doppler_JU1pcFaV58gCB", "PdrzTCEi4G1eMwAB9XnzUp0X6uaMK6zT")
 );
