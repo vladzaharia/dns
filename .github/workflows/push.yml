@@ -16,12 +16,12 @@ jobs:
       id-token: write
     steps:
       - name: Download DNSControl binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: lib
           path: lib
       - name: Download compiled JS
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: out
           path: out
@@ -29,17 +29,18 @@ jobs:
         run: chmod +x dnscontrol*
         working-directory: lib
         shell: bash
-      - name: Pull CF secrets from Vault
-        uses: hashicorp/vault-action@v2
-        with:
-          url: https://vault.zhr.one
-          role: dns
-          path: github
-          method: jwt
-          jwtGithubAudience: sigstore
-          secrets: |
-            /ci-cd/dns/cloudflare/push CF_API
+      # - name: Pull CF secrets from Vault
+      #   uses: hashicorp/vault-action@v2
+      #   with:
+      #     url: https://vault.zhr.one
+      #     role: dns
+      #     path: github
+      #     method: jwt
+      #     secrets: |
+      #       /ci-cd/dns/cloudflare/push CF_API
       - name: Generate and push records
         run: ../lib/dnscontrol-Linux --diff2 push
         working-directory: out
         shell: bash
+        env:
+          CF_API: ${{ secrets.CF_API }}

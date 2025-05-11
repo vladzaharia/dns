@@ -1,6 +1,6 @@
 import { CloudflareDns } from "../providers/cloudflare";
 import { NoRegistrar } from "../providers/noregistrar";
-import { CreateFastmailRecords } from "../records/mail/fastmail";
+import { CreateFastmailRecords } from "../services/mail/fastmail";
 
 const BASE_DOMAIN = "zaharia.email";
 console.log(`Zone: ${BASE_DOMAIN}`);
@@ -9,6 +9,8 @@ D(
   BASE_DOMAIN,
   NoRegistrar,
   DnsProvider(CloudflareDns),
+  DefaultTTL(1),
+
   /* Service records */
 
   /* Mail records */

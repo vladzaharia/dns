@@ -1,6 +1,6 @@
 import { CloudflareDnsWithRedirect } from "../providers/cloudflare";
 import { NoRegistrar } from "../providers/noregistrar";
-import { CreateFastmailRecords } from "../records/mail/fastmail";
+import { CreateFastmailRecords } from "../services/mail/fastmail";
 
 const BASE_DOMAIN = "vlad.lgbt";
 console.log(`Zone: ${BASE_DOMAIN} - vlad.gg Redirect`);
@@ -9,8 +9,9 @@ D(
   BASE_DOMAIN,
   NoRegistrar,
   DnsProvider(CloudflareDnsWithRedirect),
-  /* Basic records */
+  DefaultTTL(1),
 
+  /* Basic records */
   // CF-managed
   IGNORE_NAME("@", "A,CNAME,AAAA"),
   IGNORE_NAME("www", "A,CNAME,AAAA"),

@@ -1,14 +1,8 @@
 import { CloudflareDns } from "../providers/cloudflare";
 import { NoRegistrar } from "../providers/noregistrar";
-import { GetCoreRecords, GetPrefix } from "../records/core";
 import { CreateRecords } from "../utils/record";
-// import { BetterUptimeRecords } from "../records/services/betteruptime";
-import { CreateFastmailRecords } from "../records/mail/fastmail";
-import { InfrastructureRecords } from "../records/townhouse/infrastructure";
-import { ProductivityServiceRecords } from "../records/townhouse/productivity";
-import { MediaServiceRecords } from "../records/townhouse/media-services";
-import { SmartHomeRecords } from "../records/townhouse/smart-home";
-import { InternalRecords } from "../records/townhouse/internal";
+import { CreateFastmailRecords } from "../services/mail/fastmail";
+import { InfrastructureRecords } from "../services/infrastructure";
 
 const BASE_DOMAIN = "zhr.one";
 console.log(`Zone: ${BASE_DOMAIN} - Services`);
@@ -17,25 +11,12 @@ D(
   BASE_DOMAIN,
   NoRegistrar,
   DnsProvider(CloudflareDns),
-  /* Core records */
-  ...CreateRecords("Core", GetCoreRecords()),
+  DefaultTTL(1),
+
   IGNORE_NAME("@", "A,CNAME,AAAA"),
-
-  // DDNS-managed
-  IGNORE_NAME(GetPrefix("Helium")),
-
-  // CF-managed
-  IGNORE_NAME("status", "A,CNAME,AAAA"),
 
   /* Townhouse records */
   ...CreateRecords("Infrastructure", InfrastructureRecords),
-  ...CreateRecords("Media Services", MediaServiceRecords),
-  ...CreateRecords("Productivity", ProductivityServiceRecords),
-  ...CreateRecords("Smart Home", SmartHomeRecords),
-  ...CreateRecords("Internal", InternalRecords, "LocalTraefik", ".int"),
-
-  /* BetterUptime status */
-  // ...CreateRecords("status.zhr.one", BetterUptimeRecords),
 
   /* Mail records */
   ...CreateFastmailRecords(BASE_DOMAIN),

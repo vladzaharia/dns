@@ -1,8 +1,7 @@
 import { CloudflareDns } from "../providers/cloudflare";
 import { NoRegistrar } from "../providers/noregistrar";
-import { CreateFastmailRecords } from "../records/mail/fastmail";
-// import { BetterUptimeRecords } from "../records/services/betteruptime";
-import { PolarisVideoServices } from "../records/townhouse/polaris";
+import { CreatePostalRecords } from "../services/mail/postal";
+import { PolarisVideoServices } from "../services/polaris";
 import { CreateRecords } from "../utils/record";
 
 const BASE_DOMAIN = "polaris.video";
@@ -12,17 +11,16 @@ D(
   BASE_DOMAIN,
   NoRegistrar,
   DnsProvider(CloudflareDns),
+  DefaultTTL(1),
+
   /* Service records */
   ...CreateRecords("Polaris Video", PolarisVideoServices),
 
   // CF-managed
   IGNORE_NAME("status", "A,CNAME,AAAA"),
 
-  /* BetterUptime status */
-  // ...CreateRecords("status.polaris.video", BetterUptimeRecords),
-
   /* Mail records */
-  ...CreateFastmailRecords(BASE_DOMAIN),
+  ...CreatePostalRecords(["wedj3o"]),
 
   /* Domain verification records */
   TXT("@", "b3c14s9b4ym8wnfrz74db3g0q0425sry")

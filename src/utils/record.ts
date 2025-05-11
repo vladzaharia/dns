@@ -1,6 +1,6 @@
 import { CfProxyOn, CfSSLOn } from "../providers/cloudflare";
-import { AdditionalNames, ElementNames } from "./server";
-import { GetHost } from "../records/core";
+import { ServerNames } from "./server";
+import { GetHost } from "../services/core";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type DNSControlRecord = (
@@ -49,7 +49,7 @@ export interface Record {
 
 export function CreateRecord(
   record: Record,
-  targetName: ElementNames | AdditionalNames = "Helium",
+  targetName: ServerNames = "Greenwood",
   suffix = ""
 ): DNSControlRecord {
   const finalName = record.name + suffix;
@@ -97,7 +97,7 @@ export function CreateRecord(
 export function CreateRecords(
   groupName: string,
   records: Record[],
-  target?: ElementNames | AdditionalNames,
+  target?: ServerNames,
   suffix?: string
 ): DNSControlRecord[] {
   console.log(`\nGroup: ${groupName}`);
