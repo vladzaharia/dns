@@ -22,7 +22,7 @@ export function CreatePostalRecords(
     ...dkimKeys.map((k) =>
       CNAME(
         `postal-${k}._domainkey${subdomainRecord}`,
-        `dk1._domainkey.${POSTAL_DOMAIN}.`
+        `_dk1.${POSTAL_DOMAIN}.`
       )
     ),
   ];
