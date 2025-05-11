@@ -29,16 +29,18 @@ jobs:
         run: chmod +x dnscontrol*
         working-directory: lib
         shell: bash
-      - name: Pull CF secrets from Vault
-        uses: hashicorp/vault-action@v2
-        with:
-          url: https://vault.zhr.one
-          role: dns
-          path: github
-          method: jwt
-          secrets: |
-            /ci-cd/dns/cloudflare/preview CF_API
+      # - name: Pull CF secrets from Vault
+      #   uses: hashicorp/vault-action@v2
+      #   with:
+      #     url: https://vault.zhr.one
+      #     role: dns
+      #     path: github
+      #     method: jwt
+      #     secrets: |
+      #       /ci-cd/dns/cloudflare/preview CF_API
       - name: Generate and preview records
         run: ../lib/dnscontrol-Linux --diff2 preview
         working-directory: out
         shell: bash
+        env:
+          CF_API: ${{ secrets.CF_API }}
