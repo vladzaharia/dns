@@ -22,6 +22,7 @@ D(
 
   // CF-managed
   IGNORE_NAME("status", "A,CNAME,AAAA"),
+  IGNORE_NAME("cf2024-1._domainkey"),
 
   /* Mail records */
   ...CreateFastmailRecords(BASE_DOMAIN),

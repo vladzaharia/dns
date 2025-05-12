@@ -26,6 +26,9 @@ D(
   IGNORE_NAME(GetPrefix("Greenwood")),
   IGNORE_NAME(GetPrefix("CapHill")),
 
+  // CF-managed
+  IGNORE_NAME("baserow.r2"),
+
   /* Core records */
   ...CreateRecords("Core", GetCoreRecords()),
 

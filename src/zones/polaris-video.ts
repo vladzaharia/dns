@@ -1,7 +1,7 @@
 import { CloudflareDns } from "../providers/cloudflare";
 import { NoRegistrar } from "../providers/noregistrar";
 import { CreatePostalRecords } from "../services/mail/postal";
-import { PolarisVideoServices } from "../services/polaris";
+import { PolarisVideoServices } from "../services/polaris-video";
 import { CreateRecords } from "../utils/record";
 
 const BASE_DOMAIN = "polaris.video";
@@ -18,6 +18,7 @@ D(
 
   // CF-managed
   IGNORE_NAME("status", "A,CNAME,AAAA"),
+  IGNORE_NAME("cf2024-1._domainkey"),
 
   /* Mail records */
   ...CreatePostalRecords(["wedj3o"]),
