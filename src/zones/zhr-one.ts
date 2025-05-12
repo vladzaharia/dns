@@ -14,6 +14,7 @@ D(
   DefaultTTL(1),
 
   IGNORE_NAME("@", "A,CNAME,AAAA"),
+  IGNORE_NAME("cf2024-1._domainkey"),
 
   /* Townhouse records */
   ...CreateRecords("Infrastructure", InfrastructureRecords),

@@ -41,6 +41,12 @@ export interface Record {
   proxy?: boolean;
 
   /**
+   * Enable AzGateway proxy.
+   * Default: false
+   */
+  azgw?: boolean;
+
+  /**
    * Enable Universal SSL when proxy is enabled.
    * Default: true
    */
@@ -70,6 +76,11 @@ export function CreateRecord(
   if (targetName == "LocalTraefik") {
     finalTarget = "10.10.1.20";
     type = A;
+  }
+
+  if (record.azgw) {
+    finalTarget = GetHost("AzureGateway");
+    type = CNAME;
   }
 
   console.log(

@@ -15,6 +15,7 @@ D(
   // CF-managed
   IGNORE_NAME("@", "A,CNAME,AAAA"),
   IGNORE_NAME("www", "A,CNAME,AAAA"),
+  IGNORE_NAME("cf2024-1._domainkey"),
 
   /* Redirect all to .gg */
   CF_REDIRECT("*vlad.lgbt/*", "https://vlad.gg/$2"),
