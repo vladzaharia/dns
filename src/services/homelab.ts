@@ -12,6 +12,7 @@ export const HomeLabRecords: Record[] = [
   { name: "s3", description: "Garage S3" },
   { name: "*.s3", description: "Garage S3 Web" },
   { name: "k2v", description: "Garage K2V" },
+  { name: "d", description: "Dropshare" },
 
   { name: "log", description: "Seq Logs" },
   { name: "ingest.log", description: "Seq Log Ingest" },
