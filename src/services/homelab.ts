@@ -25,4 +25,6 @@ export const HomeLabRecords: Record[] = [
 
   { name: "z", description: "Zrok", target: GetHost("Reprise4") },
   { name: "*.z", description: "Zrok", target: GetHost("Reprise4") },
+
+  { name: "ai", description: "Librechat", azgw: true },
 ];
