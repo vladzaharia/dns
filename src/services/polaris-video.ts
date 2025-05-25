@@ -4,6 +4,7 @@ export const PolarisVideoServices: Record[] = [
   /* Public */
   { name: "media", description: "Plex" },
   { name: "request", description: "Overseerr", azgw: true },
+  { name: "invite", description: "Wizarr", azgw: true },
 
   { name: "xteve", description: "xTeVe IPTV", azgw: true },
   { name: "ersatz", description: "Ersatz TV", azgw: true },
@@ -13,33 +14,48 @@ export const PolarisVideoServices: Record[] = [
 
   /* Private */
   {
+    name: "maintain",
+    description: "Maintainerr",
+    azgw: true,
+  },
+  {
+    name: "rec",
+    description: "Recomendarr",
+    azgw: true,
+  },
+  {
     name: "sonarr",
-    description: "Sonarr - TV Indexer",
+    description: "Sonarr",
     azgw: true,
   },
   {
     name: "radarr",
-    description: "Radarr - Movie Indexer",
+    description: "Radarr",
     azgw: true,
   },
   {
     name: "lidarr",
-    description: "Lidarr - Music Indexer",
+    description: "Lidarr",
     azgw: true,
   },
   {
     name: "readarr",
-    description: "Readerr - Book Indexer",
+    description: "Readerr",
     azgw: true,
   },
   {
     name: "prowlarr",
-    description: "Prowlarr - Meta Indexer",
+    description: "Prowlarr",
     azgw: true,
   },
   {
     name: "sabnzbd",
-    description: "SabNZBd - NZB Downloader",
+    description: "SabNZBd",
+    azgw: true,
+  },
+  {
+    name: "decryptarr",
+    description: "Decryptarr",
     azgw: true,
   },
   {
