@@ -11,6 +11,7 @@ export const PolarisVideoServices: Record[] = [
   { name: "tunarr", description: "Tunarr TV", azgw: true },
   { name: "logos", description: "IPTV Logos" },
   { name: "guide", description: "Guide2go" },
+  { name: "mirror", description: "MagicMirror" },
 
   /* Private */
   {
