@@ -7,7 +7,8 @@ export const PolarisVideoServices: Record[] = [
   { name: "invite", description: "Wizarr", azgw: true },
 
   { name: "xteve", description: "xTeVe IPTV", azgw: true },
-  { name: "ersatz", description: "Ersatz TV", azgw: true },
+  { name: "threadfin", description: "Threadfin IPTV", azgw: true },
+  // { name: "ersatz", description: "Ersatz TV", azgw: true },
   { name: "tunarr", description: "Tunarr TV", azgw: true },
   { name: "logos", description: "IPTV Logos" },
   { name: "guide", description: "Guide2go" },
