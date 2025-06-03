@@ -55,6 +55,7 @@ export const PolarisVideoServices: Record[] = [
     description: "SabNZBd",
     azgw: true,
   },
+  { name: "pinchflat", description: "Pinchflat", azgw: true },
   {
     name: "decryptarr",
     description: "Decryptarr",
