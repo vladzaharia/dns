@@ -10,6 +10,7 @@ export const InfrastructureRecords: Record[] = [
   { name: "truenas", description: "TrueNAS", target: "10.10.0.10", type: "A" },
   { name: "auth", description: "Authentik/Zitadel" },
   { name: "vault", description: "Hashicorp Vault" },
+  { name: "docker", description: "Arcane Docker Management", azgw: true },
   { name: "up", description: "Uptime Kuma", target: "20.64.176.83", type: "A" },
   {
     name: "net",

@@ -20,6 +20,9 @@ D(
   /* API */
   CreateRecord({ name: "api", target: "vladgg-api.fly.dev.", type: "CNAME" }),
 
+  /* Notes */
+  CreateRecord({ name: "sticky", description: "Blinko notes", azgw: true }),
+
   // CF-managed
   IGNORE_NAME("status", "A,CNAME,AAAA"),
   IGNORE_NAME("cf2024-1._domainkey"),
