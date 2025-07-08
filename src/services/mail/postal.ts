@@ -30,9 +30,9 @@ export function CreatePostalRecords(
 
 export function CreatePostalServiceRecords(): DNSControlRecord[] {
   return [
-    A("mx.post", "104.37.168.87"),
-    A("post", "104.37.168.87"),
-    A("track", "104.37.168.87"),
+    A("mx.post", "172.179.244.26"),
+    A("post", "172.179.244.26"),
+    A("track", "172.179.244.26"),
     MX("routes.post", 10, `${POSTAL_DOMAIN}.`),
     MX("rp.post", 10, `${POSTAL_DOMAIN}.`),
     TXT("rp.post", "v=spf1 a mx include:spf.post.polaris.gdn ~all"),
