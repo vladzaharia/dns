@@ -4,14 +4,24 @@
  */
 
 import fc from "fast-check";
-import type { ServerLocation, ServerName, RoutingStrategy, ProxyStatus } from "../../src/lib/types.js";
+import type {
+  ServerLocation,
+  ServerName,
+  RoutingStrategy,
+  ProxyStatus,
+} from "../../src/lib/types.js";
 
 // =============================================================================
 // Server Arbitraries
 // =============================================================================
 
 /** Valid server locations */
-export const serverLocationArb: fc.Arbitrary<ServerLocation> = fc.constantFrom("sea", "qnc", "re", "local");
+export const serverLocationArb: fc.Arbitrary<ServerLocation> = fc.constantFrom(
+  "sea",
+  "qnc",
+  "re",
+  "local"
+);
 
 /** Valid server names */
 export const serverNameArb: fc.Arbitrary<ServerName> = fc.constantFrom(
@@ -35,7 +45,12 @@ export const serverPrefixArb = fc.stringMatching(/^[a-z][a-z0-9]{0,9}$/);
 
 /** Valid IPv4 address */
 export const ipv4Arb = fc
-  .tuple(fc.integer({ min: 0, max: 255 }), fc.integer({ min: 0, max: 255 }), fc.integer({ min: 0, max: 255 }), fc.integer({ min: 0, max: 255 }))
+  .tuple(
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 }),
+    fc.integer({ min: 0, max: 255 })
+  )
   .map(([a, b, c, d]) => `${a}.${b}.${c}.${d}`);
 
 /** Valid IPv6 address (simplified - full form) */
@@ -50,7 +65,9 @@ export const ipv6Arb = fc
 export const dnsLabelArb = fc.oneof(
   fc.constant("@"),
   fc.constant("*"),
-  fc.stringMatching(/^[a-z][a-z0-9-]{0,61}[a-z0-9]$/).filter((s) => !s.includes("--") && s.length <= 63),
+  fc
+    .stringMatching(/^[a-z][a-z0-9-]{0,61}[a-z0-9]$/)
+    .filter((s) => !s.includes("--") && s.length <= 63),
   fc.stringMatching(/^[a-z][a-z0-9]{0,62}$/)
 );
 
@@ -79,10 +96,16 @@ export const caaTagArb = fc.constantFrom("issue", "issuewild", "iodef");
 // =============================================================================
 
 /** Routing strategy */
-export const routingStrategyArb: fc.Arbitrary<RoutingStrategy> = fc.constantFrom("direct", "tunnel", "proxied");
+export const routingStrategyArb: fc.Arbitrary<RoutingStrategy> = fc.constantFrom(
+  "direct",
+  "tunnel",
+  "proxied"
+);
 
 /** Service subdomain (valid DNS label for services) */
-export const serviceSubdomainArb = fc.stringMatching(/^[a-z][a-z0-9-]{0,20}[a-z0-9]$/).filter((s) => !s.includes("--"));
+export const serviceSubdomainArb = fc
+  .stringMatching(/^[a-z][a-z0-9-]{0,20}[a-z0-9]$/)
+  .filter((s) => !s.includes("--"));
 
 /** Service name */
 export const serviceNameArb = fc.string({ minLength: 1, maxLength: 100 });
@@ -165,4 +188,3 @@ export const serviceArb = fc.record({
   internal: fc.option(fc.boolean(), { nil: undefined }),
   internalSuffix: fc.option(fc.constantFrom(".local", ".int", ".internal"), { nil: undefined }),
 });
-

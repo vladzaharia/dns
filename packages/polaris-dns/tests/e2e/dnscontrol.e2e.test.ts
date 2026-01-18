@@ -3,7 +3,7 @@
  * Tests the actual build output and DNSControl validation
  */
 
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { exec } from "child_process";
 import { promisify } from "util";
 import * as fs from "fs";
@@ -43,7 +43,7 @@ describe("DNSControl E2E Tests", () => {
   let dnsControlBinary: string;
   let hasDnsControl: boolean;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     hasDnsControl = dnsControlExists();
     if (hasDnsControl) {
       dnsControlBinary = getDnsControlBinary();
@@ -52,7 +52,7 @@ describe("DNSControl E2E Tests", () => {
 
   describe("Build Process", () => {
     it("should build successfully with webpack", async () => {
-      const { stdout, stderr } = await execAsync("npm run build", {
+      const { stderr } = await execAsync("npm run build", {
         cwd: projectRoot,
         timeout: 60000,
       });
@@ -102,13 +102,10 @@ describe("DNSControl E2E Tests", () => {
     it.skipIf(!hasDnsControl)(
       "should pass dnscontrol check",
       async () => {
-        const { stdout, stderr } = await execAsync(
-          `${dnsControlBinary} check`,
-          {
-            cwd: outDir,
-            timeout: 30000,
-          }
-        );
+        const { stderr } = await execAsync(`${dnsControlBinary} check`, {
+          cwd: outDir,
+          timeout: 30000,
+        });
 
         // Check should pass without errors
         expect(stderr).not.toContain("ERROR");
@@ -158,4 +155,3 @@ describe("DNSControl E2E Tests", () => {
     });
   });
 });
-

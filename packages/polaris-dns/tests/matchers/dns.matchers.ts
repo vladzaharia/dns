@@ -3,21 +3,12 @@
  */
 
 import { expect } from "vitest";
-
-// IPv4 regex pattern
-const IPV4_REGEX =
-  /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-
-// IPv6 regex pattern (simplified, covers most common formats)
-const IPV6_REGEX =
-  /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}$|^(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}$|^(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}$|^[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,6}$|^:(?::[0-9a-fA-F]{1,4}){1,7}$|^::$/;
-
-// Hostname regex pattern (RFC 1123)
-const HOSTNAME_REGEX =
-  /^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)$/;
-
-// DNS label regex (subdomain)
-const DNS_LABEL_REGEX = /^(?!-)[a-zA-Z0-9-]{1,63}(?<!-)$|^@$|^\*$/;
+import {
+  IPV4_REGEX,
+  IPV6_REGEX,
+  HOSTNAME_REGEX,
+  DNS_LABEL_REGEX,
+} from "../constants/dns-patterns.js";
 
 // Extend Vitest's expect with custom matchers
 expect.extend({

@@ -3,7 +3,7 @@
  * Sets up DNSControl DSL mocks and custom matchers
  */
 
-import { vi, expect, beforeEach, afterEach } from "vitest";
+import { vi, beforeEach, afterEach } from "vitest";
 import { mockDnsControl, resetMocks } from "./mocks/dnscontrol.js";
 import "./matchers/dns.matchers.js";
 

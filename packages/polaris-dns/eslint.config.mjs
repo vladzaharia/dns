@@ -6,7 +6,20 @@ import globals from "globals";
 export default tseslint.config(
   // Global ignores
   {
-    ignores: ["dist/", "out/", "node_modules/", "lib/", "*.js", "*.cjs", "coverage/"],
+    ignores: [
+      "dist/",
+      "out/",
+      "node_modules/",
+      "lib/",
+      "*.js",
+      "*.cjs",
+      "*.mjs",
+      "coverage/",
+      // Config files at root that aren't part of the TypeScript project
+      "vitest.config.ts",
+      "webpack.config.js",
+      "stryker.config.json",
+    ],
   },
 
   // Base ESLint recommended rules
@@ -61,17 +74,16 @@ export default tseslint.config(
           varsIgnorePattern: "^_",
         },
       ],
-      // Warn on explicit any (will be upgraded to error after type improvements)
-      "@typescript-eslint/no-explicit-any": "warn",
+      // Require explicit any to be intentional
+      "@typescript-eslint/no-explicit-any": "error",
       // Prefer const assertions for literal types
       "@typescript-eslint/prefer-as-const": "error",
-      // These rules are temporarily set to warn - will be upgraded to error
-      // after DNSControl type definitions are created
-      "@typescript-eslint/no-unsafe-member-access": "warn",
-      "@typescript-eslint/no-unsafe-call": "warn",
-      "@typescript-eslint/no-unsafe-assignment": "warn",
-      "@typescript-eslint/no-unsafe-return": "warn",
-      "@typescript-eslint/no-unsafe-argument": "warn",
+      // Type safety rules - now enforced as errors
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/no-unsafe-argument": "error",
       // Require explicit return types on exported functions
       "@typescript-eslint/explicit-function-return-type": [
         "warn",
@@ -115,7 +127,7 @@ export default tseslint.config(
         CF_PROXY_OFF: "readonly",
       },
       parserOptions: {
-        project: "./tsconfig.json",
+        project: "./tsconfig.test.json",
         tsconfigRootDir: import.meta.dirname,
       },
     },

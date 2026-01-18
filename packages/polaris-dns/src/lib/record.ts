@@ -5,32 +5,6 @@
 import type { ProxyStatus, RecordOptions, ServerName } from "./types.js";
 import { getServer, getServerHostname, getServerIP } from "./server.js";
 
-// =============================================================================
-// DNSControl DSL Declarations
-// =============================================================================
-
-// These are provided by DNSControl at runtime
-declare function A(name: string, ip: string, ...modifiers: unknown[]): unknown;
-declare function AAAA(name: string, ip: string, ...modifiers: unknown[]): unknown;
-declare function CNAME(name: string, target: string, ...modifiers: unknown[]): unknown;
-declare function MX(
-  name: string,
-  priority: number,
-  target: string,
-  ...modifiers: unknown[]
-): unknown;
-declare function TXT(name: string, content: string, ...modifiers: unknown[]): unknown;
-declare function SRV(
-  name: string,
-  priority: number,
-  weight: number,
-  port: number,
-  target: string,
-  ...modifiers: unknown[]
-): unknown;
-declare function CAA(name: string, tag: string, value: string, ...modifiers: unknown[]): unknown;
-declare function TTL(ttl: number): unknown;
-
 // Cloudflare proxy modifiers (objects, not functions)
 const CF_PROXY_ON = { cloudflare_proxy: "on" };
 const CF_PROXY_OFF = { cloudflare_proxy: "off" };
@@ -55,13 +29,13 @@ export interface ServiceRecordOptions {
 /**
  * Build modifiers array from options
  */
-function buildModifiers(options?: RecordOptions): unknown[] {
-  const modifiers: unknown[] = [];
+function buildModifiers(options?: RecordOptions): RecordModifier[] {
+  const modifiers: RecordModifier[] = [];
 
   if (options?.proxy === "on") {
-    modifiers.push(CF_PROXY_ON);
+    modifiers.push(CF_PROXY_ON as RecordModifier);
   } else if (options?.proxy === "off") {
-    modifiers.push(CF_PROXY_OFF);
+    modifiers.push(CF_PROXY_OFF as RecordModifier);
   }
 
   if (options?.ttl !== undefined) {
@@ -74,21 +48,29 @@ function buildModifiers(options?: RecordOptions): unknown[] {
 /**
  * Create an A record
  */
-export function createARecord(name: string, ip: string, options?: RecordOptions): unknown {
+export function createARecord(name: string, ip: string, options?: RecordOptions): DomainModifier {
   return A(name, ip, ...buildModifiers(options));
 }
 
 /**
  * Create an AAAA record
  */
-export function createAAAARecord(name: string, ip: string, options?: RecordOptions): unknown {
+export function createAAAARecord(
+  name: string,
+  ip: string,
+  options?: RecordOptions
+): DomainModifier {
   return AAAA(name, ip, ...buildModifiers(options));
 }
 
 /**
  * Create a CNAME record
  */
-export function createCNAMERecord(name: string, target: string, options?: RecordOptions): unknown {
+export function createCNAMERecord(
+  name: string,
+  target: string,
+  options?: RecordOptions
+): DomainModifier {
   return CNAME(name, target, ...buildModifiers(options));
 }
 
@@ -100,14 +82,18 @@ export function createMXRecord(
   priority: number,
   target: string,
   options?: RecordOptions
-): unknown {
+): DomainModifier {
   return MX(name, priority, target, ...buildModifiers(options));
 }
 
 /**
  * Create a TXT record
  */
-export function createTXTRecord(name: string, content: string, options?: RecordOptions): unknown {
+export function createTXTRecord(
+  name: string,
+  content: string,
+  options?: RecordOptions
+): DomainModifier {
   return TXT(name, content, ...buildModifiers(options));
 }
 
@@ -121,7 +107,7 @@ export function createSRVRecord(
   port: number,
   target: string,
   options?: RecordOptions
-): unknown {
+): DomainModifier {
   return SRV(name, priority, weight, port, target, ...buildModifiers(options));
 }
 
@@ -133,7 +119,7 @@ export function createCAARecord(
   tag: "issue" | "issuewild" | "iodef",
   value: string,
   options?: RecordOptions
-): unknown {
+): DomainModifier {
   return CAA(name, tag, value, ...buildModifiers(options));
 }
 
@@ -149,7 +135,7 @@ export function createServiceRecord(
   subdomain: string,
   server: ServerName,
   options: ServiceRecordOptions = {}
-): unknown {
+): DomainModifier {
   const serverInfo = getServer(server);
   const { proxy = "on", useTunnel = false } = options;
 
@@ -176,7 +162,7 @@ export function createServerCNAME(
   subdomain: string,
   server: ServerName,
   options?: RecordOptions
-): unknown {
+): DomainModifier {
   const hostname = getServerHostname(server);
   return createCNAMERecord(subdomain, hostname + ".", options);
 }
@@ -188,7 +174,7 @@ export function createServerARecord(
   subdomain: string,
   server: ServerName,
   options?: RecordOptions
-): unknown {
+): DomainModifier {
   const ip = getServerIP(server);
   return createARecord(subdomain, ip, options);
 }

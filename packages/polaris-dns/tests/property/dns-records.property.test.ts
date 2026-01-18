@@ -3,8 +3,8 @@
  * Uses fast-check to generate random valid inputs and verify invariants
  */
 
-import { describe, it, expect } from "vitest";
-import { test, fc } from "@fast-check/vitest";
+import { describe, expect } from "vitest";
+import { test } from "@fast-check/vitest";
 import {
   ipv4Arb,
   ipv6Arb,
@@ -150,10 +150,13 @@ describe("DNS Record Property Tests", () => {
   });
 
   describe("CNAME Record Properties", () => {
-    test.prop([cnameRecordArb])("generated CNAME records should pass schema validation", (record) => {
-      const result = cnameRecordSchema.safeParse(record);
-      expect(result.success).toBe(true);
-    });
+    test.prop([cnameRecordArb])(
+      "generated CNAME records should pass schema validation",
+      (record) => {
+        const result = cnameRecordSchema.safeParse(record);
+        expect(result.success).toBe(true);
+      }
+    );
 
     test.prop([cnameRecordArb])("CNAME records should have type 'CNAME'", (record) => {
       expect(record.type).toBe("CNAME");
@@ -194,4 +197,3 @@ describe("DNS Record Property Tests", () => {
     });
   });
 });
-

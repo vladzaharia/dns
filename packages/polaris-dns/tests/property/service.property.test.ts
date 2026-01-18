@@ -5,20 +5,31 @@
 
 import { describe, expect } from "vitest";
 import { test, fc } from "@fast-check/vitest";
-import { serviceArb, routingStrategyArb, serverNameArb, serviceSubdomainArb } from "./arbitraries.js";
-import { routingStrategySchema, serviceSchema, serviceDefinitionSchema } from "../schemas/service.schema.js";
+import {
+  serviceArb,
+  routingStrategyArb,
+  serverNameArb,
+  serviceSubdomainArb,
+} from "./arbitraries.js";
+import { routingStrategySchema } from "../schemas/service.schema.js";
 import { serverNameSchema } from "../schemas/server.schema.js";
 
 describe("Service Property Tests", () => {
   describe("Routing Strategy Properties", () => {
-    test.prop([routingStrategyArb])("generated routing strategies should pass schema validation", (strategy) => {
-      const result = routingStrategySchema.safeParse(strategy);
-      expect(result.success).toBe(true);
-    });
+    test.prop([routingStrategyArb])(
+      "generated routing strategies should pass schema validation",
+      (strategy) => {
+        const result = routingStrategySchema.safeParse(strategy);
+        expect(result.success).toBe(true);
+      }
+    );
 
-    test.prop([routingStrategyArb])("routing strategies should be one of the valid values", (strategy) => {
-      expect(["direct", "tunnel", "proxied"]).toContain(strategy);
-    });
+    test.prop([routingStrategyArb])(
+      "routing strategies should be one of the valid values",
+      (strategy) => {
+        expect(["direct", "tunnel", "proxied"]).toContain(strategy);
+      }
+    );
   });
 
   describe("Service Object Properties", () => {
@@ -76,13 +87,19 @@ describe("Service Property Tests", () => {
       expect(subdomain).not.toMatch(/-$/);
     });
 
-    test.prop([serviceSubdomainArb])("subdomains should not contain consecutive hyphens", (subdomain) => {
-      expect(subdomain).not.toContain("--");
-    });
+    test.prop([serviceSubdomainArb])(
+      "subdomains should not contain consecutive hyphens",
+      (subdomain) => {
+        expect(subdomain).not.toContain("--");
+      }
+    );
 
-    test.prop([serviceSubdomainArb])("subdomains should only contain lowercase alphanumeric and hyphens", (subdomain) => {
-      expect(subdomain).toMatch(/^[a-z0-9-]+$/);
-    });
+    test.prop([serviceSubdomainArb])(
+      "subdomains should only contain lowercase alphanumeric and hyphens",
+      (subdomain) => {
+        expect(subdomain).toMatch(/^[a-z0-9-]+$/);
+      }
+    );
   });
 
   describe("Service Invariants", () => {
@@ -99,10 +116,13 @@ describe("Service Property Tests", () => {
       }
     );
 
-    test.prop([serviceArb, serviceArb])("two services can have different properties", (service1, service2) => {
-      expect(service1).toBeDefined();
-      expect(service2).toBeDefined();
-    });
+    test.prop([serviceArb, serviceArb])(
+      "two services can have different properties",
+      (service1, service2) => {
+        expect(service1).toBeDefined();
+        expect(service2).toBeDefined();
+      }
+    );
   });
 
   describe("Routing Strategy Combinations", () => {
@@ -120,7 +140,7 @@ describe("Service Property Tests", () => {
       }
     );
 
-    test.prop([fc.constantFrom("direct", "tunnel", "proxied") as fc.Arbitrary<"direct" | "tunnel" | "proxied">])(
+    test.prop([fc.constantFrom("direct", "tunnel", "proxied")])(
       "all routing strategies should be valid",
       (routing) => {
         const result = routingStrategySchema.safeParse(routing);
@@ -145,4 +165,3 @@ describe("Service Property Tests", () => {
     );
   });
 });
-

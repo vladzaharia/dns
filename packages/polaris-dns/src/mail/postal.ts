@@ -39,11 +39,11 @@ export interface PostalDomainOptions {
 /**
  * Create Postal DNS records for a domain that uses Postal for email
  */
-export function createPostalRecords(options: PostalDomainOptions = {}): unknown[] {
+export function createPostalRecords(options: PostalDomainOptions = {}): DomainModifier[] {
   const { dkimKeys = [], rootRecord = "@", dmarcPolicy = "none" } = options;
 
   const subdomainSuffix = rootRecord === "@" ? "" : `.${rootRecord}`;
-  const records: unknown[] = [];
+  const records: DomainModifier[] = [];
 
   // MX records
   records.push(createMXRecord(rootRecord, 10, `mx.${POSTAL_DOMAIN}.`));
@@ -72,7 +72,7 @@ export function createPostalRecords(options: PostalDomainOptions = {}): unknown[
  * Create the Postal service infrastructure records
  * These are the records needed on polaris.gdn for the Postal server itself
  */
-export function createPostalServiceRecords(): unknown[] {
+export function createPostalServiceRecords(): DomainModifier[] {
   return [
     // A records for Postal services
     createARecord("mx.post", POSTAL_IP),

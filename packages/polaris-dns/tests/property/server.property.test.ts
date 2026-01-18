@@ -5,20 +5,32 @@
 
 import { describe, expect } from "vitest";
 import { test, fc } from "@fast-check/vitest";
-import { serverArb, serverLocationArb, serverNameArb, ipv4Arb, hostnameArb } from "./arbitraries.js";
-import { serverSchema, serverLocationSchema, serverNameSchema } from "../schemas/server.schema.js";
+import {
+  serverArb,
+  serverLocationArb,
+  serverNameArb,
+  ipv4Arb,
+  hostnameArb,
+} from "./arbitraries.js";
+import { serverLocationSchema, serverNameSchema } from "../schemas/server.schema.js";
 import { ipv4Schema, hostnameSchema } from "../schemas/dns.schema.js";
 
 describe("Server Property Tests", () => {
   describe("Server Location Properties", () => {
-    test.prop([serverLocationArb])("generated server locations should pass schema validation", (location) => {
-      const result = serverLocationSchema.safeParse(location);
-      expect(result.success).toBe(true);
-    });
+    test.prop([serverLocationArb])(
+      "generated server locations should pass schema validation",
+      (location) => {
+        const result = serverLocationSchema.safeParse(location);
+        expect(result.success).toBe(true);
+      }
+    );
 
-    test.prop([serverLocationArb])("server locations should be one of the valid values", (location) => {
-      expect(["sea", "qnc", "re", "local"]).toContain(location);
-    });
+    test.prop([serverLocationArb])(
+      "server locations should be one of the valid values",
+      (location) => {
+        expect(["sea", "qnc", "re", "local"]).toContain(location);
+      }
+    );
   });
 
   describe("Server Name Properties", () => {
@@ -102,11 +114,14 @@ describe("Server Property Tests", () => {
       }
     );
 
-    test.prop([serverArb, serverArb])("two servers can have different properties", (server1, server2) => {
-      // This is a weak property - just verifying we can generate two servers
-      expect(server1).toBeDefined();
-      expect(server2).toBeDefined();
-    });
+    test.prop([serverArb, serverArb])(
+      "two servers can have different properties",
+      (server1, server2) => {
+        // This is a weak property - just verifying we can generate two servers
+        expect(server1).toBeDefined();
+        expect(server2).toBeDefined();
+      }
+    );
   });
 
   describe("IP Address Invariants", () => {
@@ -135,4 +150,3 @@ describe("Server Property Tests", () => {
     });
   });
 });
-

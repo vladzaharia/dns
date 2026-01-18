@@ -14,12 +14,6 @@ import { servers } from "../../lib/server.js";
 import { createCloudflareEmailRecords } from "../../mail/cloudflare.js";
 
 // =============================================================================
-// DNSControl DSL Declarations
-// =============================================================================
-
-declare function IGNORE_NAME(name: string, types?: string): unknown;
-
-// =============================================================================
 // Zone Definition
 // =============================================================================
 
@@ -42,9 +36,9 @@ export function registerPolarisExpress(): void {
     createCNAMERecord("www", "charging.pages.dev.", { proxy: "on" }),
 
     // EV Charging Services (via Azure tunnel)
-    createCNAMERecord("ocpp", servers["pangolin"].hostname + ".", { proxy: "on" }), // StEvE OCPP server
-    createCNAMERecord("billing", servers["pangolin"].hostname + ".", { proxy: "on" }), // Lago Billing API
-    createCNAMERecord("manage", servers["pangolin"].hostname + ".", { proxy: "on" }), // ExpressSync
+    createCNAMERecord("ocpp", servers.pangolin.hostname + ".", { proxy: "on" }), // StEvE OCPP server
+    createCNAMERecord("billing", servers.pangolin.hostname + ".", { proxy: "on" }), // Lago Billing API
+    createCNAMERecord("manage", servers.pangolin.hostname + ".", { proxy: "on" }), // ExpressSync
 
     // Mail (Cloudflare Email Routing)
     ...createCloudflareEmailRecords(),

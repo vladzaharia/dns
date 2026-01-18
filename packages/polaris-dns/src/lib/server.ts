@@ -28,7 +28,7 @@ export const servers: ServerRegistry = {
     ip: "97.113.197.175",
     isDDNS: true,
   },
-  "pangolin": {
+  pangolin: {
     name: "pangolin",
     location: "qnc",
     prefix: "tun",

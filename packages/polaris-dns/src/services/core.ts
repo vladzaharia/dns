@@ -15,7 +15,7 @@ import { createARecord, createCNAMERecord } from "../lib/record.js";
 /**
  * Convert a service definition to DNS records
  */
-export function serviceToRecords(service: ServiceDefinition): unknown[] {
+export function serviceToRecords(service: ServiceDefinition): DomainModifier[] {
   const { subdomain, server = "greenwood", routing = "direct", ip, cname, proxy = true } = service;
 
   // Custom IP address
@@ -57,9 +57,9 @@ export function serviceToRecords(service: ServiceDefinition): unknown[] {
 /**
  * Convert a service category to DNS records
  */
-export function categoryToRecords(category: ServiceCategory): unknown[] {
+export function categoryToRecords(category: ServiceCategory): DomainModifier[] {
   // Use reduce instead of flatMap for ES5 compatibility
-  return category.services.reduce<unknown[]>((acc, service) => {
+  return category.services.reduce<DomainModifier[]>((acc, service) => {
     return acc.concat(serviceToRecords(service));
   }, []);
 }
@@ -67,9 +67,9 @@ export function categoryToRecords(category: ServiceCategory): unknown[] {
 /**
  * Convert multiple service categories to DNS records
  */
-export function categoriesToRecords(categories: ServiceCategory[]): unknown[] {
+export function categoriesToRecords(categories: ServiceCategory[]): DomainModifier[] {
   // Use reduce instead of flatMap for ES5 compatibility
-  return categories.reduce<unknown[]>((acc, category) => {
+  return categories.reduce<DomainModifier[]>((acc, category) => {
     return acc.concat(categoryToRecords(category));
   }, []);
 }

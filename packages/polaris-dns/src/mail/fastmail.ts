@@ -34,11 +34,11 @@ export interface FastmailOptions {
 /**
  * Create all Fastmail DNS records for a domain
  */
-export function createFastmailRecords(options: FastmailOptions): unknown[] {
+export function createFastmailRecords(options: FastmailOptions): DomainModifier[] {
   const { domain, rootRecord = "@", includeWildcard = true, dmarcPolicy = "none" } = options;
 
   const subdomainSuffix = rootRecord === "@" ? "" : `.${rootRecord}`;
-  const records: unknown[] = [];
+  const records: DomainModifier[] = [];
 
   // Mail CNAME for webmail access
   records.push(createCNAMERecord(`mail${subdomainSuffix}`, FASTMAIL_MAIL_CNAME));
@@ -75,7 +75,10 @@ export function createFastmailRecords(options: FastmailOptions): unknown[] {
 /**
  * Create Fastmail records for a subdomain
  */
-export function createFastmailSubdomainRecords(domain: string, subdomain: string): unknown[] {
+export function createFastmailSubdomainRecords(
+  domain: string,
+  subdomain: string
+): DomainModifier[] {
   return createFastmailRecords({
     domain,
     rootRecord: subdomain,

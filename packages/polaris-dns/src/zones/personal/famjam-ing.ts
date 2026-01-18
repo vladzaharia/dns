@@ -9,12 +9,6 @@ import { createDomain, CLOUDFLARE, NO_REGISTRAR } from "../../lib/domain.js";
 import { createCloudflareEmailRecords } from "../../mail/cloudflare.js";
 
 // =============================================================================
-// DNSControl DSL Declarations
-// =============================================================================
-
-declare function IGNORE_NAME(name: string, types?: string): unknown;
-
-// =============================================================================
 // Zone Definition
 // =============================================================================
 

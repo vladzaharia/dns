@@ -4,29 +4,16 @@
  */
 
 import { z } from "zod";
+import { IPV4_REGEX, IPV6_REGEX, HOSTNAME_REGEX } from "../constants/dns-patterns.js";
 
 // IPv4 address validation
-export const ipv4Schema = z
-  .string()
-  .regex(
-    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-    "Invalid IPv4 address"
-  );
+export const ipv4Schema = z.string().regex(IPV4_REGEX, "Invalid IPv4 address");
 
 // IPv6 address validation (comprehensive pattern)
-export const ipv6Schema = z
-  .string()
-  .regex(
-    /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,7}:$|^(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}$|^(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}$|^(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}$|^(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}$|^[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,6}$|^:(?::[0-9a-fA-F]{1,4}){1,7}$|^::$/,
-    "Invalid IPv6 address"
-  );
+export const ipv6Schema = z.string().regex(IPV6_REGEX, "Invalid IPv6 address");
 
 // Hostname validation (RFC 1123)
-export const hostnameSchema = z
-  .string()
-  .min(1)
-  .max(253)
-  .regex(/^(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)$/, "Invalid hostname");
+export const hostnameSchema = z.string().min(1).max(253).regex(HOSTNAME_REGEX, "Invalid hostname");
 
 // DNS label (subdomain) validation - allows @, *, and standard labels including underscores
 export const dnsLabelSchema = z

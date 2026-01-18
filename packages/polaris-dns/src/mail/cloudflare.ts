@@ -32,11 +32,13 @@ export interface CloudflareEmailOptions {
 /**
  * Create all Cloudflare Email Routing DNS records for a domain
  */
-export function createCloudflareEmailRecords(options: CloudflareEmailOptions = {}): unknown[] {
+export function createCloudflareEmailRecords(
+  options: CloudflareEmailOptions = {}
+): DomainModifier[] {
   const { rootRecord = "@", dmarcPolicy = "none", dmarcReportEmail } = options;
 
   const subdomainSuffix = rootRecord === "@" ? "" : `.${rootRecord}`;
-  const records: unknown[] = [];
+  const records: DomainModifier[] = [];
 
   // MX records (Cloudflare uses priority 77, 50, 37 by convention)
   records.push(createMXRecord(rootRecord, 77, CLOUDFLARE_MX_1));

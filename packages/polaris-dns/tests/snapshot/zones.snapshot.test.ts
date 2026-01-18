@@ -34,23 +34,29 @@ describe("Zone Snapshot Tests", () => {
     );
 
     // Mock record functions to capture records
-    (globalThis as Record<string, unknown>).A = vi.fn((name: string, ip: string, ...modifiers: unknown[]) => {
-      const record = { type: "A", name, ip, modifiers };
-      mockRecords.push(record);
-      return record;
-    });
+    (globalThis as Record<string, unknown>).A = vi.fn(
+      (name: string, ip: string, ...modifiers: unknown[]) => {
+        const record = { type: "A", name, ip, modifiers };
+        mockRecords.push(record);
+        return record;
+      }
+    );
 
-    (globalThis as Record<string, unknown>).AAAA = vi.fn((name: string, ip: string, ...modifiers: unknown[]) => {
-      const record = { type: "AAAA", name, ip, modifiers };
-      mockRecords.push(record);
-      return record;
-    });
+    (globalThis as Record<string, unknown>).AAAA = vi.fn(
+      (name: string, ip: string, ...modifiers: unknown[]) => {
+        const record = { type: "AAAA", name, ip, modifiers };
+        mockRecords.push(record);
+        return record;
+      }
+    );
 
-    (globalThis as Record<string, unknown>).CNAME = vi.fn((name: string, target: string, ...modifiers: unknown[]) => {
-      const record = { type: "CNAME", name, target, modifiers };
-      mockRecords.push(record);
-      return record;
-    });
+    (globalThis as Record<string, unknown>).CNAME = vi.fn(
+      (name: string, target: string, ...modifiers: unknown[]) => {
+        const record = { type: "CNAME", name, target, modifiers };
+        mockRecords.push(record);
+        return record;
+      }
+    );
 
     (globalThis as Record<string, unknown>).MX = vi.fn(
       (name: string, priority: number, target: string, ...modifiers: unknown[]) => {
@@ -60,14 +66,23 @@ describe("Zone Snapshot Tests", () => {
       }
     );
 
-    (globalThis as Record<string, unknown>).TXT = vi.fn((name: string, content: string, ...modifiers: unknown[]) => {
-      const record = { type: "TXT", name, content, modifiers };
-      mockRecords.push(record);
-      return record;
-    });
+    (globalThis as Record<string, unknown>).TXT = vi.fn(
+      (name: string, content: string, ...modifiers: unknown[]) => {
+        const record = { type: "TXT", name, content, modifiers };
+        mockRecords.push(record);
+        return record;
+      }
+    );
 
     (globalThis as Record<string, unknown>).SRV = vi.fn(
-      (name: string, priority: number, weight: number, port: number, target: string, ...modifiers: unknown[]) => {
+      (
+        name: string,
+        priority: number,
+        weight: number,
+        port: number,
+        target: string,
+        ...modifiers: unknown[]
+      ) => {
         const record = { type: "SRV", name, priority, weight, port, target, modifiers };
         mockRecords.push(record);
         return record;
@@ -169,4 +184,3 @@ describe("Zone Snapshot Tests", () => {
     });
   });
 });
-

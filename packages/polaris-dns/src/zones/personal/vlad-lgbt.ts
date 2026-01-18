@@ -6,27 +6,6 @@ import { createTXTRecord } from "../../lib/record.js";
 import { createFastmailRecords } from "../../mail/fastmail.js";
 
 // =============================================================================
-// DNSControl DSL Declarations
-// =============================================================================
-
-declare function D(
-  domain: string,
-  registrar: unknown,
-  dnsProvider: unknown,
-  ...records: unknown[]
-): void;
-declare function NewRegistrar(name: string): unknown;
-declare function NewDnsProvider(
-  name: string,
-  type?: string,
-  options?: Record<string, unknown>
-): unknown;
-declare function DnsProvider(provider: unknown): unknown;
-declare function DefaultTTL(ttl: number): unknown;
-declare function IGNORE_NAME(name: string, types?: string): unknown;
-declare function CF_REDIRECT(from: string, to: string): unknown;
-
-// =============================================================================
 // Zone Definition
 // =============================================================================
 

@@ -23,12 +23,6 @@ import { createARecord, createCNAMERecord } from "../../lib/record.js";
 import { servers } from "../../lib/server.js";
 
 // =============================================================================
-// DNSControl DSL Declarations
-// =============================================================================
-
-declare function IGNORE_NAME(name: string, types?: string): unknown;
-
-// =============================================================================
 // Zone Definition
 // =============================================================================
 
@@ -41,18 +35,16 @@ function generateServerRecords(): unknown[] {
   const records: unknown[] = [];
   const ignored: unknown[] = [];
 
-  // Use Object.keys + index lookup for ES5 compatibility
-  const serverNames = Object.keys(servers);
-  for (let i = 0; i < serverNames.length; i++) {
-    const serverName = serverNames[i] as keyof typeof servers;
+  // Iterate over all servers in the registry
+  const serverNames = Object.keys(servers) as (keyof typeof servers)[];
+  for (const serverName of serverNames) {
     const server = servers[serverName];
 
     // Skip local/internal servers (not publicly routable)
-    // Use indexOf for ES5 compatibility (no startsWith)
     if (
       server.location === "local" ||
-      server.ip.indexOf("10.") === 0 ||
-      server.ip.indexOf("192.168.") === 0
+      server.ip.startsWith("10.") ||
+      server.ip.startsWith("192.168.")
     ) {
       continue;
     }

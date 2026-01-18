@@ -5,7 +5,7 @@
 
 import { Factory } from "fishery";
 import { faker } from "@faker-js/faker";
-import type { Service, RoutingStrategy, ServerName, ServiceCategory } from "../../src/lib/types.js";
+import type { Service, RoutingStrategy, ServiceCategory } from "../../src/lib/types.js";
 import { SERVER_NAMES } from "./server.factory.js";
 
 // Valid routing strategies
@@ -47,16 +47,18 @@ function generateSubdomain(): string {
 /**
  * Service factory for generating test service data
  */
-export const serviceFactory = Factory.define<Service>(({ sequence }) => {
+export const serviceFactory = Factory.define<Service>(() => {
   const isInternal = faker.datatype.boolean({ probability: 0.2 });
 
   return {
     name: faker.company.buzzNoun(),
     subdomain: generateSubdomain(),
-    server: faker.helpers.arrayElement(SERVER_NAMES) as ServerName,
+    server: faker.helpers.arrayElement(SERVER_NAMES),
     routing: faker.helpers.arrayElement(ROUTING_STRATEGIES),
     internal: isInternal ? true : undefined,
-    internalSuffix: isInternal ? faker.helpers.arrayElement([".local", ".int", ".internal"]) : undefined,
+    internalSuffix: isInternal
+      ? faker.helpers.arrayElement([".local", ".int", ".internal"])
+      : undefined,
   };
 });
 
@@ -136,10 +138,4 @@ export const serviceCategoryFactory = Factory.define<ServiceCategoryDefinition>(
 });
 
 // Export helper functions and constants
-export {
-  generateSubdomain,
-  ROUTING_STRATEGIES,
-  SERVICE_CATEGORIES,
-  SERVICE_PREFIXES,
-};
-
+export { generateSubdomain, ROUTING_STRATEGIES, SERVICE_CATEGORIES, SERVICE_PREFIXES };

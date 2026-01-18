@@ -27,20 +27,24 @@ const originalCNAME = (globalThis as Record<string, unknown>).CNAME;
 describe("Service Record Snapshot Tests", () => {
   beforeEach(() => {
     // Mock A() to return structured data
-    (globalThis as Record<string, unknown>).A = vi.fn((name: string, ip: string, ...modifiers: unknown[]) => ({
-      type: "A",
-      name,
-      ip,
-      modifiers,
-    }));
+    (globalThis as Record<string, unknown>).A = vi.fn(
+      (name: string, ip: string, ...modifiers: unknown[]) => ({
+        type: "A",
+        name,
+        ip,
+        modifiers,
+      })
+    );
 
     // Mock CNAME() to return structured data
-    (globalThis as Record<string, unknown>).CNAME = vi.fn((name: string, target: string, ...modifiers: unknown[]) => ({
-      type: "CNAME",
-      name,
-      target,
-      modifiers,
-    }));
+    (globalThis as Record<string, unknown>).CNAME = vi.fn(
+      (name: string, target: string, ...modifiers: unknown[]) => ({
+        type: "CNAME",
+        name,
+        target,
+        modifiers,
+      })
+    );
   });
 
   afterEach(() => {
@@ -156,4 +160,3 @@ describe("Service Record Snapshot Tests", () => {
     });
   });
 });
-

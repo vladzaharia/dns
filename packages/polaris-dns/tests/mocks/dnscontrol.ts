@@ -116,7 +116,7 @@ export const mockDnsControl = {
 
   // Provider functions
   NewRegistrar: vi.fn((name: string) => name),
-  NewDnsProvider: vi.fn((name: string, type?: string) => name),
+  NewDnsProvider: vi.fn((name: string) => name),
 
   // Cloudflare proxy constants
   CF_PROXY_ON: { proxy: true },

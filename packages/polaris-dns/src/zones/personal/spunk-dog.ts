@@ -9,12 +9,6 @@ import { createTXTRecord } from "../../lib/record.js";
 import { createFastmailRecords } from "../../mail/fastmail.js";
 
 // =============================================================================
-// DNSControl DSL Declarations
-// =============================================================================
-
-declare function IGNORE_NAME(name: string, types?: string): unknown;
-
-// =============================================================================
 // Zone Definition
 // =============================================================================
 

@@ -20,9 +20,7 @@ import {
   SERVER_LOCATIONS,
   ROUTING_STRATEGIES,
 } from "../../factories/index.js";
-import { serverSchema } from "../../schemas/server.schema.js";
-import { serviceSchema } from "../../schemas/service.schema.js";
-import { aRecordSchema, cnameRecordSchema, mxRecordSchema, txtRecordSchema, caaRecordSchema } from "../../schemas/dns.schema.js";
+import { aRecordSchema, cnameRecordSchema, mxRecordSchema } from "../../schemas/dns.schema.js";
 
 describe("Test Data Factories", () => {
   describe("Server Factory", () => {
@@ -192,4 +190,3 @@ describe("Test Data Factories", () => {
     });
   });
 });
-
