@@ -106,12 +106,12 @@ describe("DNS Record Validation", () => {
     });
 
     it("should reject invalid hostnames", () => {
+      // Note: example.com. (with trailing dot) is VALID - it's an FQDN notation
       const invalidHostnames = [
         "-example.com",
         "example-.com",
         "example..com",
         ".example.com",
-        "example.com.",
         "",
         "a".repeat(64) + ".com",
       ];
@@ -192,7 +192,8 @@ describe("DNS Record Validation", () => {
     });
 
     it("should reject invalid port numbers", () => {
-      const invalidPorts = [0, -1, 65536, 1.5];
+      // Note: Port 0 is VALID per RFC (used in SRV records to indicate service not available)
+      const invalidPorts = [-1, 65536, 1.5];
 
       invalidPorts.forEach((port) => {
         expect(portSchema.safeParse(port).success, `${port} should be invalid`).toBe(false);
@@ -318,9 +319,10 @@ describe("DNS Record Validation", () => {
     });
 
     it("should reject invalid SRV records", () => {
+      // Note: port: 0 is VALID per RFC 2782 - it means service is not available
       const invalidRecords = [
-        { name: "_sip._tcp", priority: 10, weight: 5, port: 0, target: "sip.example.com." },
         { name: "_sip._tcp", priority: 10, weight: 5, port: 65536, target: "sip.example.com." },
+        { name: "_sip._tcp", priority: -1, weight: 5, port: 5060, target: "sip.example.com." },
       ];
 
       invalidRecords.forEach((record) => {

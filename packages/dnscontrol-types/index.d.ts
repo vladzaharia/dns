@@ -34,29 +34,29 @@
  */
 
 // Core types
-/// <reference path="base.d.ts" />
+/// <reference path="types/base.d.ts" />
 
 // Base capabilities (BaseProviderCapabilities, record type unions)
-/// <reference path="base-capabilities.d.ts" />
+/// <reference path="types/base-capabilities.d.ts" />
 
 // Top-level functions (D, D_EXTEND, NewDnsProvider, etc.)
-/// <reference path="top-level.d.ts" />
+/// <reference path="types/top-level.d.ts" />
 
 // DNS record types (A, AAAA, CNAME, MX, etc.)
-/// <reference path="records.d.ts" />
+/// <reference path="types/records.d.ts" />
 
 // Domain modifiers (DnsProvider, DefaultTTL, NO_PURGE, etc.)
-/// <reference path="domain-modifiers.d.ts" />
+/// <reference path="types/domain-modifiers.d.ts" />
 
 // Record modifiers (TTL, CAA_CRITICAL, etc.)
-/// <reference path="record-modifiers.d.ts" />
+/// <reference path="types/record-modifiers.d.ts" />
 
 // Builder functions (CAA_BUILDER, SPF_BUILDER, DMARC_BUILDER, etc.)
-/// <reference path="builders.d.ts" />
+/// <reference path="types/builders.d.ts" />
 
 // Provider-specific types (Cloudflare, Azure, Route53, etc.)
-/// <reference path="providers/index.d.ts" />
+/// <reference path="types/providers/index.d.ts" />
 
 // Provider capabilities registry and utility types
-/// <reference path="provider-capabilities.d.ts" />
+/// <reference path="types/provider-capabilities.d.ts" />
 

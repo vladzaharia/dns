@@ -23,205 +23,205 @@
       "require": "./dist/validators/index.cjs"
     },
     "./base": {
-      "types": "./base.d.ts"
+      "types": "./types/base.d.ts"
     },
     "./base-capabilities": {
-      "types": "./base-capabilities.d.ts"
+      "types": "./types/base-capabilities.d.ts"
     },
     "./records": {
-      "types": "./records.d.ts"
+      "types": "./types/records.d.ts"
     },
     "./builders": {
-      "types": "./builders.d.ts"
+      "types": "./types/builders.d.ts"
     },
     "./domain-modifiers": {
-      "types": "./domain-modifiers.d.ts"
+      "types": "./types/domain-modifiers.d.ts"
     },
     "./record-modifiers": {
-      "types": "./record-modifiers.d.ts"
+      "types": "./types/record-modifiers.d.ts"
     },
     "./top-level": {
-      "types": "./top-level.d.ts"
+      "types": "./types/top-level.d.ts"
     },
     "./provider-capabilities": {
-      "types": "./provider-capabilities.d.ts"
+      "types": "./types/provider-capabilities.d.ts"
     },
     "./providers": {
-      "types": "./providers/index.d.ts"
+      "types": "./types/providers/index.d.ts"
     },
     "./providers/adguardhome": {
-      "types": "./providers/adguardhome.d.ts"
+      "types": "./types/providers/adguardhome.d.ts"
     },
     "./providers/akamai": {
-      "types": "./providers/akamai.d.ts"
+      "types": "./types/providers/akamai.d.ts"
     },
     "./providers/alidns": {
-      "types": "./providers/alidns.d.ts"
+      "types": "./types/providers/alidns.d.ts"
     },
     "./providers/autodns": {
-      "types": "./providers/autodns.d.ts"
+      "types": "./types/providers/autodns.d.ts"
     },
     "./providers/axfrddns": {
-      "types": "./providers/axfrddns.d.ts"
+      "types": "./types/providers/axfrddns.d.ts"
     },
     "./providers/azure": {
-      "types": "./providers/azure.d.ts"
+      "types": "./types/providers/azure.d.ts"
     },
     "./providers/bind": {
-      "types": "./providers/bind.d.ts"
+      "types": "./types/providers/bind.d.ts"
     },
     "./providers/bunnydns": {
-      "types": "./providers/bunnydns.d.ts"
+      "types": "./types/providers/bunnydns.d.ts"
     },
     "./providers/cloudflare": {
-      "types": "./providers/cloudflare.d.ts"
+      "types": "./types/providers/cloudflare.d.ts"
     },
     "./providers/cloudns": {
-      "types": "./providers/cloudns.d.ts"
+      "types": "./types/providers/cloudns.d.ts"
     },
     "./providers/cnr": {
-      "types": "./providers/cnr.d.ts"
+      "types": "./types/providers/cnr.d.ts"
     },
     "./providers/cscglobal": {
-      "types": "./providers/cscglobal.d.ts"
+      "types": "./types/providers/cscglobal.d.ts"
     },
     "./providers/desec": {
-      "types": "./providers/desec.d.ts"
+      "types": "./types/providers/desec.d.ts"
     },
     "./providers/digitalocean": {
-      "types": "./providers/digitalocean.d.ts"
+      "types": "./types/providers/digitalocean.d.ts"
     },
     "./providers/dnscale": {
-      "types": "./providers/dnscale.d.ts"
+      "types": "./types/providers/dnscale.d.ts"
     },
     "./providers/dnsimple": {
-      "types": "./providers/dnsimple.d.ts"
+      "types": "./types/providers/dnsimple.d.ts"
     },
     "./providers/dnsmadeeasy": {
-      "types": "./providers/dnsmadeeasy.d.ts"
+      "types": "./types/providers/dnsmadeeasy.d.ts"
     },
     "./providers/dnsoverhttps": {
-      "types": "./providers/dnsoverhttps.d.ts"
+      "types": "./types/providers/dnsoverhttps.d.ts"
     },
     "./providers/domainnameshop": {
-      "types": "./providers/domainnameshop.d.ts"
+      "types": "./types/providers/domainnameshop.d.ts"
     },
     "./providers/dynadot": {
-      "types": "./providers/dynadot.d.ts"
+      "types": "./types/providers/dynadot.d.ts"
     },
     "./providers/easyname": {
-      "types": "./providers/easyname.d.ts"
+      "types": "./types/providers/easyname.d.ts"
     },
     "./providers/exoscale": {
-      "types": "./providers/exoscale.d.ts"
+      "types": "./types/providers/exoscale.d.ts"
     },
     "./providers/fortigate": {
-      "types": "./providers/fortigate.d.ts"
+      "types": "./types/providers/fortigate.d.ts"
     },
     "./providers/gandi": {
-      "types": "./providers/gandi.d.ts"
+      "types": "./types/providers/gandi.d.ts"
     },
     "./providers/gcloud": {
-      "types": "./providers/gcloud.d.ts"
+      "types": "./types/providers/gcloud.d.ts"
     },
     "./providers/gcore": {
-      "types": "./providers/gcore.d.ts"
+      "types": "./types/providers/gcore.d.ts"
     },
     "./providers/hedns": {
-      "types": "./providers/hedns.d.ts"
+      "types": "./types/providers/hedns.d.ts"
     },
     "./providers/hetzner": {
-      "types": "./providers/hetzner.d.ts"
+      "types": "./types/providers/hetzner.d.ts"
     },
     "./providers/hetznerv2": {
-      "types": "./providers/hetznerv2.d.ts"
+      "types": "./types/providers/hetznerv2.d.ts"
     },
     "./providers/hexonet": {
-      "types": "./providers/hexonet.d.ts"
+      "types": "./types/providers/hexonet.d.ts"
     },
     "./providers/hostingde": {
-      "types": "./providers/hostingde.d.ts"
+      "types": "./types/providers/hostingde.d.ts"
     },
     "./providers/huaweicloud": {
-      "types": "./providers/huaweicloud.d.ts"
+      "types": "./types/providers/huaweicloud.d.ts"
     },
     "./providers/internetbs": {
-      "types": "./providers/internetbs.d.ts"
+      "types": "./types/providers/internetbs.d.ts"
     },
     "./providers/inwx": {
-      "types": "./providers/inwx.d.ts"
+      "types": "./types/providers/inwx.d.ts"
     },
     "./providers/joker": {
-      "types": "./providers/joker.d.ts"
+      "types": "./types/providers/joker.d.ts"
     },
     "./providers/linode": {
-      "types": "./providers/linode.d.ts"
+      "types": "./types/providers/linode.d.ts"
     },
     "./providers/loopia": {
-      "types": "./providers/loopia.d.ts"
+      "types": "./types/providers/loopia.d.ts"
     },
     "./providers/luadns": {
-      "types": "./providers/luadns.d.ts"
+      "types": "./types/providers/luadns.d.ts"
     },
     "./providers/mythicbeasts": {
-      "types": "./providers/mythicbeasts.d.ts"
+      "types": "./types/providers/mythicbeasts.d.ts"
     },
     "./providers/namecheap": {
-      "types": "./providers/namecheap.d.ts"
+      "types": "./types/providers/namecheap.d.ts"
     },
     "./providers/namedotcom": {
-      "types": "./providers/namedotcom.d.ts"
+      "types": "./types/providers/namedotcom.d.ts"
     },
     "./providers/netcup": {
-      "types": "./providers/netcup.d.ts"
+      "types": "./types/providers/netcup.d.ts"
     },
     "./providers/netlify": {
-      "types": "./providers/netlify.d.ts"
+      "types": "./types/providers/netlify.d.ts"
     },
     "./providers/ns1": {
-      "types": "./providers/ns1.d.ts"
+      "types": "./types/providers/ns1.d.ts"
     },
     "./providers/opensrs": {
-      "types": "./providers/opensrs.d.ts"
+      "types": "./types/providers/opensrs.d.ts"
     },
     "./providers/oracle": {
-      "types": "./providers/oracle.d.ts"
+      "types": "./types/providers/oracle.d.ts"
     },
     "./providers/ovh": {
-      "types": "./providers/ovh.d.ts"
+      "types": "./types/providers/ovh.d.ts"
     },
     "./providers/packetframe": {
-      "types": "./providers/packetframe.d.ts"
+      "types": "./types/providers/packetframe.d.ts"
     },
     "./providers/porkbun": {
-      "types": "./providers/porkbun.d.ts"
+      "types": "./types/providers/porkbun.d.ts"
     },
     "./providers/powerdns": {
-      "types": "./providers/powerdns.d.ts"
+      "types": "./types/providers/powerdns.d.ts"
     },
     "./providers/realtimeregister": {
-      "types": "./providers/realtimeregister.d.ts"
+      "types": "./types/providers/realtimeregister.d.ts"
     },
     "./providers/route53": {
-      "types": "./providers/route53.d.ts"
+      "types": "./types/providers/route53.d.ts"
     },
     "./providers/rwth": {
-      "types": "./providers/rwth.d.ts"
+      "types": "./types/providers/rwth.d.ts"
     },
     "./providers/sakuracloud": {
-      "types": "./providers/sakuracloud.d.ts"
+      "types": "./types/providers/sakuracloud.d.ts"
     },
     "./providers/softlayer": {
-      "types": "./providers/softlayer.d.ts"
+      "types": "./types/providers/softlayer.d.ts"
     },
     "./providers/transip": {
-      "types": "./providers/transip.d.ts"
+      "types": "./types/providers/transip.d.ts"
     },
     "./providers/vercel": {
-      "types": "./providers/vercel.d.ts"
+      "types": "./types/providers/vercel.d.ts"
     },
     "./providers/vultr": {
-      "types": "./providers/vultr.d.ts"
+      "types": "./types/providers/vultr.d.ts"
     }
   },
   "scripts": {
@@ -240,7 +240,7 @@
   "files": [
     "dist",
     "*.d.ts",
-    "providers/*.d.ts",
+    "types/**/*.d.ts",
     "README.md"
   ],
   "keywords": [
@@ -269,7 +269,7 @@
     "access": "public"
   },
   "dependencies": {
-    "zod": "^3.24.0"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "tsup": "^8.3.0",
@@ -288,4 +288,3 @@
     "node": ">=18.0.0"
   }
 }
-

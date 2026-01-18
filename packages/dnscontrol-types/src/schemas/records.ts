@@ -350,28 +350,31 @@ export type DhcidRecord = z.infer<typeof DhcidRecordSchema>;
 
 /**
  * URL record schema (302 redirect)
+ * Uses Zod 4's native z.url() for validation
  */
 export const UrlRecordSchema = BaseRecordSchema.extend({
   type: z.literal('URL').default('URL'),
-  target: z.string().url(),
+  target: z.url({ error: 'Invalid URL format' }),
 });
 export type UrlRecord = z.infer<typeof UrlRecordSchema>;
 
 /**
  * URL301 record schema (301 permanent redirect)
+ * Uses Zod 4's native z.url() for validation
  */
 export const Url301RecordSchema = BaseRecordSchema.extend({
   type: z.literal('URL301').default('URL301'),
-  target: z.string().url(),
+  target: z.url({ error: 'Invalid URL format' }),
 });
 export type Url301Record = z.infer<typeof Url301RecordSchema>;
 
 /**
  * FRAME record schema (frame/masking redirect)
+ * Uses Zod 4's native z.url() for validation
  */
 export const FrameRecordSchema = BaseRecordSchema.extend({
   type: z.literal('FRAME').default('FRAME'),
-  target: z.string().url(),
+  target: z.url({ error: 'Invalid URL format' }),
 });
 export type FrameRecord = z.infer<typeof FrameRecordSchema>;
 

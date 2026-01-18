@@ -48,3 +48,6 @@ export {
   ALL_DOMAINS,
 } from "./domain.js";
 export type { DomainBuilderOptions } from "./domain.js";
+
+// Validation module
+export * from "./validation/index.js";

@@ -1,21 +1,36 @@
 /**
  * Zod schemas for DNS record validation
  * Provides runtime validation for all DNS record types
+ *
+ * This module re-exports schemas from the validation module and
+ * @vladzaharia/dnscontrol-types for use in tests.
  */
 
 import { z } from "zod";
-import { IPV4_REGEX, IPV6_REGEX, HOSTNAME_REGEX } from "../constants/dns-patterns.js";
 
-// IPv4 address validation
-export const ipv4Schema = z.string().regex(IPV4_REGEX, "Invalid IPv4 address");
+// Re-export from dnscontrol-types via validation module
+import {
+  Ipv4AddressSchema,
+  Ipv6AddressSchema,
+  HostnameSchema,
+  RecordNameSchema,
+  PortSchema,
+  PrioritySchema,
+  CaaTagSchema,
+  ProxyStatusSchema,
+} from "../../src/lib/validation/index.js";
 
-// IPv6 address validation (comprehensive pattern)
-export const ipv6Schema = z.string().regex(IPV6_REGEX, "Invalid IPv6 address");
-
-// Hostname validation (RFC 1123)
-export const hostnameSchema = z.string().min(1).max(253).regex(HOSTNAME_REGEX, "Invalid hostname");
+// Re-export with test-friendly names (lowercase for consistency with existing tests)
+export const ipv4Schema = Ipv4AddressSchema;
+export const ipv6Schema = Ipv6AddressSchema;
+export const hostnameSchema = HostnameSchema;
+export const prioritySchema = PrioritySchema;
+export const portSchema = PortSchema;
+export const proxyStatusSchema = ProxyStatusSchema;
+export const caaTagSchema = CaaTagSchema;
 
 // DNS label (subdomain) validation - allows @, *, and standard labels including underscores
+// This is more permissive than dnscontrol-types RecordNameSchema for test flexibility
 export const dnsLabelSchema = z
   .string()
   .min(1)
@@ -32,20 +47,9 @@ export const dnsLabelSchema = z
     { message: "Invalid DNS label" }
   );
 
-// TTL validation (60 seconds to 1 day)
+// TTL validation (60 seconds to 1 day) - test-specific range
+// Note: dnscontrol-types TtlSchema allows strings like "1h", this is numeric only
 export const ttlSchema = z.number().int().min(60).max(86400);
-
-// Priority validation (0-65535)
-export const prioritySchema = z.number().int().min(0).max(65535);
-
-// Port validation (1-65535, 0 is reserved)
-export const portSchema = z.number().int().min(1).max(65535);
-
-// Proxy status for Cloudflare
-export const proxyStatusSchema = z.enum(["on", "off", "full"]);
-
-// CAA tag validation
-export const caaTagSchema = z.enum(["issue", "issuewild", "iodef"]);
 
 // A Record schema (flexible - type is optional for validation tests)
 export const aRecordSchema = z.object({

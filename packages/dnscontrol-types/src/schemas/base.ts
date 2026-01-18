@@ -19,20 +19,22 @@ import { z } from 'zod';
  */
 export const TtlSchema = z.union([
   z.number().int().min(0).max(2147483647),
-  z.string().regex(/^\d+[smhdw]?$/, 'Invalid TTL format. Use number or duration string (e.g., "300", "5m", "1h")'),
+  z.string().regex(/^\d+[smhdw]?$/, { error: 'Invalid TTL format. Use number or duration string (e.g., "300", "5m", "1h")' }),
 ]);
 export type Ttl = z.infer<typeof TtlSchema>;
 
 /**
  * IPv4 address schema
+ * Uses Zod 4's native z.ipv4() for validation
  */
-export const Ipv4AddressSchema = z.string().ip({ version: 'v4' });
+export const Ipv4AddressSchema = z.ipv4({ error: 'Invalid IPv4 address' });
 export type Ipv4Address = z.infer<typeof Ipv4AddressSchema>;
 
 /**
  * IPv6 address schema
+ * Uses Zod 4's native z.ipv6() for validation
  */
-export const Ipv6AddressSchema = z.string().ip({ version: 'v6' });
+export const Ipv6AddressSchema = z.ipv6({ error: 'Invalid IPv6 address' });
 export type Ipv6Address = z.infer<typeof Ipv6AddressSchema>;
 
 /**

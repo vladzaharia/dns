@@ -25,7 +25,7 @@ export const DnsLabelSchema = z
   .max(63)
   .regex(
     /^(?!-)[a-zA-Z0-9-]{1,63}(?<!-)$/,
-    'DNS label must be 1-63 characters, alphanumeric and hyphens, cannot start or end with hyphen'
+    { error: 'DNS label must be 1-63 characters, alphanumeric and hyphens, cannot start or end with hyphen' }
   );
 export type DnsLabel = z.infer<typeof DnsLabelSchema>;
 
@@ -41,7 +41,7 @@ export const FqdnSchema = z
   .max(253)
   .regex(
     /^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/,
-    'Invalid FQDN format'
+    { error: 'Invalid FQDN format' }
   );
 export type Fqdn = z.infer<typeof FqdnSchema>;
 
@@ -54,7 +54,7 @@ export const DomainNameSchema = z
   .max(253)
   .regex(
     /^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/,
-    'Invalid domain name format'
+    { error: 'Invalid domain name format' }
   );
 export type DomainName = z.infer<typeof DomainNameSchema>;
 
@@ -77,7 +77,7 @@ export const RecordNameSchema = z.union([
     .max(253)
     .regex(
       /^(?:\*\.)?(?:(?!-)[a-zA-Z0-9_-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9_-]{1,63}(?<!-)$/,
-      'Invalid record name format'
+      { error: 'Invalid record name format' }
     ),
 ]);
 export type RecordName = z.infer<typeof RecordNameSchema>;
@@ -92,7 +92,7 @@ export const HostnameSchema = z
   .max(253)
   .regex(
     /^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/,
-    'Invalid hostname format'
+    { error: 'Invalid hostname format' }
   );
 export type Hostname = z.infer<typeof HostnameSchema>;
 
@@ -139,14 +139,13 @@ export type TxtContent = z.infer<typeof TxtContentSchema>;
 /**
  * Validates a hexadecimal string (used in TLSA, SSHFP, DS records)
  */
-export const HexStringSchema = z.string().regex(/^[a-fA-F0-9]+$/, 'Must be a valid hexadecimal string');
+export const HexStringSchema = z.string().regex(/^[a-fA-F0-9]+$/, { error: 'Must be a valid hexadecimal string' });
 export type HexString = z.infer<typeof HexStringSchema>;
 
 /**
  * Validates a base64-encoded string (used in DNSKEY, DKIM records)
+ * Uses Zod 4's native z.base64() for validation
  */
-export const Base64StringSchema = z
-  .string()
-  .regex(/^[A-Za-z0-9+/]*={0,2}$/, 'Must be a valid base64 string');
+export const Base64StringSchema = z.base64({ error: 'Must be a valid base64 string' });
 export type Base64String = z.infer<typeof Base64StringSchema>;
 
