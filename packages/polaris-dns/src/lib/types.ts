@@ -7,7 +7,7 @@
 // =============================================================================
 
 /** Geographic location identifiers for servers */
-export type ServerLocation = "sea" | "az" | "re" | "local";
+export type ServerLocation = "sea" | "qnc" | "re" | "local";
 
 /** Server name identifiers */
 export type ServerName =

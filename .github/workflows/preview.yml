@@ -18,28 +18,19 @@ jobs:
       - name: Download DNSControl binaries
         uses: actions/download-artifact@v4
         with:
-          name: lib
-          path: lib
+          name: bin
+          path: bin
       - name: Download compiled JS
         uses: actions/download-artifact@v4
         with:
           name: out
           path: out
       - name: Make binaries executable
-        run: chmod +x dnscontrol*
-        working-directory: lib
+        run: chmod +x dnscontrol-*
+        working-directory: bin
         shell: bash
-      # - name: Pull CF secrets from Vault
-      #   uses: hashicorp/vault-action@v2
-      #   with:
-      #     url: https://vault.zhr.one
-      #     role: dns
-      #     path: github
-      #     method: jwt
-      #     secrets: |
-      #       /ci-cd/dns/cloudflare/preview CF_API
       - name: Generate and preview records
-        run: ../lib/dnscontrol-Linux --diff2 preview
+        run: ../bin/dnscontrol-Linux --diff2 preview
         working-directory: out
         shell: bash
         env:

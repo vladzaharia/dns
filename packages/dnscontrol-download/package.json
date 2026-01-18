@@ -1,0 +1,52 @@
+{
+  "name": "@vladzaharia/dnscontrol-download",
+  "version": "1.0.0",
+  "description": "Downloads DNSControl binaries for the current platform",
+  "type": "module",
+  "bin": {
+    "dnscontrol-download": "./src/download.ts",
+    "dnscontrol-Darwin": "./bin/dnscontrol-Darwin",
+    "dnscontrol-Linux": "./bin/dnscontrol-Linux",
+    "dnscontrol-Windows": "./bin/dnscontrol-Windows.exe"
+  },
+  "scripts": {
+    "postinstall": "tsx src/download.ts",
+    "download": "tsx src/download.ts",
+    "download:force": "tsx src/download.ts --force",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "README.md"
+  ],
+  "keywords": [
+    "dnscontrol",
+    "dns",
+    "infrastructure-as-code",
+    "binary",
+    "download"
+  ],
+  "author": "Vlad Zaharia",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vladzaharia/dns.git",
+    "directory": "packages/dnscontrol-download"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "tar": "^7.4.3",
+    "tsx": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}
+

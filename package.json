@@ -3,7 +3,8 @@
   "private": true,
   "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "build": "pnpm --filter @vladzaharia/polaris-dns run build",
+    "build": "pnpm -r run build",
+    "build:dns": "pnpm --filter @vladzaharia/polaris-dns run build",
     "preview": "pnpm --filter @vladzaharia/polaris-dns run preview",
     "push": "pnpm --filter @vladzaharia/polaris-dns run push",
     "lint": "pnpm -r run lint",

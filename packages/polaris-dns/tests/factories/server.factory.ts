@@ -8,7 +8,7 @@ import { faker } from "@faker-js/faker";
 import type { Server, ServerLocation, ServerName } from "../../src/lib/types.js";
 
 // Valid server locations
-const SERVER_LOCATIONS: ServerLocation[] = ["sea", "az", "re", "local"];
+const SERVER_LOCATIONS: ServerLocation[] = ["sea", "qnc", "re", "local"];
 
 // Valid server names
 const SERVER_NAMES: ServerName[] = [
@@ -79,10 +79,10 @@ export const seattleServerFactory = serverFactory.params({
 });
 
 /**
- * Factory for Azure-based servers
+ * Factory for Quincy-based servers (Azure US-West-2)
  */
-export const azureServerFactory = serverFactory.params({
-  location: "az",
+export const quincyServerFactory = serverFactory.params({
+  location: "qnc",
 });
 
 /**

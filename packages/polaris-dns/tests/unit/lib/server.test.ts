@@ -89,7 +89,7 @@ describe("Server Registry", () => {
     it("should return the correct server for pangolin", () => {
       const server = getServer("pangolin");
       expect(server.name).toBe("pangolin");
-      expect(server.location).toBe("az");
+      expect(server.location).toBe("qnc");
       expect(server.prefix).toBe("tun");
     });
 
@@ -136,7 +136,7 @@ describe("Server Registry", () => {
     });
 
     it("should return correct hostname for pangolin", () => {
-      expect(getServerHostname("pangolin")).toBe("tun.az.plrs.im");
+      expect(getServerHostname("pangolin")).toBe("tun.qnc.plrs.im");
     });
 
     it("should return valid hostname for all servers", () => {
@@ -200,11 +200,11 @@ describe("Server Registry", () => {
       });
     });
 
-    it("should return Azure servers", () => {
-      const azServers = getServersByLocation("az");
-      expect(azServers.length).toBeGreaterThan(0);
-      azServers.forEach((server) => {
-        expect(server.location).toBe("az");
+    it("should return Quincy servers", () => {
+      const qncServers = getServersByLocation("qnc");
+      expect(qncServers.length).toBeGreaterThan(0);
+      qncServers.forEach((server) => {
+        expect(server.location).toBe("qnc");
       });
     });
 

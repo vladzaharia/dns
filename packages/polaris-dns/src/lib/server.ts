@@ -30,16 +30,16 @@ export const servers: ServerRegistry = {
   },
   "pangolin": {
     name: "pangolin",
-    location: "az",
+    location: "qnc",
     prefix: "tun",
-    hostname: "tun.az.plrs.im",
+    hostname: "tun.qnc.plrs.im",
     ip: "172.179.0.103",
   },
   upvpn: {
     name: "upvpn",
-    location: "az",
+    location: "qnc",
     prefix: "upvpn",
-    hostname: "upvpn.az.plrs.im",
+    hostname: "upvpn.qnc.plrs.im",
     ip: "20.3.240.145",
   },
   reprise1: {

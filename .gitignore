@@ -5,10 +5,12 @@ dist/
 .env
 .DS_Store
 
-# DNSControl binaries
-lib/*
-!lib/README.md
-!lib/download*
+# DNSControl binaries (downloaded at install time)
+packages/dnscontrol-download/bin/dnscontrol-*
+packages/dnscontrol-download/bin/dnscontrol-VERSION
 
 # Testing (Vitest)
 coverage/
+
+# pnpm
+.pnpm-store/

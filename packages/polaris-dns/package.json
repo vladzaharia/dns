@@ -5,17 +5,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "postinstall": "../../lib/download.sh",
     "build": "webpack",
     "preview-ci": "run-script-os",
-    "preview-ci:darwin": "cd out && ../../../lib/dnscontrol-Darwin --diff2 preview",
-    "preview-ci:linux": "cd out && ../../../lib/dnscontrol-Linux --diff2 preview",
-    "preview-ci:win32": "cd out && ..\\..\\..\\lib\\dnscontrol --diff2 preview",
+    "preview-ci:darwin": "cd out && dnscontrol-Darwin --diff2 preview",
+    "preview-ci:linux": "cd out && dnscontrol-Linux --diff2 preview",
+    "preview-ci:win32": "cd out && dnscontrol --diff2 preview",
     "preview": "pnpm run build && pnpm run preview-ci",
     "push-ci": "run-script-os",
-    "push-ci:darwin": "cd out && ../../../lib/dnscontrol-Darwin --diff2 push",
-    "push-ci:linux": "cd out && ../../../lib/dnscontrol-Linux --diff2 push",
-    "push-ci:win32": "cd out && ..\\..\\..\\lib\\dnscontrol --diff2 push",
+    "push-ci:darwin": "cd out && dnscontrol-Darwin --diff2 push",
+    "push-ci:linux": "cd out && dnscontrol-Linux --diff2 push",
+    "push-ci:win32": "cd out && dnscontrol --diff2 push",
     "push": "pnpm run build && pnpm run push-ci",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -45,6 +44,7 @@
     "polaris"
   ],
   "dependencies": {
+    "@vladzaharia/dnscontrol-download": "workspace:*",
     "@vladzaharia/dnscontrol-types": "workspace:*"
   },
   "devDependencies": {

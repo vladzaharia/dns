@@ -74,7 +74,7 @@ describe("Service Core", () => {
         expect(mockDnsControl.CNAME).toHaveBeenCalled();
         // Should point to Azure tunnel hostname
         const call = mockDnsControl.CNAME.mock.calls[0];
-        expect(call[1]).toContain("tun.az.plrs.im");
+        expect(call[1]).toContain("tun.qnc.plrs.im");
       });
     });
 

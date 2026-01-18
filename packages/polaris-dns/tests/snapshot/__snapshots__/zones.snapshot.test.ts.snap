@@ -13,7 +13,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
         "cloudflare_proxy": "off",
       },
     ],
-    "name": "tun.az",
+    "name": "tun.qnc",
     "type": "A",
   },
   {
@@ -23,7 +23,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
         "cloudflare_proxy": "off",
       },
     ],
-    "name": "upvpn.az",
+    "name": "upvpn.qnc",
     "type": "A",
   },
   {
@@ -172,7 +172,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
       },
     ],
     "name": "docker",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -192,7 +192,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
       },
     ],
     "name": "net",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -342,7 +342,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
       },
     ],
     "name": "ai",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -939,7 +939,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
       },
     ],
     "name": "docker",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -959,7 +959,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
       },
     ],
     "name": "net",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1089,7 +1089,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
       },
     ],
     "name": "games",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1274,7 +1274,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "request",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1284,7 +1284,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "invite",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1294,7 +1294,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "xteve",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1304,7 +1304,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "threadfin",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1314,7 +1314,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "tunarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1374,7 +1374,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "maintain",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1384,7 +1384,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "rec",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1394,7 +1394,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "sonarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1404,7 +1404,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "radarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1414,7 +1414,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "lidarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1424,7 +1424,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "readarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1434,7 +1434,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "prowlarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1444,7 +1444,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "sabnzbd",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1454,7 +1454,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "decryptarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1464,7 +1464,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
       },
     ],
     "name": "tautulli",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {

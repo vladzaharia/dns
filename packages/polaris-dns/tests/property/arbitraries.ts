@@ -11,7 +11,7 @@ import type { ServerLocation, ServerName, RoutingStrategy, ProxyStatus } from ".
 // =============================================================================
 
 /** Valid server locations */
-export const serverLocationArb: fc.Arbitrary<ServerLocation> = fc.constantFrom("sea", "az", "re", "local");
+export const serverLocationArb: fc.Arbitrary<ServerLocation> = fc.constantFrom("sea", "qnc", "re", "local");
 
 /** Valid server names */
 export const serverNameArb: fc.Arbitrary<ServerName> = fc.constantFrom(

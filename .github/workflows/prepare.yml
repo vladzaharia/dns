@@ -4,22 +4,8 @@ on:
   workflow_call:
 
 jobs:
-  lib:
-    name: Download DNSControl binaries
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download latest binaries
-        run: ./download.sh
-        working-directory: lib
-        shell: bash
-      - name: Upload DNSControl binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: lib
-          path: lib/*
   compile:
-    name: Compile TypeScript
+    name: Compile TypeScript and Download Binaries
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +16,7 @@ jobs:
         with:
           node-version: 18
           cache: pnpm
-      - name: Download dependencies
+      - name: Download dependencies and binaries
         run: pnpm install --frozen-lockfile
       - name: Build JS files
         run: pnpm run build
@@ -39,3 +25,8 @@ jobs:
         with:
           name: out
           path: packages/polaris-dns/out/*
+      - name: Upload DNSControl binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: bin
+          path: packages/dnscontrol-download/bin/dnscontrol-*

@@ -49,7 +49,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "docker",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -69,7 +69,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "net",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -199,7 +199,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "games",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -359,7 +359,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "ai",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -419,7 +419,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "request",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -429,7 +429,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "invite",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -439,7 +439,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "xteve",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -449,7 +449,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "threadfin",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -459,7 +459,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "tunarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -519,7 +519,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "maintain",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -529,7 +529,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "rec",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -539,7 +539,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "sonarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -549,7 +549,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "radarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -559,7 +559,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "lidarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -569,7 +569,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "readarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -579,7 +579,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "prowlarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -589,7 +589,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "sabnzbd",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -599,7 +599,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "decryptarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -609,7 +609,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
       },
     ],
     "name": "tautulli",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
 ]
@@ -701,7 +701,7 @@ exports[`Service Record Snapshot Tests > Individual Service Records > tunnel rou
       },
     ],
     "name": "test-tunnel",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
 ]
@@ -716,7 +716,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > gaming servi
       },
     ],
     "name": "games",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -881,7 +881,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
       },
     ],
     "name": "ai",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
 ]
@@ -936,7 +936,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
       },
     ],
     "name": "docker",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -956,7 +956,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
       },
     ],
     "name": "net",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
 ]
@@ -1071,7 +1071,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "request",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1081,7 +1081,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "invite",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1091,7 +1091,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "xteve",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1101,7 +1101,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "threadfin",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1111,7 +1111,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "tunarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1171,7 +1171,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "maintain",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1181,7 +1181,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "rec",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1191,7 +1191,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "sonarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1201,7 +1201,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "radarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1211,7 +1211,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "lidarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1221,7 +1221,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "readarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1231,7 +1231,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "prowlarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1241,7 +1241,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "sabnzbd",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1251,7 +1251,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "decryptarr",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
   {
@@ -1261,7 +1261,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
       },
     ],
     "name": "tautulli",
-    "target": "tun.az.plrs.im.",
+    "target": "tun.qnc.plrs.im.",
     "type": "CNAME",
   },
 ]

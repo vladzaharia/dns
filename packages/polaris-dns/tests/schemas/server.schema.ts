@@ -7,7 +7,7 @@ import { z } from "zod";
 import { ipv4Schema, ipv6Schema, hostnameSchema } from "./dns.schema.js";
 
 // Server location validation
-export const serverLocationSchema = z.enum(["sea", "az", "re", "local"]);
+export const serverLocationSchema = z.enum(["sea", "qnc", "re", "local"]);
 
 // Server name validation
 export const serverNameSchema = z.enum([

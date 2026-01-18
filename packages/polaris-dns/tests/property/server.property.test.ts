@@ -17,7 +17,7 @@ describe("Server Property Tests", () => {
     });
 
     test.prop([serverLocationArb])("server locations should be one of the valid values", (location) => {
-      expect(["sea", "az", "re", "local"]).toContain(location);
+      expect(["sea", "qnc", "re", "local"]).toContain(location);
     });
   });
 

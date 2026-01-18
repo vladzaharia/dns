@@ -35,7 +35,7 @@ import type {
 describe("Type Definitions", () => {
   describe("Server Types", () => {
     it("should allow valid ServerLocation values", () => {
-      const locations: ServerLocation[] = ["sea", "az", "re", "local"];
+      const locations: ServerLocation[] = ["sea", "qnc", "re", "local"];
       expect(locations).toHaveLength(4);
     });
 
