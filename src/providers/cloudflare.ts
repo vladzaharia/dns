@@ -4,7 +4,7 @@
 export const CloudflareDns = NewDnsProvider("cloudflare");
 export const CloudflareDnsWithRedirect = NewDnsProvider(
   "cloudflare",
-  "CLOUDFLAREAPI",
+  undefined,
   { manage_redirects: true }
 );
 

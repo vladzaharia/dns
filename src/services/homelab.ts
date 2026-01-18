@@ -21,8 +21,6 @@ export const HomeLabRecords: Record[] = [
   { name: "registry.kasm", description: "Kasm Registry" },
   { name: "registry", description: "Docker Registry" },
 
-  { name: "pass", description: "Bitwarden" },
-
   { name: "z", description: "Zrok", target: GetHost("Reprise4") },
   { name: "*.z", description: "Zrok", target: GetHost("Reprise4") },
 
