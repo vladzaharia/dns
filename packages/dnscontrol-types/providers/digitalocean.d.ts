@@ -1,16 +1,17 @@
 /**
- * DNSControl Azure Provider Types
- * Azure DNS and Azure Private DNS specific functions
+ * DNSControl DigitalOcean Provider Types
+ * DigitalOcean DNS-specific functions and modifiers
  *
- * @provider AZUREDNS, AZUREPRIVATEDNS
- * @maintainer @vatsalyagoel
+ * @provider DIGITALOCEAN
+ * @maintainer @Deraen
  *
- * ## Capabilities (Azure DNS)
+ * ## Capabilities
  *
  * ### Supported Record Types
- * - ✅ A, AAAA, CNAME, MX, NS, TXT, SOA, PTR
+ * - ✅ A, AAAA, CNAME, MX, NS, TXT, SOA
  * - ✅ CAA (Certificate Authority Authorization)
  * - ✅ SRV (Service records)
+ * - ❌ PTR (not supported)
  * - ❌ SSHFP (not supported)
  * - ❌ TLSA (not supported)
  * - ❌ NAPTR (not supported)
@@ -25,13 +26,10 @@
  * - ✅ Can Concur: Yes (concurrent operations)
  * - ✅ Can Get Zones: Yes
  *
- * ### Custom Record Types
- * - **AZURE_ALIAS**: Azure resource aliases (Traffic Manager, CDN, Public IP, etc.)
- *
- * ## Capabilities (Azure Private DNS)
- *
- * Similar to Azure DNS but for private/internal DNS zones within Azure VNets.
- * Also supports AZURE_ALIAS for private endpoints and other Azure resources.
+ * ### Notes
+ * - Free DNS hosting for DigitalOcean customers
+ * - Global anycast network
+ * - Simple and straightforward DNS management
  *
  * @packageDocumentation
  */
@@ -43,21 +41,21 @@
 import type { BaseProviderCapabilities } from "../base-capabilities";
 
 // =============================================================================
-// AZURE CAPABILITIES
+// DIGITALOCEAN CAPABILITIES
 // =============================================================================
 
 /**
- * Azure DNS provider capability interface
+ * DigitalOcean provider capability interface
  * Extends BaseProviderCapabilities to inherit documentation
  */
-export interface AzureCapabilities extends BaseProviderCapabilities {
+export interface DigitalOceanCapabilities extends BaseProviderCapabilities {
   // Standard record types
   canUseA: true;
   canUseAAAA: true;
   canUseCNAME: true;
   canUseMX: true;
   canUseNS: true;
-  canUsePTR: true;
+  canUsePTR: false;
   canUseSOA: true;
   canUseSRV: true;
   canUseTXT: true;
@@ -77,15 +75,12 @@ export interface AzureCapabilities extends BaseProviderCapabilities {
   canUseTLSA: false;
 
   // Pseudo record types
-  canUseALIAS: true; // Via AZURE_ALIAS
+  canUseALIAS: false;
   canUseDHCID: false;
   canUseFRAME: false;
   canUseRP: false;
   canUseURL: false;
   canUseURL301: false;
-
-  // Azure-specific
-  canUseAzureAlias: true;
 
   // Features
   canAutoDNSSEC: false;
@@ -97,27 +92,28 @@ export interface AzureCapabilities extends BaseProviderCapabilities {
 }
 
 // =============================================================================
-// AZURE NAMESPACE (STRICT MODE)
+// DIGITALOCEAN NAMESPACE (STRICT MODE)
 // =============================================================================
 
 /**
- * Azure namespace with compile-time validation
- * Only includes record types supported by Azure DNS
+ * DigitalOcean namespace with compile-time validation
+ * Only includes record types supported by DigitalOcean
  *
  * @example
  * ```typescript
- * D("example.com", REG_NONE, DnsProvider(DSP_AZUREDNS),
- *   Azure.A("@", "1.2.3.4"),
- *   Azure.CAA("@", "issue", "letsencrypt.org"),
- *   Azure.AZURE_ALIAS("www", "A", "/subscriptions/.../publicIPAddresses/myIP")
+ * D("example.com", REG_NONE, DnsProvider(DSP_DIGITALOCEAN),
+ *   DigitalOcean.A("@", "1.2.3.4"),
+ *   DigitalOcean.CAA("@", "issue", "letsencrypt.org"),
+ *   DigitalOcean.MX("@", 10, "mail.example.com.")
  * );
  * ```
  *
- * @note Azure does NOT support: SSHFP, TLSA, NAPTR, LOC, HTTPS, SVCB, DNAME,
- *       DNSKEY, DS, OPENPGPKEY, SMIMEA
+ * @note DigitalOcean does NOT support: PTR, SSHFP, TLSA, NAPTR, LOC, HTTPS,
+ *       SVCB, DNAME, DNSKEY, DS, OPENPGPKEY, SMIMEA, ALIAS, DHCID, FRAME,
+ *       RP, URL, URL301
  */
-export namespace Azure {
-  // Supported record types
+export namespace DigitalOcean {
+  // Supported record types only
   export function A(
     name: string,
     address: IpAddress,
@@ -150,11 +146,6 @@ export namespace Azure {
     target: string,
     ...modifiers: (RecordModifier | RecordMeta)[]
   ): DomainModifier;
-  export function PTR(
-    name: string,
-    target: string,
-    ...modifiers: (RecordModifier | RecordMeta)[]
-  ): DomainModifier;
   export function SOA(
     name: string,
     mname: string,
@@ -179,37 +170,6 @@ export namespace Azure {
     ...contents: (string | RecordModifier | RecordMeta)[]
   ): DomainModifier;
 
-  // Azure-specific functions
-  export function AZURE_ALIAS(
-    name: string,
-    type: AzureAliasType,
-    target: string,
-    ...modifiers: (RecordModifier | RecordMeta)[]
-  ): DomainModifier;
-
-  // Note: SSHFP, TLSA, NAPTR, LOC, HTTPS, SVCB, DNAME, DNSKEY, DS,
+  // Note: PTR, SSHFP, TLSA, NAPTR, LOC, HTTPS, SVCB, DNAME, DNSKEY, DS,
   // OPENPGPKEY, SMIMEA are NOT available
 }
-
-// =============================================================================
-// AZURE DNS ALIAS (GLOBAL FUNCTIONS)
-// =============================================================================
-
-/** Azure alias target resource types */
-type AzureAliasType = "A" | "AAAA" | "CNAME";
-
-/**
- * AZURE_ALIAS() creates an Azure DNS alias record.
- * Alias records point to Azure resources like Traffic Manager, CDN, Public IP.
- * @param name - Record name
- * @param type - Alias record type (A, AAAA, or CNAME)
- * @param target - Target Azure resource ID
- * @param modifiers - Record modifiers
- * @see https://docs.dnscontrol.org/language-reference/domain-modifiers/azure/azure_alias
- */
-declare function AZURE_ALIAS(
-  name: string,
-  type: AzureAliasType,
-  target: string,
-  ...modifiers: (RecordModifier | RecordMeta)[]
-): DomainModifier;

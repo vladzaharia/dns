@@ -39,6 +39,57 @@ Or configure in your `tsconfig.json`:
 
 ## What's Included
 
+### 🆕 Compile-Time Validation
+
+**NEW!** This package now includes compile-time validation to ensure only supported record types are used with each provider:
+
+```typescript
+// ✅ Strict mode - only supported record types available
+D("example.com", REG_NONE, DnsProvider(DSP_CLOUDFLARE),
+  Cloudflare.A("@", "1.2.3.4"),
+  Cloudflare.SSHFP("@", 1, 1, "..."),  // OK - Cloudflare supports SSHFP
+  Cloudflare.CF_PROXY_ON()
+);
+
+D("example.com", REG_NONE, DnsProvider(DSP_PACKETFRAME),
+  Packetframe.A("@", "1.2.3.4"),
+  Packetframe.SSHFP("@", 1, 1, "..."), // ❌ Error - Packetframe doesn't support SSHFP
+);
+```
+
+See [COMPILE_TIME_VALIDATION.md](./COMPILE_TIME_VALIDATION.md) for details.
+
+### 🏗️ Extensible Architecture
+
+The type system is designed for easy extensibility. All provider capability interfaces extend `BaseProviderCapabilities`, which provides:
+
+- **Centralized documentation** - JSDoc comments are inherited by all providers
+- **Compile-time enforcement** - TypeScript errors if any capability field is missing
+- **Literal types** - Use `true`/`false` literals for compile-time validation
+
+```typescript
+// Example: Adding a new provider
+import type { BaseProviderCapabilities } from "@vladzaharia/dnscontrol-types/base-capabilities";
+
+export interface MyProviderCapabilities extends BaseProviderCapabilities {
+  canUseA: true;
+  canUseAAAA: true;
+  canUseCAA: false;  // Provider doesn't support CAA
+  // ... all other fields must be defined
+}
+
+export namespace MyProvider {
+  export function A(name: string, address: IpAddress, ...modifiers: RecordModifier[]): DomainModifier;
+  export function AAAA(name: string, address: string, ...modifiers: RecordModifier[]): DomainModifier;
+  // Only include functions for supported record types
+}
+```
+
+**Dependency Hierarchy (no circular dependencies):**
+```
+base.d.ts → base-capabilities.d.ts → providers/*.d.ts → provider-capabilities.d.ts
+```
+
 ### Core Types
 - `Ttl` - TTL values (number or string like "1h")
 - `DomainModifier` - Return type for record and domain functions
@@ -72,25 +123,62 @@ All standard DNS record types are supported:
 
 ### Provider-Specific Types
 
-#### Cloudflare
-- `CF_PROXY_ON`, `CF_PROXY_OFF`
-- `CF_REDIRECT()`, `CF_TEMP_REDIRECT()`
-- `CF_SINGLE_REDIRECT()`
-- `CF_WORKER_ROUTE()`
+This package includes comprehensive type definitions for **59+ DNS providers**, organized into four tiers:
 
-#### AWS Route53
-- `R53_ALIAS()`
-- `R53_ZONE()`
-- Routing policies: `R53_WEIGHT()`, `R53_GEO()`, `R53_FAILOVER()`
+#### Tier 1: Providers with Custom Record Types (16 providers)
 
-#### Azure DNS
-- `AZURE_ALIAS()`
+**Cloudflare**
+- `CF_PROXY_ON`, `CF_PROXY_OFF` - Proxy control
+- `CF_REDIRECT()`, `CF_TEMP_REDIRECT()` - Page rule redirects
+- `CF_SINGLE_REDIRECT()` - Bulk redirects
+- `CF_WORKER_ROUTE()` - Worker routes
+- `CF_UNIVERSALSSL_*()` - SSL control
 
-#### Others
-- PowerDNS: `LUA()`
-- ClouDNS: `CLOUDNS_WR()`
-- NS1: `NS1_URLFWD()`
-- Gandi: `GANDI_V5_ALIAS()`
+**AWS Route53**
+- `R53_ALIAS()` - AWS resource aliases
+- `R53_ZONE()` - Hosted zone specification
+- Routing policies: `R53_WEIGHT()`, `R53_GEO()`, `R53_FAILOVER()`, `R53_LATENCY()`
+
+**Azure DNS**
+- `AZURE_ALIAS()` - Azure resource aliases
+
+**Other Providers with Custom Records**
+- **AdGuard Home**: `ADGUARDHOME_PASSTHROUGH()`
+- **Akamai**: `AKAMAICDN()`, `AKAMAI_TLC()`
+- **Bunny DNS**: `BUNNY_DNS_RDR()`
+- **ClouDNS**: `CLOUDNS_WR()`
+- **deSEC**: `DESEC_REDIRECT()`
+- **DNSimple**: `DNSIMPLE_URL()`
+- **Gandi**: `GANDI_V5_ALIAS()`
+- **HEDNS**: `HEDNS_NULL_MX()`
+- **Namecheap**: `URL()`, `URL301()`, `FRAME()`
+- **Netlify**: `NETLIFY()`, `NETLIFYv6()`
+- **NS1**: `NS1_URLFWD()`
+- **Porkbun**: `PORKBUN_URLFWD()`, `URL()`, `URL301()`
+- **PowerDNS**: `LUA()`
+
+#### Tier 2: Full-Featured Providers (20 providers)
+
+Comprehensive DNS support including modern record types (CAA, SRV, SSHFP, TLSA, HTTPS, SVCB):
+- DigitalOcean, Domainnameshop, Exoscale, Google Cloud DNS, Gcore
+- Hetzner (legacy), Hetzner v2, Hosting.de, Huawei Cloud, INWX
+- Linode, Name.com, Netcup, Oracle Cloud, OVH
+- Packetframe, Realtime Register, Sakura Cloud, TransIP, Vultr
+
+#### Tier 3: Standard Providers (20 providers)
+
+Standard DNS capabilities with basic record types:
+- AliDNS, AutoDNS, AXFR+DDNS, BIND, CNR
+- CSC Global, DNS Made Easy, DNS-over-HTTPS, DNScale, Dynadot
+- Easyname, Fortigate, Hexonet, Joker, Loopia
+- LuaDNS, Mythic Beasts, RWTH DNS-Admin, SoftLayer, Vercel
+
+#### Tier 4: Basic/Registrar Providers (2 providers)
+
+Basic DNS or primarily registrar functionality:
+- Internet.bs, OpenSRS
+
+For detailed provider capabilities, see [PROVIDER_CAPABILITIES.md](./PROVIDER_CAPABILITIES.md) and the [providers directory](./providers/README.md).
 
 ## Documentation
 
