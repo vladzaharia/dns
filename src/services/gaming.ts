@@ -1,9 +1,26 @@
-import { Record } from "../utils/record";
-
 /**
- * Internal (int.zhr.one) records
+ * Gaming services
+ *
+ * Services for gaming, game management, and retro gaming.
  */
-export const GamingRecords: Record[] = [
-  { name: "games", description: "Drop", azgw: true },
-  { name: "retro", description: "Romm" },
-];
+
+import type { ServiceCategory } from "./types.js";
+
+export const gamingServices: ServiceCategory = {
+  name: "gaming",
+  description: "Gaming services",
+  services: [
+    {
+      subdomain: "games",
+      description: "Drop Game Library",
+      server: "greenwood",
+      routing: "tunnel",
+    },
+    {
+      subdomain: "retro",
+      description: "Romm Retro Game Manager",
+      server: "greenwood",
+      routing: "direct",
+    },
+  ],
+} as const;

@@ -5,6 +5,10 @@ dist/
 .env
 .DS_Store
 
+# DNSControl binaries
 lib/*
 !lib/README.md
 !lib/download*
+
+# Testing (Vitest)
+coverage/
