@@ -1,15 +1,32 @@
 {
   "name": "@vladzaharia/dnscontrol-types",
-  "version": "1.0.0",
-  "description": "TypeScript type definitions for DNSControl DSL",
+  "version": "2.0.0",
+  "description": "TypeScript type definitions and runtime validation for DNSControl DSL",
   "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts"
+      "types": "./index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "import": "./dist/schemas/index.js",
+      "require": "./dist/schemas/index.cjs"
+    },
+    "./validators": {
+      "types": "./dist/validators/index.d.ts",
+      "import": "./dist/validators/index.js",
+      "require": "./dist/validators/index.cjs"
     },
     "./base": {
       "types": "./base.d.ts"
+    },
+    "./base-capabilities": {
+      "types": "./base-capabilities.d.ts"
     },
     "./records": {
       "types": "./records.d.ts"
@@ -17,22 +34,214 @@
     "./builders": {
       "types": "./builders.d.ts"
     },
-    "./providers/cloudflare": {
-      "types": "./providers/cloudflare.d.ts"
+    "./domain-modifiers": {
+      "types": "./domain-modifiers.d.ts"
+    },
+    "./record-modifiers": {
+      "types": "./record-modifiers.d.ts"
+    },
+    "./top-level": {
+      "types": "./top-level.d.ts"
+    },
+    "./provider-capabilities": {
+      "types": "./provider-capabilities.d.ts"
+    },
+    "./providers": {
+      "types": "./providers/index.d.ts"
+    },
+    "./providers/adguardhome": {
+      "types": "./providers/adguardhome.d.ts"
+    },
+    "./providers/akamai": {
+      "types": "./providers/akamai.d.ts"
+    },
+    "./providers/alidns": {
+      "types": "./providers/alidns.d.ts"
+    },
+    "./providers/autodns": {
+      "types": "./providers/autodns.d.ts"
+    },
+    "./providers/axfrddns": {
+      "types": "./providers/axfrddns.d.ts"
     },
     "./providers/azure": {
       "types": "./providers/azure.d.ts"
     },
+    "./providers/bind": {
+      "types": "./providers/bind.d.ts"
+    },
+    "./providers/bunnydns": {
+      "types": "./providers/bunnydns.d.ts"
+    },
+    "./providers/cloudflare": {
+      "types": "./providers/cloudflare.d.ts"
+    },
+    "./providers/cloudns": {
+      "types": "./providers/cloudns.d.ts"
+    },
+    "./providers/cnr": {
+      "types": "./providers/cnr.d.ts"
+    },
+    "./providers/cscglobal": {
+      "types": "./providers/cscglobal.d.ts"
+    },
+    "./providers/desec": {
+      "types": "./providers/desec.d.ts"
+    },
+    "./providers/digitalocean": {
+      "types": "./providers/digitalocean.d.ts"
+    },
+    "./providers/dnscale": {
+      "types": "./providers/dnscale.d.ts"
+    },
+    "./providers/dnsimple": {
+      "types": "./providers/dnsimple.d.ts"
+    },
+    "./providers/dnsmadeeasy": {
+      "types": "./providers/dnsmadeeasy.d.ts"
+    },
+    "./providers/dnsoverhttps": {
+      "types": "./providers/dnsoverhttps.d.ts"
+    },
+    "./providers/domainnameshop": {
+      "types": "./providers/domainnameshop.d.ts"
+    },
+    "./providers/dynadot": {
+      "types": "./providers/dynadot.d.ts"
+    },
+    "./providers/easyname": {
+      "types": "./providers/easyname.d.ts"
+    },
+    "./providers/exoscale": {
+      "types": "./providers/exoscale.d.ts"
+    },
+    "./providers/fortigate": {
+      "types": "./providers/fortigate.d.ts"
+    },
+    "./providers/gandi": {
+      "types": "./providers/gandi.d.ts"
+    },
+    "./providers/gcloud": {
+      "types": "./providers/gcloud.d.ts"
+    },
+    "./providers/gcore": {
+      "types": "./providers/gcore.d.ts"
+    },
+    "./providers/hedns": {
+      "types": "./providers/hedns.d.ts"
+    },
+    "./providers/hetzner": {
+      "types": "./providers/hetzner.d.ts"
+    },
+    "./providers/hetznerv2": {
+      "types": "./providers/hetznerv2.d.ts"
+    },
+    "./providers/hexonet": {
+      "types": "./providers/hexonet.d.ts"
+    },
+    "./providers/hostingde": {
+      "types": "./providers/hostingde.d.ts"
+    },
+    "./providers/huaweicloud": {
+      "types": "./providers/huaweicloud.d.ts"
+    },
+    "./providers/internetbs": {
+      "types": "./providers/internetbs.d.ts"
+    },
+    "./providers/inwx": {
+      "types": "./providers/inwx.d.ts"
+    },
+    "./providers/joker": {
+      "types": "./providers/joker.d.ts"
+    },
+    "./providers/linode": {
+      "types": "./providers/linode.d.ts"
+    },
+    "./providers/loopia": {
+      "types": "./providers/loopia.d.ts"
+    },
+    "./providers/luadns": {
+      "types": "./providers/luadns.d.ts"
+    },
+    "./providers/mythicbeasts": {
+      "types": "./providers/mythicbeasts.d.ts"
+    },
+    "./providers/namecheap": {
+      "types": "./providers/namecheap.d.ts"
+    },
+    "./providers/namedotcom": {
+      "types": "./providers/namedotcom.d.ts"
+    },
+    "./providers/netcup": {
+      "types": "./providers/netcup.d.ts"
+    },
+    "./providers/netlify": {
+      "types": "./providers/netlify.d.ts"
+    },
+    "./providers/ns1": {
+      "types": "./providers/ns1.d.ts"
+    },
+    "./providers/opensrs": {
+      "types": "./providers/opensrs.d.ts"
+    },
+    "./providers/oracle": {
+      "types": "./providers/oracle.d.ts"
+    },
+    "./providers/ovh": {
+      "types": "./providers/ovh.d.ts"
+    },
+    "./providers/packetframe": {
+      "types": "./providers/packetframe.d.ts"
+    },
+    "./providers/porkbun": {
+      "types": "./providers/porkbun.d.ts"
+    },
+    "./providers/powerdns": {
+      "types": "./providers/powerdns.d.ts"
+    },
+    "./providers/realtimeregister": {
+      "types": "./providers/realtimeregister.d.ts"
+    },
     "./providers/route53": {
       "types": "./providers/route53.d.ts"
     },
-    "./providers": {
-      "types": "./providers/index.d.ts"
+    "./providers/rwth": {
+      "types": "./providers/rwth.d.ts"
+    },
+    "./providers/sakuracloud": {
+      "types": "./providers/sakuracloud.d.ts"
+    },
+    "./providers/softlayer": {
+      "types": "./providers/softlayer.d.ts"
+    },
+    "./providers/transip": {
+      "types": "./providers/transip.d.ts"
+    },
+    "./providers/vercel": {
+      "types": "./providers/vercel.d.ts"
+    },
+    "./providers/vultr": {
+      "types": "./providers/vultr.d.ts"
     }
   },
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "typecheck:src": "tsc -p tsconfig.src.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run build"
+  },
   "files": [
+    "dist",
     "*.d.ts",
-    "providers/*.d.ts"
+    "providers/*.d.ts",
+    "README.md"
   ],
   "keywords": [
     "dnscontrol",
@@ -40,7 +249,10 @@
     "typescript",
     "types",
     "typings",
-    "infrastructure-as-code"
+    "infrastructure-as-code",
+    "zod",
+    "validation",
+    "schema"
   ],
   "author": "Vlad Zaharia",
   "license": "MIT",
@@ -55,6 +267,25 @@
   "homepage": "https://github.com/vladzaharia/dns/tree/main/packages/dnscontrol-types#readme",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
 
