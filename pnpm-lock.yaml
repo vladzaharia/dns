@@ -6,11 +6,15 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  packages/dnscontrol-types: {}
+
+  packages/polaris-dns:
     dependencies:
       '@vladzaharia/dnscontrol-types':
         specifier: workspace:*
-        version: link:packages/dnscontrol-types
+        version: link:../dnscontrol-types
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.2
@@ -78,8 +82,6 @@ importers:
       zod:
         specifier: ^4.3.5
         version: 4.3.5
-
-  packages/dnscontrol-types: {}
 
 packages:
 
