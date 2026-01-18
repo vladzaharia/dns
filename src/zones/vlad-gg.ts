@@ -23,6 +23,18 @@ D(
   /* Notes */
   CreateRecord({ name: "sticky", description: "Blinko notes", azgw: true }),
 
+  /* Services */
+  CreateRecord({
+    name: "pass",
+    description: "Vaultwarden",
+    target: "gw.sea.polaris.gdn.",
+  }),
+  CreateRecord({
+    name: "plan",
+    description: "Plane Project Management",
+    target: "gw.sea.polaris.gdn.",
+  }),
+
   // CF-managed
   IGNORE_NAME("status", "A,CNAME,AAAA"),
   IGNORE_NAME("cf2024-1._domainkey"),

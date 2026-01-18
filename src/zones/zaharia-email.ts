@@ -14,7 +14,8 @@ D(
   /* Service records */
 
   /* Mail records */
-  ...CreateFastmailRecords(BASE_DOMAIN)
+  ...CreateFastmailRecords(BASE_DOMAIN),
 
   /* Domain verification records */
+  TXT("@", "MS=ms66850642")
 );

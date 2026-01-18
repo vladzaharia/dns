@@ -13,6 +13,8 @@ export const PolarisVideoServices: Record[] = [
   { name: "logos", description: "IPTV Logos" },
   { name: "guide", description: "Guide2go" },
   { name: "mirror", description: "MagicMirror" },
+  { name: "flows", description: "n8n Workflows" },
+  { name: "metube", description: "MeTube Downloader" },
 
   /* Private */
   {
