@@ -35,7 +35,7 @@ export function registerPolarisGdn(): void {
       registrar: NO_REGISTRAR,
       dnsProvider: CLOUDFLARE,
     },
-    
+
     // Infrastructure services
     ...categoryToRecords(infrastructureServices),
 

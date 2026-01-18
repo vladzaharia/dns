@@ -1,0 +1,1353 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Service Record Snapshot Tests > All Services Combined > all services combined should match snapshot 1`] = `
+[
+  {
+    "ip": "10.10.0.1",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "router",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.0.10",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "truenas",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "auth",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "vault",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "docker",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "20.64.176.83",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "up",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "net",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "atuin",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "cloud",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "docs",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "mqtt",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "chat",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "10.11.2.123",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "kiwix",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "books",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "calibre",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "manga",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "stash",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "games",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "retro",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "garage",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "s3",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.s3",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "k2v",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "d",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "log",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "ingest.log",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "kasm",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "registry.kasm",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "registry",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "z",
+    "target": "re4.re.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.z",
+    "target": "re4.re.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "ai",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "traefik",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "netbootxyz",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "portainer",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "pgadmin",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "media",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "request",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "invite",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "xteve",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "threadfin",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "tunarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "logos",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "guide",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "mirror",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "flows",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "metube",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "maintain",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "rec",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "sonarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "radarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "lidarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "readarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "prowlarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "sabnzbd",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "decryptarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "tautulli",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > All Services Combined > all services count should be consistent 1`] = `61`;
+
+exports[`Service Record Snapshot Tests > Individual Service Records > custom CNAME service should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "test-cname",
+    "target": "external.example.com.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Individual Service Records > custom IP service should match snapshot 1`] = `
+[
+  {
+    "ip": "10.0.0.100",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "test-ip",
+    "type": "A",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Individual Service Records > direct routing service should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "test-direct",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Individual Service Records > internal routing service should match snapshot 1`] = `
+[
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "test-internal",
+    "type": "A",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Individual Service Records > proxied routing service should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "test-proxied",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Individual Service Records > tunnel routing service should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "test-tunnel",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Service Category Records > gaming services should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "games",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "retro",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Service Category Records > homelab services should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "garage",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "s3",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.s3",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "k2v",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "d",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "log",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "ingest.log",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "kasm",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "registry.kasm",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "registry",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "z",
+    "target": "re4.re.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.z",
+    "target": "re4.re.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "ai",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Service Category Records > infrastructure services should match snapshot 1`] = `
+[
+  {
+    "ip": "10.10.0.1",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "router",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.0.10",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "truenas",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "auth",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "vault",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "docker",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "20.64.176.83",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "up",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "net",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Service Category Records > internal services should match snapshot 1`] = `
+[
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "traefik",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "netbootxyz",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "portainer",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "pgadmin",
+    "type": "A",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Service Category Records > media services should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "books",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "calibre",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "manga",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "stash",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Service Category Records > polaris video services should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "media",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "request",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "invite",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "xteve",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "threadfin",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "tunarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "logos",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "guide",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "mirror",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "flows",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "metube",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "maintain",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "rec",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "sonarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "radarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "lidarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "readarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "prowlarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "sabnzbd",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "decryptarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "tautulli",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Service Record Snapshot Tests > Service Category Records > productivity services should match snapshot 1`] = `
+[
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "atuin",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "cloud",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "docs",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "mqtt",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "chat",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "10.11.2.123",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "kiwix",
+    "type": "A",
+  },
+]
+`;

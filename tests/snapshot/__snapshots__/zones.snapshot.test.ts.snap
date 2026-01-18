@@ -1,0 +1,1520 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match snapshot 1`] = `
+[
+  {
+    "ttl": 1,
+    "type": "DefaultTTL",
+  },
+  {
+    "ip": "172.179.0.103",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "tun.az",
+    "type": "A",
+  },
+  {
+    "ip": "20.3.240.145",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "upvpn.az",
+    "type": "A",
+  },
+  {
+    "ip": "104.37.168.87",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "re1.re",
+    "type": "A",
+  },
+  {
+    "ip": "104.37.168.88",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "re2.re",
+    "type": "A",
+  },
+  {
+    "ip": "104.37.168.89",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "re3.re",
+    "type": "A",
+  },
+  {
+    "ip": "104.37.168.90",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "re4.re",
+    "type": "A",
+  },
+  {
+    "name": "gw.sea",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "ch.sea",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "fly.ext",
+    "target": "fly.io.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "netlify.ext",
+    "target": "netlify.app.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "pages.ext",
+    "target": "pages.dev.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "vercel.ext",
+    "target": "vercel.app.",
+    "type": "CNAME",
+  },
+]
+`;
+
+exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should match snapshot 1`] = `
+[
+  {
+    "ttl": 1,
+    "type": "DefaultTTL",
+  },
+  {
+    "ip": "10.10.0.1",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "router",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.0.10",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "truenas",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "auth",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "vault",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "docker",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "20.64.176.83",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "up",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "net",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "garage",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "s3",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.s3",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "k2v",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "d",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "log",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "ingest.log",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "kasm",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "registry.kasm",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "registry",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "z",
+    "target": "re4.re.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.z",
+    "target": "re4.re.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "ai",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "traefik.local",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "netbootxyz.local",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "portainer.local",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "pgadmin.local",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "charge",
+    "target": "charging.pages.dev.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 77,
+    "target": "route1.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 50,
+    "target": "route2.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 37,
+    "target": "route3.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "content": "v=spf1 include:_spf.mx.cloudflare.net ~all",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "v=DMARC1; p=none",
+    "modifiers": [],
+    "name": "_dmarc",
+    "type": "TXT",
+  },
+  {
+    "name": "@",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+  {
+    "name": "gw.sea",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "ch.sea",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "baserow.r2",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+]
+`;
+
+exports[`Zone Snapshot Tests > Personal Zones > vlad.gg zone should match snapshot 1`] = `
+[
+  {
+    "ttl": 1,
+    "type": "DefaultTTL",
+  },
+  {
+    "ip": "75.2.60.5",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "@",
+    "type": "A",
+  },
+  {
+    "modifiers": [],
+    "name": "www",
+    "target": "vladgg.netlify.app.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "bb",
+    "target": "bb-vlad-gg.netlify.app.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "api",
+    "target": "vladgg-api.fly.dev.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "sticky",
+    "target": "tun.azure.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "pass",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "plan",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "drop-alt",
+    "target": "du8l8g206yjol.cloudfront.net.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "_44e75dbdd76f1e03953cbf0fa3905c46.drop-alt",
+    "target": "_9c248e5cbb6d5514c37a895f0efdc7e8.fgsdscwdjl.acm-validations.aws.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "_b2939c0fadc2984e462e24c1f5ba199f.drop",
+    "target": "_41d2694c3cef6997de96302706a73a96.cvxnfrzvtq.acm-validations.aws.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "tag": "issue",
+    "type": "CAA",
+    "value": "amazon.com",
+  },
+  {
+    "modifiers": [],
+    "name": "mail",
+    "target": "mail.fastmail.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 10,
+    "target": "in1-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 20,
+    "target": "in2-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "*",
+    "priority": 10,
+    "target": "in1-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "*",
+    "priority": 20,
+    "target": "in2-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "content": "v=spf1 include:spf.messagingengine.com ?all",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "v=DMARC1; p=none",
+    "modifiers": [],
+    "name": "_dmarc",
+    "type": "TXT",
+  },
+  {
+    "modifiers": [],
+    "name": "fm1._domainkey",
+    "target": "fm1.vlad.gg.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "fm2._domainkey",
+    "target": "fm2.vlad.gg.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "fm3._domainkey",
+    "target": "fm3.vlad.gg.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "mail.ds",
+    "target": "mail.fastmail.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "ds",
+    "priority": 10,
+    "target": "in1-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "ds",
+    "priority": 20,
+    "target": "in2-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "*.ds",
+    "priority": 10,
+    "target": "in1-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "*.ds",
+    "priority": 20,
+    "target": "in2-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "content": "v=spf1 include:spf.messagingengine.com ?all",
+    "modifiers": [],
+    "name": "ds",
+    "type": "TXT",
+  },
+  {
+    "content": "v=DMARC1; p=none",
+    "modifiers": [],
+    "name": "_dmarc.ds",
+    "type": "TXT",
+  },
+  {
+    "modifiers": [],
+    "name": "fm1._domainkey.ds",
+    "target": "fm1.ds.vlad.gg.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "fm2._domainkey.ds",
+    "target": "fm2.ds.vlad.gg.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "fm3._domainkey.ds",
+    "target": "fm3.ds.vlad.gg.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "content": "b3c14s9b4ym8wnfrz74db3g0q0425sry",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "verification:RZjHjtRtEzMtsNp12KuUs5GY",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "keybase-site-verification=n3qSwDzktIKPqHCuwaKzYV8kp7LK6GBH8JlVRaso8j0",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "google-site-verification=KcgCGo0bX44Bv2_u1ylo0QBQJ9yF9SimfZxp7t-RNlk",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "openai-domain-verification=dv-yx38yZ1KFGSTvjqQ52TSN9EA",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "PdrzTCEi4G1eMwAB9XnzUp0X6uaMK6zT",
+    "modifiers": [],
+    "name": "_doppler_JU1pcFaV58gCB",
+    "type": "TXT",
+  },
+  {
+    "name": "status",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+  {
+    "name": "cf2024-1._domainkey",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "drop",
+    "type": "IGNORE_NAME",
+    "types": "CNAME",
+  },
+  {
+    "name": "pkmn",
+    "type": "IGNORE_NAME",
+    "types": "CNAME",
+  },
+  {
+    "name": "assassin",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "*.assassin",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "track",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "*.track",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+]
+`;
+
+exports[`Zone Snapshot Tests > Personal Zones > vlad.lgbt zone should match snapshot 1`] = `
+[
+  {
+    "ttl": 1,
+    "type": "DefaultTTL",
+  },
+  {
+    "code": "*vlad.lgbt/*",
+    "destination": "https://vlad.gg/$2",
+    "type": "CF_REDIRECT",
+  },
+  {
+    "modifiers": [],
+    "name": "mail",
+    "target": "mail.fastmail.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 10,
+    "target": "in1-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 20,
+    "target": "in2-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "*",
+    "priority": 10,
+    "target": "in1-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "*",
+    "priority": 20,
+    "target": "in2-smtp.messagingengine.com.",
+    "type": "MX",
+  },
+  {
+    "content": "v=spf1 include:spf.messagingengine.com ?all",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "v=DMARC1; p=none",
+    "modifiers": [],
+    "name": "_dmarc",
+    "type": "TXT",
+  },
+  {
+    "modifiers": [],
+    "name": "fm1._domainkey",
+    "target": "fm1.vlad.lgbt.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "fm2._domainkey",
+    "target": "fm2.vlad.lgbt.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "fm3._domainkey",
+    "target": "fm3.vlad.lgbt.dkim.fmhosted.com.",
+    "type": "CNAME",
+  },
+  {
+    "content": "did=did:plc:eykvgeqaqtyspquyx5wozboq",
+    "modifiers": [],
+    "name": "_atproto",
+    "type": "TXT",
+  },
+  {
+    "name": "@",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+  {
+    "name": "www",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+  {
+    "name": "cf2024-1._domainkey",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+]
+`;
+
+exports[`Zone Snapshot Tests > Personal Zones > zaharia.email zone should match snapshot 1`] = `
+[
+  {
+    "ttl": 1,
+    "type": "DefaultTTL",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 77,
+    "target": "route1.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 50,
+    "target": "route2.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 37,
+    "target": "route3.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "content": "v=spf1 include:_spf.mx.cloudflare.net ~all",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "v=DMARC1; p=none",
+    "modifiers": [],
+    "name": "_dmarc",
+    "type": "TXT",
+  },
+  {
+    "content": "MS=ms66850642",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+]
+`;
+
+exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match snapshot 1`] = `
+[
+  {
+    "ttl": 1,
+    "type": "DefaultTTL",
+  },
+  {
+    "ip": "10.10.0.1",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "router",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.0.10",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "truenas",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "auth",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "vault",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "docker",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "20.64.176.83",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "up",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "net",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "atuin",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "cloud",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "docs",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "*.code",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "mqtt",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "chat",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "10.11.2.123",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "kiwix",
+    "type": "A",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "books",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "calibre",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "manga",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "stash",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "games",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "retro",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "traefik.int",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "netbootxyz.int",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "portainer.int",
+    "type": "A",
+  },
+  {
+    "ip": "10.10.1.20",
+    "modifiers": [
+      {
+        "cloudflare_proxy": "off",
+      },
+    ],
+    "name": "pgadmin.int",
+    "type": "A",
+  },
+  {
+    "modifiers": [],
+    "name": "uptime",
+    "target": "polaris-uptime.fly.dev.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "_vlmcs._tcp",
+    "port": 1688,
+    "priority": 0,
+    "target": "truenas.polaris.rest.",
+    "type": "SRV",
+    "weight": 0,
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 77,
+    "target": "route1.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 50,
+    "target": "route2.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 37,
+    "target": "route3.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "content": "v=spf1 include:_spf.mx.cloudflare.net ~all",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "v=DMARC1; p=none",
+    "modifiers": [],
+    "name": "_dmarc",
+    "type": "TXT",
+  },
+  {
+    "content": "TAILSCALE-KobgpNhPbtAVhro8SUdO",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "MS=ms74686894",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "openai-domain-verification=dv-SMfh9R6xAxKUcf05bu9fzt50",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "name": "gw.sea",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "assets",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+  {
+    "name": "@",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+  {
+    "name": "webfinger",
+    "type": "IGNORE_NAME",
+    "types": "CNAME",
+  },
+  {
+    "name": "homedb",
+    "type": "IGNORE_NAME",
+    "types": "CNAME",
+  },
+  {
+    "name": "status",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+  {
+    "name": "s3.chat",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+  {
+    "name": "dndbeyond.chat",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+]
+`;
+
+exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match snapshot 1`] = `
+[
+  {
+    "ttl": 1,
+    "type": "DefaultTTL",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "media",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "request",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "invite",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "xteve",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "threadfin",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "tunarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "logos",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "guide",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "mirror",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "flows",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "metube",
+    "target": "gw.sea.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "maintain",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "rec",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "sonarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "radarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "lidarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "readarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "prowlarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "sabnzbd",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "decryptarr",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [
+      {
+        "cloudflare_proxy": "on",
+      },
+    ],
+    "name": "tautulli",
+    "target": "tun.az.plrs.im.",
+    "type": "CNAME",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 77,
+    "target": "route1.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 50,
+    "target": "route2.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "modifiers": [],
+    "name": "@",
+    "priority": 37,
+    "target": "route3.mx.cloudflare.net.",
+    "type": "MX",
+  },
+  {
+    "content": "v=spf1 include:_spf.mx.cloudflare.net ~all",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "content": "v=DMARC1; p=none",
+    "modifiers": [],
+    "name": "_dmarc",
+    "type": "TXT",
+  },
+  {
+    "content": "b3c14s9b4ym8wnfrz74db3g0q0425sry",
+    "modifiers": [],
+    "name": "@",
+    "type": "TXT",
+  },
+  {
+    "name": "status",
+    "type": "IGNORE_NAME",
+    "types": "A,CNAME,AAAA",
+  },
+  {
+    "name": "cf2024-1._domainkey",
+    "type": "IGNORE_NAME",
+    "types": undefined,
+  },
+]
+`;

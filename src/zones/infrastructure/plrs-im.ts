@@ -49,7 +49,11 @@ function generateServerRecords(): unknown[] {
 
     // Skip local/internal servers (not publicly routable)
     // Use indexOf for ES5 compatibility (no startsWith)
-    if (server.location === "local" || server.ip.indexOf("10.") === 0 || server.ip.indexOf("192.168.") === 0) {
+    if (
+      server.location === "local" ||
+      server.ip.indexOf("10.") === 0 ||
+      server.ip.indexOf("192.168.") === 0
+    ) {
       continue;
     }
 

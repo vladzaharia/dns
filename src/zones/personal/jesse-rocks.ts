@@ -33,4 +33,3 @@ export function registerJesseRocks(): void {
     // createCNAMERecord("www", "...", { proxy: "on" }),
   );
 }
-

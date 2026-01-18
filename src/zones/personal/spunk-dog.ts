@@ -42,4 +42,3 @@ export function registerSpunkDog(): void {
     IGNORE_NAME("@", "A,CNAME,AAAA")
   );
 }
-

@@ -50,4 +50,3 @@ export function registerDangerDiy(): void {
     createARecord("*", ROUTER_IP, { proxy: "off" })
   );
 }
-

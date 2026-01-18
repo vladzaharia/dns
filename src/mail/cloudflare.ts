@@ -55,4 +55,3 @@ export function createCloudflareEmailRecords(options: CloudflareEmailOptions = {
 
   return records;
 }
-

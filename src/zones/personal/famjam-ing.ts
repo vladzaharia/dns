@@ -38,4 +38,3 @@ export function registerFamjamIng(): void {
     IGNORE_NAME("@", "A,CNAME,AAAA")
   );
 }
-

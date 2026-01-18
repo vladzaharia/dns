@@ -42,9 +42,9 @@ export function registerPolarisExpress(): void {
     createCNAMERecord("www", "charging.pages.dev.", { proxy: "on" }),
 
     // EV Charging Services (via Azure tunnel)
-    createCNAMERecord("ocpp", servers["azure-tunnel"].hostname + ".", { proxy: "on" }),      // StEvE OCPP server
-    createCNAMERecord("billing", servers["azure-tunnel"].hostname + ".", { proxy: "on" }),   // Lago Billing API
-    createCNAMERecord("manage", servers["azure-tunnel"].hostname + ".", { proxy: "on" }),    // ExpressSync
+    createCNAMERecord("ocpp", servers["azure-tunnel"].hostname + ".", { proxy: "on" }), // StEvE OCPP server
+    createCNAMERecord("billing", servers["azure-tunnel"].hostname + ".", { proxy: "on" }), // Lago Billing API
+    createCNAMERecord("manage", servers["azure-tunnel"].hostname + ".", { proxy: "on" }), // ExpressSync
 
     // Mail (Cloudflare Email Routing)
     ...createCloudflareEmailRecords(),
