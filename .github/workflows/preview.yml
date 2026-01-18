@@ -4,34 +4,142 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
 jobs:
+  validate:
+    name: Validate
+    uses: ./.github/workflows/_reusable-validate.yml
+
   prepare:
+    name: Build
+    needs: validate
     uses: ./.github/workflows/prepare.yml
+
   preview:
-    name: Preview DNS changes
-    needs: prepare
+    name: Preview DNS Changes
+    needs: [validate, prepare]
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
+    outputs:
+      preview-output: ${{ steps.preview.outputs.preview-output }}
+      has-changes: ${{ steps.preview.outputs.has-changes }}
     steps:
       - name: Download DNSControl binaries
         uses: actions/download-artifact@v4
         with:
           name: bin
           path: bin
+
       - name: Download compiled JS
         uses: actions/download-artifact@v4
         with:
           name: out
           path: out
+
       - name: Make binaries executable
         run: chmod +x dnscontrol-*
         working-directory: bin
         shell: bash
-      - name: Generate and preview records
-        run: ../bin/dnscontrol-Linux --diff2 preview
+
+      - name: Preview DNS changes
+        id: preview
         working-directory: out
         shell: bash
         env:
           CF_API: ${{ secrets.CF_API }}
+        run: |
+          set +e
+          OUTPUT=$(../bin/dnscontrol-Linux --diff2 preview 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          # Save output for PR comment
+          echo "preview-output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Check if there are changes
+          if echo "$OUTPUT" | grep -q "CREATING\|MODIFY\|DELETE"; then
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Print output to logs
+          echo "$OUTPUT"
+
+          # Exit with original code
+          exit $EXIT_CODE
+
+  comment:
+    name: Update PR Comment
+    needs: [validate, prepare, preview]
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate status icons
+        id: status
+        run: |
+          # Validation status
+          if [ "${{ needs.validate.result }}" == "success" ]; then
+            echo "validate-icon=✅" >> $GITHUB_OUTPUT
+          else
+            echo "validate-icon=❌" >> $GITHUB_OUTPUT
+          fi
+
+          # Build status
+          if [ "${{ needs.prepare.result }}" == "success" ]; then
+            echo "build-icon=✅" >> $GITHUB_OUTPUT
+          else
+            echo "build-icon=❌" >> $GITHUB_OUTPUT
+          fi
+
+          # Preview status
+          if [ "${{ needs.preview.result }}" == "success" ]; then
+            echo "preview-icon=✅" >> $GITHUB_OUTPUT
+          else
+            echo "preview-icon=❌" >> $GITHUB_OUTPUT
+          fi
+
+          # Changes status
+          if [ "${{ needs.preview.outputs.has-changes }}" == "true" ]; then
+            echo "changes-icon=🔄" >> $GITHUB_OUTPUT
+            echo "changes-text=Changes detected" >> $GITHUB_OUTPUT
+          else
+            echo "changes-icon=✨" >> $GITHUB_OUTPUT
+            echo "changes-text=No changes" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create or update PR comment
+        uses: marocchino/sticky-pull-request-comment@v2.9.4
+        with:
+          header: dns-preview
+          message: |
+            ## 🌐 DNS Preview Results
+
+            | Step | Status |
+            |------|--------|
+            | Validation (lint, format, typecheck, test) | ${{ steps.status.outputs.validate-icon }} |
+            | Build | ${{ steps.status.outputs.build-icon }} |
+            | Preview | ${{ steps.status.outputs.preview-icon }} |
+            | **Changes** | ${{ steps.status.outputs.changes-icon }} ${{ steps.status.outputs.changes-text }} |
+
+            <details>
+            <summary>📋 DNSControl Preview Output</summary>
+
+            ```
+            ${{ needs.preview.outputs.preview-output || 'No output available' }}
+            ```
+
+            </details>
+
+            ---
+            *Commit: `${{ github.event.pull_request.head.sha }}`*

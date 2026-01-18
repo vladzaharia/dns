@@ -1,0 +1,28 @@
+{
+  "action": "opened",
+  "number": 1,
+  "pull_request": {
+    "number": 1,
+    "head": {
+      "ref": "feature-branch",
+      "sha": "abc123def456"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "def456abc123"
+    },
+    "title": "Test PR for local act testing",
+    "body": "This is a test PR for local GitHub Actions testing with act",
+    "user": {
+      "login": "local-tester"
+    }
+  },
+  "repository": {
+    "name": "dns",
+    "full_name": "vladzaharia/dns",
+    "owner": {
+      "login": "vladzaharia"
+    }
+  }
+}
+

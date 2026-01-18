@@ -24,11 +24,18 @@
     "test:snapshot:update": "pnpm --filter @vladzaharia/polaris-dns run test:snapshot:update",
     "test:e2e": "pnpm --filter @vladzaharia/polaris-dns run test:e2e",
     "test:mutation": "pnpm --filter @vladzaharia/polaris-dns run test:mutation",
-    "types:publish": "pnpm --filter @vladzaharia/dnscontrol-types publish"
+    "types:publish": "pnpm --filter @vladzaharia/dnscontrol-types publish",
+    "act:preview": "act pull_request -e .github/act/pull_request.json -W .github/workflows/preview.yml",
+    "act:push": "act push -e .github/act/push.json -W .github/workflows/push.yml",
+    "act:validate": "act -j validate -W .github/workflows/preview.yml",
+    "act:dry": "act -n -l"
   },
   "author": "Vlad Zaharia",
   "license": "MIT",
   "engines": {
     "node": ">=18.18.0"
+  },
+  "devDependencies": {
+    "lefthook": "2.0.15"
   }
 }

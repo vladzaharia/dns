@@ -1,0 +1,76 @@
+name: Validate Code
+
+on:
+  workflow_call:
+    outputs:
+      lint-result:
+        description: "Lint check result (success/failure)"
+        value: ${{ jobs.validate.outputs.lint-result }}
+      format-result:
+        description: "Format check result (success/failure)"
+        value: ${{ jobs.validate.outputs.format-result }}
+      typecheck-result:
+        description: "Typecheck result (success/failure)"
+        value: ${{ jobs.validate.outputs.typecheck-result }}
+      test-result:
+        description: "Test result (success/failure)"
+        value: ${{ jobs.validate.outputs.test-result }}
+
+jobs:
+  validate:
+    name: Lint, Format, Typecheck, and Test
+    runs-on: ubuntu-latest
+    outputs:
+      lint-result: ${{ steps.lint.outcome }}
+      format-result: ${{ steps.format.outcome }}
+      typecheck-result: ${{ steps.typecheck.outcome }}
+      test-result: ${{ steps.test.outcome }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.2.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.2.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm run build
+
+      - name: Run ESLint
+        id: lint
+        run: pnpm run lint
+        continue-on-error: true
+
+      - name: Check formatting
+        id: format
+        run: pnpm run format:check
+        continue-on-error: true
+
+      - name: Run TypeScript type checking
+        id: typecheck
+        run: pnpm run typecheck
+        continue-on-error: true
+
+      - name: Run tests
+        id: test
+        run: pnpm run test
+        continue-on-error: true
+
+      - name: Check for failures
+        if: steps.lint.outcome == 'failure' || steps.format.outcome == 'failure' || steps.typecheck.outcome == 'failure' || steps.test.outcome == 'failure'
+        run: |
+          echo "::error::One or more validation checks failed"
+          echo "Lint: ${{ steps.lint.outcome }}"
+          echo "Format: ${{ steps.format.outcome }}"
+          echo "Typecheck: ${{ steps.typecheck.outcome }}"
+          echo "Test: ${{ steps.test.outcome }}"
+          exit 1
+

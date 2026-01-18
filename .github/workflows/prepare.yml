@@ -2,31 +2,47 @@ name: Build and Prepare for Preview/Push
 
 on:
   workflow_call:
+    outputs:
+      build-result:
+        description: "Build result (success/failure)"
+        value: ${{ jobs.compile.outputs.build-result }}
 
 jobs:
   compile:
     name: Compile TypeScript and Download Binaries
     runs-on: ubuntu-latest
+    outputs:
+      build-result: ${{ steps.build.outcome }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
-      - name: Use Node.js v18
-        uses: actions/setup-node@v3
+        uses: pnpm/action-setup@v4.2.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.2.0
         with:
-          node-version: 18
+          node-version: 22
           cache: pnpm
-      - name: Download dependencies and binaries
+
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
       - name: Build JS files
+        id: build
         run: pnpm run build
+
       - name: Upload compiled JS
         uses: actions/upload-artifact@v4
         with:
           name: out
           path: packages/polaris-dns/out/*
+          retention-days: 1
+
       - name: Upload DNSControl binaries
         uses: actions/upload-artifact@v4
         with:
           name: bin
           path: packages/dnscontrol-download/bin/dnscontrol-*
+          retention-days: 1

@@ -14,3 +14,15 @@ coverage/
 
 # pnpm
 .pnpm-store/
+
+# Local secrets for act (local GitHub Actions testing)
+.secrets
+
+# Lefthook local overrides
+lefthook-local.yml
+
+# Local secrets for act (local GitHub Actions testing)
+.secrets
+
+# Lefthook local overrides
+lefthook-local.yml

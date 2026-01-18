@@ -1,0 +1,42 @@
+# Lefthook configuration for DNS Infrastructure-as-Code
+# https://github.com/evilmartians/lefthook
+#
+# Install hooks: pnpm exec lefthook install
+# Run manually: pnpm exec lefthook run pre-commit
+#
+# Create lefthook-local.yml to override settings locally (gitignored)
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{ts,tsx,js,jsx,mjs}"
+      run: pnpm run lint
+      stage_fixed: true
+    format:
+      glob: "*.{ts,tsx,js,jsx,json,md,yml,yaml}"
+      run: pnpm run format:check
+    typecheck:
+      run: pnpm run typecheck
+    workflows:
+      glob: ".github/workflows/*.yml"
+      run: pnpm run act:dry
+
+pre-push:
+  parallel: true
+  commands:
+    lint:
+      run: pnpm run lint
+    format:
+      run: pnpm run format:check
+    typecheck:
+      run: pnpm run typecheck
+    test:
+      run: pnpm run test
+    workflows:
+      glob: ".github/workflows/*.yml"
+      run: pnpm run act:preview
+
+# Note: To skip hooks in CI, set CI=true environment variable
+# Each command can use: skip: run: test "${CI}" = "true"
+

@@ -4,34 +4,53 @@ on:
   push:
     branches: [main]
 
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
+  validate:
+    name: Validate
+    uses: ./.github/workflows/_reusable-validate.yml
+
   prepare:
+    name: Build
+    needs: validate
     uses: ./.github/workflows/prepare.yml
+
   push:
-    name: Push DNS changes
-    needs: prepare
+    name: Push DNS Changes
+    needs: [validate, prepare]
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Download DNSControl binaries
         uses: actions/download-artifact@v4
         with:
           name: bin
           path: bin
+
       - name: Download compiled JS
         uses: actions/download-artifact@v4
         with:
           name: out
           path: out
+
       - name: Make binaries executable
         run: chmod +x dnscontrol-*
         working-directory: bin
         shell: bash
-      - name: Generate and push records
-        run: ../bin/dnscontrol-Linux --diff2 push
+
+      - name: Push DNS changes
         working-directory: out
         shell: bash
         env:
           CF_API: ${{ secrets.CF_API }}
+        run: |
+          echo "🚀 Pushing DNS changes to providers..."
+          ../bin/dnscontrol-Linux --diff2 push
+          echo "✅ DNS changes pushed successfully!"
