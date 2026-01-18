@@ -13,7 +13,6 @@ import {
   Ipv4AddressSchema,
   Ipv6AddressSchema,
   HostnameSchema,
-  RecordNameSchema,
   PortSchema,
   PrioritySchema,
   CaaTagSchema,

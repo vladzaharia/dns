@@ -5,10 +5,6 @@
 import type { ProxyStatus, RecordOptions, ServerName } from "./types.js";
 import { getServer, getServerHostname, getServerIP } from "./server.js";
 
-// Cloudflare proxy modifiers (objects, not functions)
-const CF_PROXY_ON = { cloudflare_proxy: "on" };
-const CF_PROXY_OFF = { cloudflare_proxy: "off" };
-
 // =============================================================================
 // Record Builder Options
 // =============================================================================
@@ -28,14 +24,15 @@ export interface ServiceRecordOptions {
 
 /**
  * Build modifiers array from options
+ * Uses the global CF_PROXY_ON() and CF_PROXY_OFF() functions from DNSControl
  */
 function buildModifiers(options?: RecordOptions): RecordModifier[] {
   const modifiers: RecordModifier[] = [];
 
   if (options?.proxy === "on") {
-    modifiers.push(CF_PROXY_ON as RecordModifier);
+    modifiers.push(CF_PROXY_ON());
   } else if (options?.proxy === "off") {
-    modifiers.push(CF_PROXY_OFF as RecordModifier);
+    modifiers.push(CF_PROXY_OFF());
   }
 
   if (options?.ttl !== undefined) {

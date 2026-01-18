@@ -6,7 +6,7 @@
  */
 
 import { z } from "zod";
-import { DomainNameSchema, DnsLabelSchema } from "@vladzaharia/dnscontrol-types";
+import { DnsLabelSchema } from "@vladzaharia/dnscontrol-types";
 import { ServerNameSchema } from "./server.schema.js";
 
 // =============================================================================

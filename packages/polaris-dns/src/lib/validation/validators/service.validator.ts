@@ -5,27 +5,26 @@
  * and domain configurations with configuration-aware behavior.
  */
 
-import { formatErrors } from "@vladzaharia/dnscontrol-types";
-import type { FormattedError } from "@vladzaharia/dnscontrol-types";
+import type { ZodError } from "zod";
+import * as dnscontrolTypes from "@vladzaharia/dnscontrol-types";
 
 import {
   ServiceSchema,
   ServiceDefinitionSchema,
   RoutingStrategySchema,
-  ServiceCategorySchema,
-  DomainCategorySchema,
   PolarisDomainConfigSchema,
   MailConfigSchema,
   type Service,
   type ServiceDefinition,
   type RoutingStrategy,
-  type ServiceCategory,
-  type DomainCategory,
   type PolarisDomainConfig,
   type MailConfig,
 } from "../schemas/service.schema.js";
 import { getValidationConfig, logValidationWarning, shouldThrowOnError } from "../config.js";
 import { ServiceValidationError, ConfigValidationError } from "../errors.js";
+
+// Local type alias for FormattedError
+type FormattedError = dnscontrolTypes.FormattedError;
 
 /**
  * Service validation result
@@ -46,13 +45,15 @@ export function validateService(data: unknown): ServiceValidationResult<Service>
     return { success: true, data: data as Service, errors: [] };
   }
 
-  const result = ServiceSchema.safeParse(data);
+  const result = ServiceSchema.safeParse(data) as
+    | { success: true; data: Service }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return { success: true, data: result.data, errors: [] };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
   const serviceName = (data as { name?: string })?.name;
 
   if (config.mode === "warn") {
@@ -83,13 +84,15 @@ export function validateServiceDefinition(
     return { success: true, data: data as ServiceDefinition, errors: [] };
   }
 
-  const result = ServiceDefinitionSchema.safeParse(data);
+  const result = ServiceDefinitionSchema.safeParse(data) as
+    | { success: true; data: ServiceDefinition }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return { success: true, data: result.data, errors: [] };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
   const serviceName = (data as { name?: string })?.name;
 
   if (config.mode === "warn") {
@@ -118,13 +121,15 @@ export function validateRoutingStrategy(data: unknown): ServiceValidationResult<
     return { success: true, data: data as RoutingStrategy, errors: [] };
   }
 
-  const result = RoutingStrategySchema.safeParse(data);
+  const result = RoutingStrategySchema.safeParse(data) as
+    | { success: true; data: RoutingStrategy }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return { success: true, data: result.data, errors: [] };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
 
   if (config.mode === "warn") {
     logValidationWarning("Routing strategy validation failed:", formattedErrors);
@@ -150,13 +155,15 @@ export function validatePolarisDomainConfig(
     return { success: true, data: data as PolarisDomainConfig, errors: [] };
   }
 
-  const result = PolarisDomainConfigSchema.safeParse(data);
+  const result = PolarisDomainConfigSchema.safeParse(data) as
+    | { success: true; data: PolarisDomainConfig }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return { success: true, data: result.data, errors: [] };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
 
   if (config.mode === "warn") {
     logValidationWarning("Domain config validation failed:", formattedErrors);
@@ -180,13 +187,15 @@ export function validateMailConfig(data: unknown): ServiceValidationResult<MailC
     return { success: true, data: data as MailConfig, errors: [] };
   }
 
-  const result = MailConfigSchema.safeParse(data);
+  const result = MailConfigSchema.safeParse(data) as
+    | { success: true; data: MailConfig }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return { success: true, data: result.data, errors: [] };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
 
   if (config.mode === "warn") {
     logValidationWarning("Mail config validation failed:", formattedErrors);

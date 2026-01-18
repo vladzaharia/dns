@@ -11,8 +11,6 @@ import {
   TxtRecordSchema,
   SrvRecordSchema,
   CaaRecordSchema,
-  TlsaRecordSchema,
-  DnsRecordSchema,
 } from './records.js';
 
 describe('ARecordSchema', () => {

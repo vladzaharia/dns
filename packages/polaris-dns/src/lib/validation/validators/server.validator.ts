@@ -5,8 +5,8 @@
  * with configuration-aware behavior.
  */
 
-import { formatErrors } from "@vladzaharia/dnscontrol-types";
-import type { FormattedError } from "@vladzaharia/dnscontrol-types";
+import type { ZodError } from "zod";
+import * as dnscontrolTypes from "@vladzaharia/dnscontrol-types";
 
 import {
   ServerSchema,
@@ -20,6 +20,9 @@ import {
 } from "../schemas/server.schema.js";
 import { getValidationConfig, logValidationWarning, shouldThrowOnError } from "../config.js";
 import { ServerValidationError } from "../errors.js";
+
+// Local type alias for FormattedError
+type FormattedError = dnscontrolTypes.FormattedError;
 
 /**
  * Server validation result
@@ -45,7 +48,9 @@ export function validateServer(data: unknown): ServerValidationResult<Server> {
     };
   }
 
-  const result = ServerSchema.safeParse(data);
+  const result = ServerSchema.safeParse(data) as
+    | { success: true; data: Server }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return {
@@ -55,7 +60,7 @@ export function validateServer(data: unknown): ServerValidationResult<Server> {
     };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
   const serverName = (data as { name?: string })?.name;
 
   // In warn mode, log and return success
@@ -93,13 +98,15 @@ export function validateServerLocation(data: unknown): ServerValidationResult<Se
     return { success: true, data: data as ServerLocation, errors: [] };
   }
 
-  const result = ServerLocationSchema.safeParse(data);
+  const result = ServerLocationSchema.safeParse(data) as
+    | { success: true; data: ServerLocation }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return { success: true, data: result.data, errors: [] };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
 
   if (config.mode === "warn") {
     logValidationWarning("Server location validation failed:", formattedErrors);
@@ -123,13 +130,15 @@ export function validateServerName(data: unknown): ServerValidationResult<Server
     return { success: true, data: data as ServerName, errors: [] };
   }
 
-  const result = ServerNameSchema.safeParse(data);
+  const result = ServerNameSchema.safeParse(data) as
+    | { success: true; data: ServerName }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return { success: true, data: result.data, errors: [] };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
 
   if (config.mode === "warn") {
     logValidationWarning("Server name validation failed:", formattedErrors);
@@ -153,13 +162,15 @@ export function validateServerRegistry(data: unknown): ServerValidationResult<Se
     return { success: true, data: data as ServerRegistry, errors: [] };
   }
 
-  const result = ServerRegistrySchema.safeParse(data);
+  const result = ServerRegistrySchema.safeParse(data) as
+    | { success: true; data: ServerRegistry }
+    | { success: false; error: ZodError };
 
   if (result.success) {
     return { success: true, data: result.data, errors: [] };
   }
 
-  const formattedErrors = formatErrors(result.error);
+  const formattedErrors: FormattedError[] = dnscontrolTypes.formatErrors(result.error);
 
   if (config.mode === "warn") {
     logValidationWarning("Server registry validation failed:", formattedErrors);

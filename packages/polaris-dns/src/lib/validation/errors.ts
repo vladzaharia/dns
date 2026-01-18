@@ -7,6 +7,13 @@
 
 import type { FormattedError } from "@vladzaharia/dnscontrol-types";
 
+// Extend Error interface to include V8-specific captureStackTrace
+declare global {
+  interface ErrorConstructor {
+    captureStackTrace?(targetObject: object, constructorOpt?: NewableFunction): void;
+  }
+}
+
 /**
  * Base validation error class
  * All validation errors extend this class for consistent error handling
@@ -35,7 +42,7 @@ export class ValidationError extends Error {
       return this.message;
     }
 
-    const errorLines = this.errors.map((e) => `  - ${e.path.join(".")}: ${e.message} (${e.code})`);
+    const errorLines = this.errors.map((e) => `  - ${e.path}: ${e.message} (${e.code})`);
     return `${this.message}\n${errorLines.join("\n")}`;
   }
 

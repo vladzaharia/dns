@@ -6,32 +6,16 @@
  */
 
 import type { ZodSchema, ZodError } from "zod";
-import {
-  validateRecord as baseValidateRecord,
-  validateARecord as baseValidateARecord,
-  validateAAAARecord as baseValidateAAAARecord,
-  validateCnameRecord as baseValidateCnameRecord,
-  validateMxRecord as baseValidateMxRecord,
-  validateTxtRecord as baseValidateTxtRecord,
-  validateCaaRecord as baseValidateCaaRecord,
-  validateSrvRecord as baseValidateSrvRecord,
-  validateTtl as baseValidateTtl,
-  validateIpAddress as baseValidateIpAddress,
-  validateDomainName as baseValidateDomainName,
-  validateRecordName as baseValidateRecordName,
-  validateHostname as baseValidateHostname,
-  formatErrors,
-  getErrorSummary,
-  type ValidationResult,
-  type FormattedError,
-} from "@vladzaharia/dnscontrol-types";
+import * as dnscontrolTypes from "@vladzaharia/dnscontrol-types";
 
 import { getValidationConfig, logValidationWarning, shouldThrowOnError } from "../config.js";
 import { RecordValidationError } from "../errors.js";
 
 // Re-export types and utilities from dnscontrol-types
-export type { ValidationResult, FormattedError };
-export { formatErrors, getErrorSummary };
+export type ValidationResult<T> = dnscontrolTypes.ValidationResult<T>;
+export type FormattedError = dnscontrolTypes.FormattedError;
+export const formatErrors = dnscontrolTypes.formatErrors;
+export const getErrorSummary = dnscontrolTypes.getErrorSummary;
 
 /**
  * Polaris-specific validation result that includes formatted errors
@@ -47,7 +31,7 @@ export interface PolarisValidationResult<T> {
  * Wrap a validation result with config-aware behavior
  */
 function wrapValidationResult<T>(
-  result: ValidationResult<T>,
+  result: { success: boolean; data?: T; errors?: ZodError },
   recordType?: string,
   recordName?: string
 ): PolarisValidationResult<T> {
@@ -72,7 +56,9 @@ function wrapValidationResult<T>(
   }
 
   // Validation failed - format errors
-  const formattedErrors = result.errors ? formatErrors(result.errors) : [];
+  const formattedErrors: FormattedError[] = result.errors
+    ? dnscontrolTypes.formatErrors(result.errors)
+    : [];
 
   // In warn mode, log and return success with errors attached
   if (config.mode === "warn") {
@@ -110,7 +96,11 @@ export function validateWithConfig<T>(
   data: unknown,
   recordType?: string
 ): PolarisValidationResult<T> {
-  const result = baseValidateRecord(schema, data);
+  const result = dnscontrolTypes.validateRecord(schema, data) as {
+    success: boolean;
+    data?: T;
+    errors?: ZodError;
+  };
   return wrapValidationResult(result, recordType);
 }
 
@@ -119,51 +109,66 @@ export function validateWithConfig<T>(
 // =============================================================================
 
 export function validateARecord(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(baseValidateARecord(data), "A", (data as { name?: string })?.name);
+  const result = dnscontrolTypes.validateARecord(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "A", (data as { name?: string })?.name);
 }
 
 export function validateAAAARecord(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(
-    baseValidateAAAARecord(data),
-    "AAAA",
-    (data as { name?: string })?.name
-  );
+  const result = dnscontrolTypes.validateAAAARecord(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "AAAA", (data as { name?: string })?.name);
 }
 
 export function validateCnameRecord(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(
-    baseValidateCnameRecord(data),
-    "CNAME",
-    (data as { name?: string })?.name
-  );
+  const result = dnscontrolTypes.validateCnameRecord(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "CNAME", (data as { name?: string })?.name);
 }
 
 export function validateMxRecord(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(baseValidateMxRecord(data), "MX", (data as { name?: string })?.name);
+  const result = dnscontrolTypes.validateMxRecord(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "MX", (data as { name?: string })?.name);
 }
 
 export function validateTxtRecord(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(
-    baseValidateTxtRecord(data),
-    "TXT",
-    (data as { name?: string })?.name
-  );
+  const result = dnscontrolTypes.validateTxtRecord(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "TXT", (data as { name?: string })?.name);
 }
 
 export function validateCaaRecord(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(
-    baseValidateCaaRecord(data),
-    "CAA",
-    (data as { name?: string })?.name
-  );
+  const result = dnscontrolTypes.validateCaaRecord(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "CAA", (data as { name?: string })?.name);
 }
 
 export function validateSrvRecord(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(
-    baseValidateSrvRecord(data),
-    "SRV",
-    (data as { name?: string })?.name
-  );
+  const result = dnscontrolTypes.validateSrvRecord(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "SRV", (data as { name?: string })?.name);
 }
 
 // =============================================================================
@@ -171,21 +176,46 @@ export function validateSrvRecord(data: unknown): PolarisValidationResult<unknow
 // =============================================================================
 
 export function validateTtl(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(baseValidateTtl(data), "TTL");
+  const result = dnscontrolTypes.validateTtl(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "TTL");
 }
 
 export function validateIpAddress(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(baseValidateIpAddress(data), "IP Address");
+  const result = dnscontrolTypes.validateIpAddress(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "IP Address");
 }
 
 export function validateDomainName(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(baseValidateDomainName(data), "Domain Name");
+  const result = dnscontrolTypes.validateDomainName(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "Domain Name");
 }
 
 export function validateRecordName(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(baseValidateRecordName(data), "Record Name");
+  const result = dnscontrolTypes.validateRecordName(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "Record Name");
 }
 
 export function validateHostname(data: unknown): PolarisValidationResult<unknown> {
-  return wrapValidationResult(baseValidateHostname(data), "Hostname");
+  const result = dnscontrolTypes.validateHostname(data) as {
+    success: boolean;
+    data?: unknown;
+    errors?: ZodError;
+  };
+  return wrapValidationResult(result, "Hostname");
 }

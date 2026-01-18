@@ -10,7 +10,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
     "ip": "172.179.0.103",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "tun.qnc",
@@ -20,7 +20,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
     "ip": "20.3.240.145",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "upvpn.qnc",
@@ -30,7 +30,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
     "ip": "104.37.168.87",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "re1.re",
@@ -40,7 +40,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
     "ip": "104.37.168.88",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "re2.re",
@@ -50,7 +50,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
     "ip": "104.37.168.89",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "re3.re",
@@ -60,7 +60,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
     "ip": "104.37.168.90",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "re4.re",
@@ -79,7 +79,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "fly.ext",
@@ -89,7 +89,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "netlify.ext",
@@ -99,7 +99,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "pages.ext",
@@ -109,7 +109,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > plrs.im zone should match 
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "vercel.ext",
@@ -129,7 +129,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
     "ip": "10.10.0.1",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "router",
@@ -139,7 +139,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
     "ip": "10.10.0.10",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "truenas",
@@ -148,7 +148,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "auth",
@@ -158,7 +158,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "vault",
@@ -168,7 +168,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "docker",
@@ -179,7 +179,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
     "ip": "20.64.176.83",
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "up",
@@ -188,7 +188,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "net",
@@ -198,7 +198,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "code",
@@ -208,7 +208,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "*.code",
@@ -218,7 +218,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "garage",
@@ -228,7 +228,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "s3",
@@ -238,7 +238,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "*.s3",
@@ -248,7 +248,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "k2v",
@@ -258,7 +258,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "d",
@@ -268,7 +268,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "log",
@@ -278,7 +278,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "ingest.log",
@@ -288,7 +288,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "kasm",
@@ -298,7 +298,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "registry.kasm",
@@ -308,7 +308,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "registry",
@@ -318,7 +318,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "z",
@@ -328,7 +328,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "*.z",
@@ -338,7 +338,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "ai",
@@ -349,7 +349,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "traefik.local",
@@ -359,7 +359,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "netbootxyz.local",
@@ -369,7 +369,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "portainer.local",
@@ -379,7 +379,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "pgadmin.local",
@@ -388,7 +388,7 @@ exports[`Zone Snapshot Tests > Infrastructure Zones > polaris.gdn zone should ma
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "charge",
@@ -461,7 +461,7 @@ exports[`Zone Snapshot Tests > Personal Zones > vlad.gg zone should match snapsh
     "ip": "75.2.60.5",
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "@",
@@ -488,7 +488,7 @@ exports[`Zone Snapshot Tests > Personal Zones > vlad.gg zone should match snapsh
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "sticky",
@@ -896,7 +896,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
     "ip": "10.10.0.1",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "router",
@@ -906,7 +906,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
     "ip": "10.10.0.10",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "truenas",
@@ -915,7 +915,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "auth",
@@ -925,7 +925,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "vault",
@@ -935,7 +935,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "docker",
@@ -946,7 +946,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
     "ip": "20.64.176.83",
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "up",
@@ -955,7 +955,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "net",
@@ -965,7 +965,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "atuin",
@@ -975,7 +975,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "cloud",
@@ -985,7 +985,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "docs",
@@ -995,7 +995,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "code",
@@ -1005,7 +1005,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "*.code",
@@ -1015,7 +1015,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "mqtt",
@@ -1025,7 +1025,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "chat",
@@ -1036,7 +1036,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
     "ip": "10.11.2.123",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "kiwix",
@@ -1045,7 +1045,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "books",
@@ -1055,7 +1055,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "calibre",
@@ -1065,7 +1065,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "manga",
@@ -1075,7 +1075,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "stash",
@@ -1085,7 +1085,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "games",
@@ -1095,7 +1095,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "retro",
@@ -1106,7 +1106,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "traefik.int",
@@ -1116,7 +1116,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "netbootxyz.int",
@@ -1126,7 +1126,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "portainer.int",
@@ -1136,7 +1136,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.rest zone should match sn
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "cloudflare_proxy": "off",
+        "proxy": false,
       },
     ],
     "name": "pgadmin.int",
@@ -1260,7 +1260,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "media",
@@ -1270,7 +1270,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "request",
@@ -1280,7 +1280,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "invite",
@@ -1290,7 +1290,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "xteve",
@@ -1300,7 +1300,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "threadfin",
@@ -1310,7 +1310,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "tunarr",
@@ -1320,7 +1320,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "logos",
@@ -1330,7 +1330,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "guide",
@@ -1340,7 +1340,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "mirror",
@@ -1350,7 +1350,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "flows",
@@ -1360,7 +1360,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "metube",
@@ -1370,7 +1370,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "maintain",
@@ -1380,7 +1380,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "rec",
@@ -1390,7 +1390,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "sonarr",
@@ -1400,7 +1400,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "radarr",
@@ -1410,7 +1410,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "lidarr",
@@ -1420,7 +1420,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "readarr",
@@ -1430,7 +1430,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "prowlarr",
@@ -1440,7 +1440,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "sabnzbd",
@@ -1450,7 +1450,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "decryptarr",
@@ -1460,7 +1460,7 @@ exports[`Zone Snapshot Tests > Service Zones > polaris.video zone should match s
   {
     "modifiers": [
       {
-        "cloudflare_proxy": "on",
+        "proxy": true,
       },
     ],
     "name": "tautulli",

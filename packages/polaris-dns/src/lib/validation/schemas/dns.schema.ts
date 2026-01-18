@@ -6,6 +6,7 @@
  */
 
 import { z } from "zod";
+import { Ipv4AddressSchema, Ipv6AddressSchema } from "@vladzaharia/dnscontrol-types";
 
 // =============================================================================
 // RE-EXPORTS FROM DNSCONTROL-TYPES
@@ -67,9 +68,6 @@ export {
   type CaaRecord,
   DnsRecordSchema as BaseDnsRecordSchema,
 } from "@vladzaharia/dnscontrol-types";
-
-// Import for local use in polaris-specific schemas
-import { Ipv4AddressSchema, Ipv6AddressSchema } from "@vladzaharia/dnscontrol-types";
 
 // =============================================================================
 // POLARIS-SPECIFIC EXTENSIONS

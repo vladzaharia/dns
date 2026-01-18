@@ -2,10 +2,10 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "noEmit": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "declaration": true,
     "declarationMap": false,
     "esModuleInterop": true,
@@ -16,7 +16,12 @@
     "types": []
   },
   "include": [
-    "*.d.ts",
-    "providers/*.d.ts"
+    "index.d.ts",
+    "types/**/*.d.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

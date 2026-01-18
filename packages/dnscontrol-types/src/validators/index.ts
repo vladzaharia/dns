@@ -114,56 +114,56 @@ export function getErrorSummary(errors: ZodError): string {
 /**
  * Validate an A record configuration
  */
-export function validateARecord(data: unknown) {
+export function validateARecord(data: unknown): ValidationResult<z.infer<typeof schemas.ARecordSchema>> {
   return validateRecord(schemas.ARecordSchema, data);
 }
 
 /**
  * Validate an AAAA record configuration
  */
-export function validateAAAARecord(data: unknown) {
+export function validateAAAARecord(data: unknown): ValidationResult<z.infer<typeof schemas.AAAARecordSchema>> {
   return validateRecord(schemas.AAAARecordSchema, data);
 }
 
 /**
  * Validate a CNAME record configuration
  */
-export function validateCnameRecord(data: unknown) {
+export function validateCnameRecord(data: unknown): ValidationResult<z.infer<typeof schemas.CnameRecordSchema>> {
   return validateRecord(schemas.CnameRecordSchema, data);
 }
 
 /**
  * Validate an MX record configuration
  */
-export function validateMxRecord(data: unknown) {
+export function validateMxRecord(data: unknown): ValidationResult<z.infer<typeof schemas.MxRecordSchema>> {
   return validateRecord(schemas.MxRecordSchema, data);
 }
 
 /**
  * Validate a TXT record configuration
  */
-export function validateTxtRecord(data: unknown) {
+export function validateTxtRecord(data: unknown): ValidationResult<z.infer<typeof schemas.TxtRecordSchema>> {
   return validateRecord(schemas.TxtRecordSchema, data);
 }
 
 /**
  * Validate a CAA record configuration
  */
-export function validateCaaRecord(data: unknown) {
+export function validateCaaRecord(data: unknown): ValidationResult<z.infer<typeof schemas.CaaRecordSchema>> {
   return validateRecord(schemas.CaaRecordSchema, data);
 }
 
 /**
  * Validate an SRV record configuration
  */
-export function validateSrvRecord(data: unknown) {
+export function validateSrvRecord(data: unknown): ValidationResult<z.infer<typeof schemas.SrvRecordSchema>> {
   return validateRecord(schemas.SrvRecordSchema, data);
 }
 
 /**
  * Validate any DNS record (auto-detects type)
  */
-export function validateDnsRecord(data: unknown) {
+export function validateDnsRecord(data: unknown): ValidationResult<z.infer<typeof schemas.DnsRecordSchema>> {
   return validateRecord(schemas.DnsRecordSchema, data);
 }
 
@@ -174,35 +174,35 @@ export function validateDnsRecord(data: unknown) {
 /**
  * Validate a CAA_BUILDER configuration
  */
-export function validateCaaBuilder(data: unknown) {
+export function validateCaaBuilder(data: unknown): ValidationResult<z.infer<typeof schemas.CaaBuilderConfigSchema>> {
   return validateRecord(schemas.CaaBuilderConfigSchema, data);
 }
 
 /**
  * Validate a DKIM_BUILDER configuration
  */
-export function validateDkimBuilder(data: unknown) {
+export function validateDkimBuilder(data: unknown): ValidationResult<z.infer<typeof schemas.DkimBuilderConfigSchema>> {
   return validateRecord(schemas.DkimBuilderConfigSchema, data);
 }
 
 /**
  * Validate a DMARC_BUILDER configuration
  */
-export function validateDmarcBuilder(data: unknown) {
+export function validateDmarcBuilder(data: unknown): ValidationResult<z.infer<typeof schemas.DmarcBuilderConfigSchema>> {
   return validateRecord(schemas.DmarcBuilderConfigSchema, data);
 }
 
 /**
  * Validate an SPF_BUILDER configuration
  */
-export function validateSpfBuilder(data: unknown) {
+export function validateSpfBuilder(data: unknown): ValidationResult<z.infer<typeof schemas.SpfBuilderConfigSchema>> {
   return validateRecord(schemas.SpfBuilderConfigSchema, data);
 }
 
 /**
  * Validate an M365_BUILDER configuration
  */
-export function validateM365Builder(data: unknown) {
+export function validateM365Builder(data: unknown): ValidationResult<z.infer<typeof schemas.M365BuilderConfigSchema>> {
   return validateRecord(schemas.M365BuilderConfigSchema, data);
 }
 
@@ -213,28 +213,28 @@ export function validateM365Builder(data: unknown) {
 /**
  * Validate a domain configuration (D() function input)
  */
-export function validateDomainConfig(data: unknown) {
+export function validateDomainConfig(data: unknown): ValidationResult<z.infer<typeof schemas.DomainConfigSchema>> {
   return validateRecord(schemas.DomainConfigSchema, data);
 }
 
 /**
  * Validate a DNS provider configuration
  */
-export function validateDnsProviderConfig(data: unknown) {
+export function validateDnsProviderConfig(data: unknown): ValidationResult<z.infer<typeof schemas.DnsProviderConfigSchema>> {
   return validateRecord(schemas.DnsProviderConfigSchema, data);
 }
 
 /**
  * Validate a registrar configuration
  */
-export function validateRegistrarConfig(data: unknown) {
+export function validateRegistrarConfig(data: unknown): ValidationResult<z.infer<typeof schemas.RegistrarConfigSchema>> {
   return validateRecord(schemas.RegistrarConfigSchema, data);
 }
 
 /**
  * Validate a complete DNSControl configuration
  */
-export function validateDnsControlConfig(data: unknown) {
+export function validateDnsControlConfig(data: unknown): ValidationResult<z.infer<typeof schemas.DnsControlConfigSchema>> {
   return validateRecord(schemas.DnsControlConfigSchema, data);
 }
 
@@ -245,35 +245,35 @@ export function validateDnsControlConfig(data: unknown) {
 /**
  * Validate a TTL value
  */
-export function validateTtl(data: unknown) {
+export function validateTtl(data: unknown): ValidationResult<z.infer<typeof schemas.TtlSchema>> {
   return validateRecord(schemas.TtlSchema, data);
 }
 
 /**
  * Validate an IP address (v4 or v6)
  */
-export function validateIpAddress(data: unknown) {
+export function validateIpAddress(data: unknown): ValidationResult<z.infer<typeof schemas.IpAddressSchema>> {
   return validateRecord(schemas.IpAddressSchema, data);
 }
 
 /**
  * Validate a domain name
  */
-export function validateDomainName(data: unknown) {
+export function validateDomainName(data: unknown): ValidationResult<z.infer<typeof schemas.DomainNameSchema>> {
   return validateRecord(schemas.DomainNameSchema, data);
 }
 
 /**
  * Validate a record name (subdomain, @, or *)
  */
-export function validateRecordName(data: unknown) {
+export function validateRecordName(data: unknown): ValidationResult<z.infer<typeof schemas.RecordNameSchema>> {
   return validateRecord(schemas.RecordNameSchema, data);
 }
 
 /**
  * Validate a hostname
  */
-export function validateHostname(data: unknown) {
+export function validateHostname(data: unknown): ValidationResult<z.infer<typeof schemas.HostnameSchema>> {
   return validateRecord(schemas.HostnameSchema, data);
 }
 
