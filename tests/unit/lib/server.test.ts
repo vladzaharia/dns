@@ -22,7 +22,7 @@ describe("Server Registry", () => {
       const expectedServers: ServerName[] = [
         "greenwood",
         "caphill",
-        "azure-tunnel",
+        "pangolin",
         "upvpn",
         "reprise1",
         "reprise2",
@@ -86,9 +86,9 @@ describe("Server Registry", () => {
       expect(server.ip).toBe("67.185.194.56");
     });
 
-    it("should return the correct server for azure-tunnel", () => {
-      const server = getServer("azure-tunnel");
-      expect(server.name).toBe("azure-tunnel");
+    it("should return the correct server for pangolin", () => {
+      const server = getServer("pangolin");
+      expect(server.name).toBe("pangolin");
       expect(server.location).toBe("az");
       expect(server.prefix).toBe("tun");
     });
@@ -115,8 +115,8 @@ describe("Server Registry", () => {
       expect(getServerIP("greenwood")).toBe("67.185.194.56");
     });
 
-    it("should return correct IP for azure-tunnel", () => {
-      expect(getServerIP("azure-tunnel")).toBe("172.179.0.103");
+    it("should return correct IP for pangolin", () => {
+      expect(getServerIP("pangolin")).toBe("172.179.0.103");
     });
 
     it("should return correct IP for local-traefik", () => {
@@ -135,8 +135,8 @@ describe("Server Registry", () => {
       expect(getServerHostname("greenwood")).toBe("gw.sea.plrs.im");
     });
 
-    it("should return correct hostname for azure-tunnel", () => {
-      expect(getServerHostname("azure-tunnel")).toBe("tun.az.plrs.im");
+    it("should return correct hostname for pangolin", () => {
+      expect(getServerHostname("pangolin")).toBe("tun.az.plrs.im");
     });
 
     it("should return valid hostname for all servers", () => {
@@ -151,8 +151,8 @@ describe("Server Registry", () => {
       expect(getServerPrefix("greenwood")).toBe("gw");
     });
 
-    it("should return correct prefix for azure-tunnel", () => {
-      expect(getServerPrefix("azure-tunnel")).toBe("tun");
+    it("should return correct prefix for pangolin", () => {
+      expect(getServerPrefix("pangolin")).toBe("tun");
     });
 
     it("should return non-empty prefix for all servers", () => {
@@ -173,8 +173,8 @@ describe("Server Registry", () => {
       expect(isServerDDNS("caphill")).toBe(true);
     });
 
-    it("should return false for azure-tunnel (static IP)", () => {
-      expect(isServerDDNS("azure-tunnel")).toBe(false);
+    it("should return false for pangolin (static IP)", () => {
+      expect(isServerDDNS("pangolin")).toBe(false);
     });
 
     it("should return false for reprise servers (static IP)", () => {
@@ -250,7 +250,7 @@ describe("Server Registry", () => {
       const names = getAllServerNames();
       expect(names).toContain("greenwood");
       expect(names).toContain("caphill");
-      expect(names).toContain("azure-tunnel");
+      expect(names).toContain("pangolin");
       expect(names).toContain("upvpn");
       expect(names).toContain("reprise1");
       expect(names).toContain("local-traefik");

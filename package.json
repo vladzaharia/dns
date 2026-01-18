@@ -4,6 +4,7 @@
   "description": "Centralized DNS Infrastructure-as-Code repository for managing DNS records across multiple domains",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
     "postinstall": "./lib/download.sh",
     "build": "webpack",
@@ -11,14 +12,14 @@
     "preview-ci:darwin": "cd out && ../lib/dnscontrol-Darwin --diff2 preview",
     "preview-ci:linux": "cd out && ../lib/dnscontrol-Linux --diff2 preview",
     "preview-ci:win32": "cd out && ..\\lib\\dnscontrol --diff2 preview",
-    "preview": "npm run build && npm run preview-ci",
+    "preview": "pnpm run build && pnpm run preview-ci",
     "push-ci": "run-script-os",
     "push-ci:darwin": "cd out && ../lib/dnscontrol-Darwin --diff2 push",
     "push-ci:linux": "cd out && ../lib/dnscontrol-Linux --diff2 push",
     "push-ci:win32": "cd out && ..\\lib\\dnscontrol --diff2 push",
-    "push": "npm run build && npm run push-ci",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
+    "push": "pnpm run build && pnpm run push-ci",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
     "typecheck": "tsc --noEmit",
@@ -33,7 +34,8 @@
     "test:snapshot": "vitest run tests/snapshot",
     "test:snapshot:update": "vitest run tests/snapshot --update",
     "test:e2e": "vitest run tests/e2e",
-    "test:mutation": "stryker run"
+    "test:mutation": "stryker run",
+    "types:publish": "pnpm --filter @vladzaharia/dnscontrol-types publish"
   },
   "author": "Vlad Zaharia",
   "license": "MIT",
@@ -43,6 +45,9 @@
     "dnscontrol",
     "cloudflare"
   ],
+  "dependencies": {
+    "@vladzaharia/dnscontrol-types": "workspace:*"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@faker-js/faker": "^10.2.0",

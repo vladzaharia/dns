@@ -155,7 +155,7 @@ export function createServiceRecord(
 
   if (useTunnel) {
     // Use CNAME to Azure tunnel
-    const tunnelHostname = getServerHostname("azure-tunnel");
+    const tunnelHostname = getServerHostname("pangolin");
     return createCNAMERecord(subdomain, tunnelHostname + ".", {
       proxy: proxy === "on" ? "on" : "off",
       ttl: options.ttl,

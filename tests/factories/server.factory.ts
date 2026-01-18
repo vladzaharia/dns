@@ -14,7 +14,7 @@ const SERVER_LOCATIONS: ServerLocation[] = ["sea", "az", "re", "local"];
 const SERVER_NAMES: ServerName[] = [
   "greenwood",
   "caphill",
-  "azure-tunnel",
+  "pangolin",
   "upvpn",
   "reprise1",
   "reprise2",

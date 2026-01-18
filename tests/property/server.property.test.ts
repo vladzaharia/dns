@@ -31,7 +31,7 @@ describe("Server Property Tests", () => {
       const validNames = [
         "greenwood",
         "caphill",
-        "azure-tunnel",
+        "pangolin",
         "upvpn",
         "reprise1",
         "reprise2",

@@ -17,7 +17,7 @@ export const serverLocationArb: fc.Arbitrary<ServerLocation> = fc.constantFrom("
 export const serverNameArb: fc.Arbitrary<ServerName> = fc.constantFrom(
   "greenwood",
   "caphill",
-  "azure-tunnel",
+  "pangolin",
   "upvpn",
   "reprise1",
   "reprise2",

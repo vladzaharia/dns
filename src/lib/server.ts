@@ -28,8 +28,8 @@ export const servers: ServerRegistry = {
     ip: "97.113.197.175",
     isDDNS: true,
   },
-  "azure-tunnel": {
-    name: "azure-tunnel",
+  "pangolin": {
+    name: "pangolin",
     location: "az",
     prefix: "tun",
     hostname: "tun.az.plrs.im",

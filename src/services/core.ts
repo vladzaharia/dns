@@ -33,7 +33,7 @@ export function serviceToRecords(service: ServiceDefinition): unknown[] {
     case "tunnel":
       // Use Azure tunnel CNAME
       return [
-        createCNAMERecord(subdomain, getServerHostname("azure-tunnel") + ".", {
+        createCNAMERecord(subdomain, getServerHostname("pangolin") + ".", {
           proxy: proxy ? "on" : "off",
         }),
       ];

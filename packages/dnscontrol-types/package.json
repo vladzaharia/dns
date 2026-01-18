@@ -1,0 +1,60 @@
+{
+  "name": "@vladzaharia/dnscontrol-types",
+  "version": "1.0.0",
+  "description": "TypeScript type definitions for DNSControl DSL",
+  "type": "module",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts"
+    },
+    "./base": {
+      "types": "./base.d.ts"
+    },
+    "./records": {
+      "types": "./records.d.ts"
+    },
+    "./builders": {
+      "types": "./builders.d.ts"
+    },
+    "./providers/cloudflare": {
+      "types": "./providers/cloudflare.d.ts"
+    },
+    "./providers/azure": {
+      "types": "./providers/azure.d.ts"
+    },
+    "./providers/route53": {
+      "types": "./providers/route53.d.ts"
+    },
+    "./providers": {
+      "types": "./providers/index.d.ts"
+    }
+  },
+  "files": [
+    "*.d.ts",
+    "providers/*.d.ts"
+  ],
+  "keywords": [
+    "dnscontrol",
+    "dns",
+    "typescript",
+    "types",
+    "typings",
+    "infrastructure-as-code"
+  ],
+  "author": "Vlad Zaharia",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vladzaharia/dns.git",
+    "directory": "packages/dnscontrol-types"
+  },
+  "bugs": {
+    "url": "https://github.com/vladzaharia/dns/issues"
+  },
+  "homepage": "https://github.com/vladzaharia/dns/tree/main/packages/dnscontrol-types#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}
+

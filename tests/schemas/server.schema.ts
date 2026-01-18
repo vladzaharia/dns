@@ -13,7 +13,7 @@ export const serverLocationSchema = z.enum(["sea", "az", "re", "local"]);
 export const serverNameSchema = z.enum([
   "greenwood",
   "caphill",
-  "azure-tunnel",
+  "pangolin",
   "upvpn",
   "reprise1",
   "reprise2",

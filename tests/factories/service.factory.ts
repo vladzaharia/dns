@@ -97,10 +97,10 @@ export const greenwoodServiceFactory = serviceFactory.params({
 });
 
 /**
- * Factory for services on azure-tunnel
+ * Factory for services on pangolin
  */
 export const azureTunnelServiceFactory = serviceFactory.params({
-  server: "azure-tunnel",
+  server: "pangolin",
   routing: "tunnel",
 });
 

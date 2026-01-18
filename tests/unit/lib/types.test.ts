@@ -43,7 +43,7 @@ describe("Type Definitions", () => {
       const names: ServerName[] = [
         "greenwood",
         "caphill",
-        "azure-tunnel",
+        "pangolin",
         "upvpn",
         "reprise1",
         "reprise2",

@@ -234,7 +234,7 @@ describe("Record Builders", () => {
     });
 
     it("should work with different servers", () => {
-      createServiceRecord("azure", "azure-tunnel");
+      createServiceRecord("azure", "pangolin");
       createServiceRecord("reprise", "reprise1");
       createServiceRecord("local", "local-traefik");
 
@@ -290,7 +290,7 @@ describe("Record Builders", () => {
     });
 
     it("should work with different servers", () => {
-      createServerCNAME("az-alias", "azure-tunnel");
+      createServerCNAME("az-alias", "pangolin");
 
       expect(mockDnsControl.CNAME).toHaveBeenCalled();
     });

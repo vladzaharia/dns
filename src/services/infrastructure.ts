@@ -58,7 +58,7 @@ export const infrastructureServices: ServiceCategory = {
     {
       subdomain: "net",
       description: "Polaris Tunnels",
-      server: "azure-tunnel",
+      server: "pangolin",
       routing: "direct",
     },
   ],
