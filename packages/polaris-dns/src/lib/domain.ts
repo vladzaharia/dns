@@ -38,7 +38,11 @@ declare function D(
   ...records: unknown[]
 ): void;
 declare function NewRegistrar(name: string): unknown;
-declare function NewDnsProvider(name: string, type?: string): unknown;
+declare function NewDnsProvider(
+  name: string,
+  type?: string,
+  metadata?: Record<string, unknown>
+): unknown;
 declare function DnsProvider(provider: unknown): unknown;
 declare function DefaultTTL(ttl: number): unknown;
 declare function IGNORE(pattern: string): unknown;
@@ -50,8 +54,17 @@ declare function IGNORE(pattern: string): unknown;
 /** No registrar (DNS-only management) */
 export const NO_REGISTRAR = NewRegistrar("none");
 
-/** Cloudflare DNS provider */
-export const CLOUDFLARE = NewDnsProvider("cloudflare");
+/** Cloudflare DNS provider (without redirect management) */
+export const CLOUDFLARE = NewDnsProvider("cloudflare", undefined, {
+  manage_redirects: false,
+  manage_single_redirects: false,
+});
+
+/** Cloudflare DNS provider with redirect management enabled */
+export const CLOUDFLARE_WITH_REDIRECTS = NewDnsProvider("cloudflare", undefined, {
+  manage_redirects: true,
+  manage_single_redirects: true,
+});
 
 // =============================================================================
 // Domain Builder

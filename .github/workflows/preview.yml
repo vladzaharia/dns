@@ -96,14 +96,22 @@ jobs:
         id: parse-changes
         if: always()
         shell: bash
+        env:
+          PREVIEW_OUTPUT: ${{ steps.preview.outputs.preview-output }}
         run: |
           # Parse the preview output to create a structured changes table
-          PREVIEW_OUTPUT='${{ steps.preview.outputs.preview-output }}'
+          # Use env var to safely handle special characters in the output
 
-          # Count changes by type
-          CREATE_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^\+ CREATE|\bCREATING\b" || echo 0)
-          MODIFY_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^± MODIFY|\bMODIFY\b" || echo 0)
-          DELETE_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^\- DELETE|\bDELETE\b" || echo 0)
+          # Count changes by type (handle empty/missing output)
+          if [ -z "$PREVIEW_OUTPUT" ]; then
+            CREATE_COUNT=0
+            MODIFY_COUNT=0
+            DELETE_COUNT=0
+          else
+            CREATE_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^#[0-9]+: \+ CREATE" || echo 0)
+            MODIFY_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^#[0-9]+: ± MODIFY" || echo 0)
+            DELETE_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^#[0-9]+: - DELETE" || echo 0)
+          fi
           TOTAL_COUNT=$((CREATE_COUNT + MODIFY_COUNT + DELETE_COUNT))
 
           # Create summary
@@ -118,30 +126,60 @@ jobs:
           fi
           echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
 
-          # Create changes table from output
+          # Create changes table from output (limit to first 50 for PR comment size)
           TABLE=""
+          CHANGE_COUNT=0
+          MAX_CHANGES=50
           while IFS= read -r line; do
-            # Parse CREATE lines: "+ CREATE domain.com TYPE value ttl=xxx"
-            if echo "$line" | grep -qE "^\+ CREATE|CREATING"; then
-              DOMAIN=$(echo "$line" | sed -E 's/.*CREATE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/' | head -1)
-              TYPE=$(echo "$line" | sed -E 's/.*CREATE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z]+)[[:space:]].*/\1/' | head -1)
-              VALUE=$(echo "$line" | sed -E 's/.*CREATE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | xargs)
+            # Skip if we've hit the limit
+            if [ "$CHANGE_COUNT" -ge "$MAX_CHANGES" ]; then
+              continue
+            fi
+
+            # Parse CREATE lines: "#1: + CREATE domain.com TYPE value ttl=xxx"
+            if echo "$line" | grep -qE "^#[0-9]+: \+ CREATE"; then
+              DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
+              TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
+              # Truncate value if too long
+              if [ ${#VALUE} -gt 60 ]; then
+                VALUE="${VALUE:0:57}..."
+              fi
               TABLE="${TABLE}| ➕ | ${DOMAIN} | ${TYPE} | - | ${VALUE} |"$'\n'
-            # Parse MODIFY lines: "± MODIFY domain.com TYPE (old) -> (new)"
-            elif echo "$line" | grep -qE "^± MODIFY|MODIFY"; then
-              DOMAIN=$(echo "$line" | sed -E 's/.*MODIFY[^[:space:]]*[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/' | head -1)
-              TYPE=$(echo "$line" | sed -E 's/.*MODIFY[^[:space:]]*[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z]+)[[:space:]].*/\1/' | head -1)
-              OLD=$(echo "$line" | sed -E 's/.*\(([^)]+)\)[[:space:]]*->.*/\1/' | head -1)
-              NEW=$(echo "$line" | sed -E 's/.*->[[:space:]]*\(([^)]+)\).*/\1/' | head -1)
+              CHANGE_COUNT=$((CHANGE_COUNT + 1))
+            # Parse MODIFY lines: "#1: ± MODIFY domain.com TYPE (old) -> (new)"
+            elif echo "$line" | grep -qE "^#[0-9]+: ± MODIFY"; then
+              DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: ± MODIFY[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
+              TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: ± MODIFY[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              OLD=$(echo "$line" | sed -E 's/.*\(([^)]+)\)[[:space:]]*->.*/\1/' | tr -d '"')
+              NEW=$(echo "$line" | sed -E 's/.*->[[:space:]]*\(([^)]+)\).*/\1/' | tr -d '"')
+              # Truncate values if too long
+              if [ ${#OLD} -gt 30 ]; then
+                OLD="${OLD:0:27}..."
+              fi
+              if [ ${#NEW} -gt 30 ]; then
+                NEW="${NEW:0:27}..."
+              fi
               TABLE="${TABLE}| ✏️ | ${DOMAIN} | ${TYPE} | ${OLD} | ${NEW} |"$'\n'
-            # Parse DELETE lines: "- DELETE domain.com TYPE value"
-            elif echo "$line" | grep -qE "^\- DELETE|DELETE"; then
-              DOMAIN=$(echo "$line" | sed -E 's/.*DELETE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/' | head -1)
-              TYPE=$(echo "$line" | sed -E 's/.*DELETE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z]+)[[:space:]].*/\1/' | head -1)
-              VALUE=$(echo "$line" | sed -E 's/.*DELETE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | xargs)
+              CHANGE_COUNT=$((CHANGE_COUNT + 1))
+            # Parse DELETE lines: "#1: - DELETE domain.com TYPE value"
+            elif echo "$line" | grep -qE "^#[0-9]+: - DELETE"; then
+              DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
+              TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
+              # Truncate value if too long
+              if [ ${#VALUE} -gt 60 ]; then
+                VALUE="${VALUE:0:57}..."
+              fi
               TABLE="${TABLE}| 🗑️ | ${DOMAIN} | ${TYPE} | ${VALUE} | - |"$'\n'
+              CHANGE_COUNT=$((CHANGE_COUNT + 1))
             fi
           done <<< "$PREVIEW_OUTPUT"
+
+          # Add truncation notice if needed
+          if [ "$TOTAL_COUNT" -gt "$MAX_CHANGES" ]; then
+            TABLE="${TABLE}| ... | *${TOTAL_COUNT} total changes* | - | - | *See full output below* |"$'\n'
+          fi
 
           # Output table (escape for GitHub Actions)
           echo "table<<EOF" >> $GITHUB_OUTPUT
@@ -362,7 +400,16 @@ jobs:
             echo "<summary>📋 Full DNSControl Output</summary>"
             echo ""
             echo "\`\`\`"
-            echo "${PREVIEW_OUTPUT:-No output available}"
+            # Truncate output to prevent excessively large comments (max ~50KB)
+            MAX_OUTPUT_LINES=500
+            OUTPUT_LINES=$(echo "${PREVIEW_OUTPUT:-No output available}" | wc -l)
+            if [ "$OUTPUT_LINES" -gt "$MAX_OUTPUT_LINES" ]; then
+              echo "${PREVIEW_OUTPUT}" | head -n "$MAX_OUTPUT_LINES"
+              echo ""
+              echo "... (truncated, $OUTPUT_LINES total lines - see workflow logs for full output)"
+            else
+              echo "${PREVIEW_OUTPUT:-No output available}"
+            fi
             echo "\`\`\`"
             echo ""
             echo "</details>"
@@ -371,14 +418,8 @@ jobs:
             echo "*Latest commit: \`$COMMIT_SHA\`* | [View Run](https://github.com/$REPO/actions/runs/$RUN_ID)"
           } > comment.md
 
-          # Output the comment content
-          COMMENT_CONTENT=$(cat comment.md)
-          echo "content<<EOF" >> $GITHUB_OUTPUT
-          echo "$COMMENT_CONTENT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Create or update PR comment
         uses: marocchino/sticky-pull-request-comment@v2.9.4
         with:
           header: dns-preview
-          message: ${{ steps.comment.outputs.content }}
+          path: comment.md

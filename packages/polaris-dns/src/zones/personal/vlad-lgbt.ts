@@ -2,6 +2,7 @@
  * vlad.lgbt - Redirect to vlad.gg
  */
 
+import { createDomain, CLOUDFLARE_WITH_REDIRECTS, NO_REGISTRAR } from "../../lib/domain.js";
 import { createTXTRecord } from "../../lib/record.js";
 import { createFastmailRecords } from "../../mail/fastmail.js";
 
@@ -10,20 +11,17 @@ import { createFastmailRecords } from "../../mail/fastmail.js";
 // =============================================================================
 
 const DOMAIN = "vlad.lgbt";
-const NO_REGISTRAR = NewRegistrar("none");
-const CLOUDFLARE_WITH_REDIRECT = NewDnsProvider("cloudflare", undefined, {
-  manage_redirects: true,
-  manage_single_redirects: true,
-});
 
 export function registerVladLGBT(): void {
   console.log(`Zone: ${DOMAIN} - vlad.gg Redirect`);
 
-  D(
-    DOMAIN,
-    NO_REGISTRAR,
-    DnsProvider(CLOUDFLARE_WITH_REDIRECT),
-    DefaultTTL(1),
+  createDomain(
+    {
+      name: DOMAIN,
+      category: "personal",
+      registrar: NO_REGISTRAR,
+      dnsProvider: CLOUDFLARE_WITH_REDIRECTS,
+    },
 
     // Redirect all to vlad.gg
     CF_REDIRECT("*vlad.lgbt/*", "https://vlad.gg/$2"),
