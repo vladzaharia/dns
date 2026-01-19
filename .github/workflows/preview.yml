@@ -169,11 +169,24 @@ jobs:
           EXISTING_BODY: ${{ steps.find-comment.outputs.comment-body }}
         run: |
           # Extract existing status table rows (excluding header)
+          # Expected format: | Commit | Build | Test | Validate | Preview | Changes | (6 columns = 7 pipes)
           if [ -n "$EXISTING_BODY" ]; then
             # Extract rows between the table header separator and the next section
-            ROWS=$(echo "$EXISTING_BODY" | sed -n '/^|--------|/,/^$/p' | grep "^| \[" || echo "")
+            RAW_ROWS=$(echo "$EXISTING_BODY" | sed -n '/^|--------|/,/^$/p' | grep "^| \[" || echo "")
+
+            # Filter to only include rows with the correct number of columns (7 pipes for 6 columns)
+            VALID_ROWS=""
+            while IFS= read -r row; do
+              if [ -n "$row" ]; then
+                PIPE_COUNT=$(echo "$row" | tr -cd '|' | wc -c)
+                if [ "$PIPE_COUNT" -eq 7 ]; then
+                  VALID_ROWS="${VALID_ROWS}${row}"$'\n'
+                fi
+              fi
+            done <<< "$RAW_ROWS"
+
             echo "rows<<EOF" >> $GITHUB_OUTPUT
-            echo "$ROWS" >> $GITHUB_OUTPUT
+            echo "$VALID_ROWS" >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           else
             echo "rows=" >> $GITHUB_OUTPUT
