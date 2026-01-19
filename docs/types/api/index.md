@@ -134,8 +134,10 @@ const domain: Domain = {
 
 For complete API documentation generated from source code, see:
 
-- [Types Reference](./types/) - Auto-generated type documentation
-- [Schemas Reference](./schemas/) - Auto-generated schema documentation
+- [Generated API Reference](./generated/) - Auto-generated TypeDoc documentation
+- [Type Aliases](./generated/type-aliases/) - All type definitions
+- [Variables](./generated/variables/) - Schema exports
+- [Functions](./generated/functions/) - Utility functions
 
 ::: tip
 API documentation is automatically generated from TSDoc comments using TypeDoc.

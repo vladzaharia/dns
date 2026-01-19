@@ -40,8 +40,9 @@ reports/
 # Prettier
 .prettiercache
 
-# VitePress (docs)
-**/.vitepress/**
+# VitePress build outputs (docs)
+**/.vitepress/cache/
+**/.vitepress/dist/
 
 # TypeDoc generated API docs
 docs/*/api/generated/
