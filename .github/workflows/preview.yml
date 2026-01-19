@@ -107,13 +107,14 @@ jobs:
           TOTAL_COUNT=$((CREATE_COUNT + MODIFY_COUNT + DELETE_COUNT))
 
           # Create summary
-          SUMMARY="**$TOTAL_COUNT** changes"
           if [ "$TOTAL_COUNT" -gt 0 ]; then
             PARTS=""
             [ "$CREATE_COUNT" -gt 0 ] && PARTS="$CREATE_COUNT create"
             [ "$MODIFY_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS, }$MODIFY_COUNT modify"
             [ "$DELETE_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS, }$DELETE_COUNT delete"
-            SUMMARY="$SUMMARY ($PARTS)"
+            SUMMARY="**$TOTAL_COUNT** changes ($PARTS)"
+          else
+            SUMMARY="**0** changes"
           fi
           echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
 
@@ -182,6 +183,9 @@ jobs:
         id: comment
         shell: bash
         env:
+          VALIDATE_RESULT: ${{ needs.validate.outputs.validate-result }}
+          VALIDATE_OUTPUT: ${{ needs.validate.outputs.validate-output }}
+          VALIDATE_PACKAGES: ${{ needs.validate.outputs.validate-packages }}
           PREPARE_RESULT: ${{ needs.prepare.result }}
           PREVIEW_RESULT: ${{ needs.preview.result }}
           HAS_CHANGES: ${{ needs.preview.outputs.has-changes }}
@@ -189,9 +193,10 @@ jobs:
           CHANGES_TABLE: ${{ needs.preview.outputs.changes-table }}
           PREVIEW_OUTPUT: ${{ needs.preview.outputs.preview-output }}
           BUILD_OUTPUT: ${{ needs.prepare.outputs.build-output }}
+          BUILD_PACKAGES: ${{ needs.prepare.outputs.build-packages }}
           TEST_RESULT: ${{ needs.validate.outputs.test-result }}
           TEST_OUTPUT: ${{ needs.validate.outputs.test-output }}
-          TEST_SUMMARY: ${{ needs.validate.outputs.test-summary }}
+          TEST_PACKAGES: ${{ needs.validate.outputs.test-packages }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
@@ -203,36 +208,24 @@ jobs:
           }
 
           BUILD_ICON=$(get_icon "$PREPARE_RESULT")
-          PREVIEW_ICON=$(get_icon "$PREVIEW_RESULT")
           TEST_ICON=$(get_icon "$TEST_RESULT")
+          VALIDATE_ICON=$(get_icon "$VALIDATE_RESULT")
+          PREVIEW_ICON=$(get_icon "$PREVIEW_RESULT")
 
-          # Changes icon
+          # Changes icon and text
           if [ "$HAS_CHANGES" == "true" ]; then
             CHANGES_ICON="🔄"
-            CHANGES_TEXT="Changes detected"
+            CHANGES_TEXT="${CHANGES_SUMMARY:-Changes detected}"
           else
             CHANGES_ICON="✨"
-            CHANGES_TEXT="No changes"
-          fi
-
-          # Parse test summary
-          if [ -n "$TEST_SUMMARY" ] && [ "$TEST_SUMMARY" != "null" ]; then
-            TEST_TOTAL=$(echo "$TEST_SUMMARY" | jq -r '.total // 0')
-            TEST_PASSED=$(echo "$TEST_SUMMARY" | jq -r '.passed // 0')
-            TEST_FAILED=$(echo "$TEST_SUMMARY" | jq -r '.failed // 0')
-            TEST_SKIPPED=$(echo "$TEST_SUMMARY" | jq -r '.skipped // 0')
-          else
-            TEST_TOTAL=0
-            TEST_PASSED=0
-            TEST_FAILED=0
-            TEST_SKIPPED=0
+            CHANGES_TEXT="0 changes"
           fi
 
           # Short commit SHA
           SHORT_SHA="${COMMIT_SHA:0:7}"
 
-          # Create new status row
-          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $TEST_ICON | $PREVIEW_ICON | $CHANGES_ICON $CHANGES_TEXT |"
+          # Create new status row (order: Build > Test > Validation > Preview)
+          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $TEST_ICON | $VALIDATE_ICON | $PREVIEW_ICON | $CHANGES_ICON $CHANGES_TEXT |"
 
           # Build the comment using echo statements
           {
@@ -241,8 +234,8 @@ jobs:
             echo ""
             echo "### 📊 Status"
             echo ""
-            echo "| Commit | Build | Test | Preview | Changes |"
-            echo "|--------|-------|------|---------|---------|"
+            echo "| Commit | Build | Test | Validate | Preview | Changes |"
+            echo "|--------|-------|------|----------|---------|---------|"
             echo "$NEW_ROW"
             # Append existing rows (history)
             if [ -n "$EXISTING_ROWS" ]; then
@@ -251,9 +244,21 @@ jobs:
             echo ""
             echo "### 🔨 Build"
             echo ""
-            echo "| Status |"
-            echo "|--------|"
-            echo "| $BUILD_ICON |"
+            echo "| Package | Status |"
+            echo "|---------|--------|"
+
+            # Parse build packages JSON and generate rows
+            if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
+              echo "$BUILD_PACKAGES" | jq -r 'to_entries | .[] | "\(.key)|\(.value)"' | while IFS='|' read -r pkg status; do
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+                PKG_ICON=$(if [ "$status" == "success" ]; then echo "✅"; else echo "❌"; fi)
+                echo "| $SHORT_PKG | $PKG_ICON |"
+              done
+            else
+              echo "| No packages | - |"
+            fi
+
             echo ""
             echo "<details>"
             echo "<summary>📋 Build Output</summary>"
@@ -266,9 +271,21 @@ jobs:
             echo ""
             echo "### 🧪 Tests"
             echo ""
-            echo "| Total | Passed | Failed | Skipped |"
-            echo "|-------|--------|--------|---------|"
-            echo "| $TEST_TOTAL | $TEST_PASSED | $TEST_FAILED | $TEST_SKIPPED |"
+            echo "| Package | Total | Passed | Failed | Skipped | Status |"
+            echo "|---------|-------|--------|--------|---------|--------|"
+
+            # Parse test packages JSON and generate rows
+            if [ -n "$TEST_PACKAGES" ] && [ "$TEST_PACKAGES" != "[]" ]; then
+              echo "$TEST_PACKAGES" | jq -r '.[] | "\(.name)|\(.total)|\(.passed)|\(.failed)|\(.skipped)|\(.status)"' | while IFS='|' read -r pkg total passed failed skipped status; do
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+                PKG_ICON=$(if [ "$status" == "success" ]; then echo "✅"; else echo "❌"; fi)
+                echo "| $SHORT_PKG | $total | $passed | $failed | $skipped | $PKG_ICON |"
+              done
+            else
+              echo "| No tests | 0 | 0 | 0 | 0 | - |"
+            fi
+
             echo ""
             echo "<details>"
             echo "<summary>📋 Test Output</summary>"
@@ -279,9 +296,38 @@ jobs:
             echo ""
             echo "</details>"
             echo ""
+            echo "### ✅ Validation"
+            echo ""
+            echo "| Package | Lint | Format | Typecheck |"
+            echo "|---------|------|--------|-----------|"
+
+            # Parse validate packages JSON and generate rows
+            if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
+              echo "$VALIDATE_PACKAGES" | jq -r '.[] | "\(.name)|\(.lint)|\(.format)|\(.typecheck)"' | while IFS='|' read -r pkg lint format typecheck; do
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+                LINT_ICON=$(if [ "$lint" == "success" ]; then echo "✅"; else echo "❌"; fi)
+                FORMAT_ICON=$(if [ "$format" == "success" ]; then echo "✅"; else echo "❌"; fi)
+                TYPECHECK_ICON=$(if [ "$typecheck" == "success" ]; then echo "✅"; else echo "❌"; fi)
+                echo "| $SHORT_PKG | $LINT_ICON | $FORMAT_ICON | $TYPECHECK_ICON |"
+              done
+            else
+              echo "| No packages | - | - | - |"
+            fi
+
+            echo ""
+            echo "<details>"
+            echo "<summary>📋 Validation Output</summary>"
+            echo ""
+            echo "\`\`\`"
+            echo "${VALIDATE_OUTPUT:-No output}"
+            echo "\`\`\`"
+            echo ""
+            echo "</details>"
+            echo ""
             echo "### 🔄 DNS Changes"
             echo ""
-            echo "**Summary:** ${CHANGES_SUMMARY:-No changes}"
+            echo "**Summary:** ${CHANGES_SUMMARY:-**0** changes}"
             echo ""
             if [ -n "$CHANGES_TABLE" ] && [ "$CHANGES_TABLE" != "" ]; then
               echo "| Type | Domain | Record | Old Value | New Value |"

@@ -9,6 +9,9 @@ on:
       build-output:
         description: "Build output"
         value: ${{ jobs.compile.outputs.build-output }}
+      build-packages:
+        description: "Per-package build results JSON"
+        value: ${{ jobs.compile.outputs.build-packages }}
 
 jobs:
   compile:
@@ -17,6 +20,7 @@ jobs:
     outputs:
       build-result: ${{ steps.build.outcome }}
       build-output: ${{ steps.build.outputs.output }}
+      build-packages: ${{ steps.build.outputs.packages }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6.0.1
@@ -37,15 +41,57 @@ jobs:
         id: build
         shell: bash
         run: |
-          set +e
-          OUTPUT=$(pnpm run build 2>&1)
-          EXIT_CODE=$?
-          set -e
+          # Build each package and track results
+          declare -A RESULTS
+          FULL_OUTPUT=""
+          OVERALL_EXIT=0
+
+          # Get list of packages with build scripts
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo") | .name')
+
+          for pkg in $PACKAGES; do
+            echo "::group::Building $pkg"
+            set +e
+            PKG_OUTPUT=$(pnpm --filter "$pkg" run build 2>&1)
+            PKG_EXIT=$?
+            set -e
+
+            if [ $PKG_EXIT -eq 0 ]; then
+              RESULTS["$pkg"]="success"
+              echo "✅ $pkg build succeeded"
+            else
+              RESULTS["$pkg"]="failure"
+              OVERALL_EXIT=1
+              echo "❌ $pkg build failed"
+            fi
+
+            FULL_OUTPUT="${FULL_OUTPUT}
+          === $pkg ===
+          $PKG_OUTPUT
+          "
+            echo "::endgroup::"
+          done
+
+          # Create JSON output for packages
+          PACKAGES_JSON="{"
+          FIRST=true
+          for pkg in "${!RESULTS[@]}"; do
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              PACKAGES_JSON+=","
+            fi
+            PACKAGES_JSON+="\"$pkg\":\"${RESULTS[$pkg]}\""
+          done
+          PACKAGES_JSON+="}"
+
+          echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
+
           echo "output<<EOF" >> $GITHUB_OUTPUT
-          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "$FULL_OUTPUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          echo "$OUTPUT"
-          exit $EXIT_CODE
+
+          exit $OVERALL_EXIT
 
       - name: Upload compiled JS
         uses: actions/upload-artifact@v4
