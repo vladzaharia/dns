@@ -35,7 +35,7 @@ pre-push:
       run: pnpm run test
     workflows:
       glob: ".github/workflows/*.yml"
-      run: pnpm run act:validate
+      run: pnpm run act:dry
 
 # Note: To skip hooks in CI, set CI=true environment variable
 # Each command can use: skip: run: test "${CI}" = "true"

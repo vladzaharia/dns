@@ -29,7 +29,6 @@ jobs:
     needs: [validate, prepare]
     runs-on: ubuntu-latest
     outputs:
-      preview-output: ${{ steps.preview.outputs.preview-output }}
       preview-report: ${{ steps.preview.outputs.preview-report }}
       has-changes: ${{ steps.preview.outputs.has-changes }}
       changes-summary: ${{ steps.parse-changes.outputs.summary }}
@@ -64,10 +63,8 @@ jobs:
           EXIT_CODE=$?
           set -e
 
-          # Save output for PR comment
-          echo "preview-output<<EOF" >> $GITHUB_OUTPUT
-          echo "$OUTPUT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          # Save output to file for artifact upload (avoids "Argument list too long" error)
+          echo "$OUTPUT" > ../preview-output.txt
 
           # Save JSON report if it exists
           if [ -f "../report.json" ]; then
@@ -96,18 +93,16 @@ jobs:
         id: parse-changes
         if: always()
         shell: bash
-        env:
-          PREVIEW_OUTPUT: ${{ steps.preview.outputs.preview-output }}
         run: |
           # Parse the preview output to create a structured changes table
-          # Use env var to safely handle special characters in the output
+          # Read from file to avoid "Argument list too long" error with large outputs
 
           # Strip ANSI color codes from output for parsing
           # DNSControl outputs colored text which breaks grep patterns
-          if [ -z "$PREVIEW_OUTPUT" ]; then
-            CLEAN_OUTPUT=""
+          if [ -f "preview-output.txt" ]; then
+            CLEAN_OUTPUT=$(cat preview-output.txt | sed 's/\x1b\[[0-9;]*m//g')
           else
-            CLEAN_OUTPUT=$(echo "$PREVIEW_OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
+            CLEAN_OUTPUT=""
           fi
 
           # Count changes by type (handle empty/missing output)
@@ -194,12 +189,28 @@ jobs:
           echo "$TABLE" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Upload preview output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-output
+          path: preview-output.txt
+          retention-days: 1
+          if-no-files-found: ignore
+
   comment:
     name: Update PR Comment
     needs: [validate, prepare, preview]
     if: always() && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
+      - name: Download preview output
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-output
+          path: .
+        continue-on-error: true
+
       - name: Find existing PR comment
         id: find-comment
         uses: peter-evans/find-comment@v4
@@ -250,7 +261,6 @@ jobs:
           HAS_CHANGES: ${{ needs.preview.outputs.has-changes }}
           CHANGES_SUMMARY: ${{ needs.preview.outputs.changes-summary }}
           CHANGES_TABLE: ${{ needs.preview.outputs.changes-table }}
-          PREVIEW_OUTPUT: ${{ needs.preview.outputs.preview-output }}
           BUILD_OUTPUT: ${{ needs.prepare.outputs.build-output }}
           BUILD_PACKAGES: ${{ needs.prepare.outputs.build-packages }}
           TEST_RESULT: ${{ needs.validate.outputs.test-result }}
@@ -261,6 +271,13 @@ jobs:
           REPO: ${{ github.repository }}
           EXISTING_ROWS: ${{ steps.existing-rows.outputs.rows }}
         run: |
+          # Read preview output from artifact file (avoids "Argument list too long" error)
+          if [ -f "preview-output.txt" ]; then
+            PREVIEW_OUTPUT=$(cat preview-output.txt)
+          else
+            PREVIEW_OUTPUT=""
+          fi
+
           # Generate status icons
           get_icon() {
             if [ "$1" == "success" ]; then echo "✅"; else echo "❌"; fi
