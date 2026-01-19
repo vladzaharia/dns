@@ -1,8 +1,25 @@
 /**
- * Fastmail email provider configuration
+ * Fastmail Email Provider Module
  *
- * Fastmail is used for personal email domains.
- * Documentation: https://www.fastmail.help/hc/en-us/articles/360060591153
+ * Provides DNS record builders for configuring Fastmail email on domains.
+ * Fastmail is used for personal email domains and provides excellent
+ * deliverability with proper SPF, DKIM, and DMARC configuration.
+ *
+ * @see {@link https://www.fastmail.help/hc/en-us/articles/360060591153 | Fastmail DNS Setup}
+ *
+ * @example
+ * ```typescript
+ * import { createFastmailRecords } from "./mail/fastmail.js";
+ *
+ * createDomain(
+ *   { name: "example.com", category: "personal" },
+ *   ...createFastmailRecords({ domain: "example.com" }),
+ *   // Other records...
+ * );
+ * ```
+ *
+ * @module mail/fastmail
+ * @packageDocumentation
  */
 
 import { createCNAMERecord, createMXRecord, createTXTRecord } from "../lib/record.js";

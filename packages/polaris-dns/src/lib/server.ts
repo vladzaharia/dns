@@ -1,5 +1,26 @@
 /**
- * Server registry and utilities
+ * Server Registry Module
+ *
+ * Provides a centralized registry of servers used in Polaris DNS.
+ * Each server has a name, location, hostname, and IP address that can be
+ * used to create DNS records pointing to infrastructure.
+ *
+ * @example
+ * ```typescript
+ * import { getServer, getServerIP, getServerHostname } from "./lib/server.js";
+ *
+ * // Get full server info
+ * const server = getServer("greenwood");
+ * console.log(server.ip);       // "67.185.194.56"
+ * console.log(server.hostname); // "gw.sea.plrs.im"
+ *
+ * // Get specific properties
+ * const ip = getServerIP("pangolin");
+ * const hostname = getServerHostname("reprise1");
+ * ```
+ *
+ * @module lib/server
+ * @packageDocumentation
  */
 
 import type { Server, ServerName, ServerRegistry } from "./types.js";

@@ -1,5 +1,23 @@
 /**
- * Core type definitions for DNS Infrastructure-as-Code
+ * Core Type Definitions
+ *
+ * This module contains all the core TypeScript type definitions used throughout
+ * Polaris DNS. These types provide type safety for servers, DNS records,
+ * services, domains, and mail providers.
+ *
+ * @example
+ * ```typescript
+ * import type {
+ *   Server,
+ *   ServerName,
+ *   RecordOptions,
+ *   DomainCategory,
+ *   Service,
+ * } from "./lib/types.js";
+ * ```
+ *
+ * @module lib/types
+ * @packageDocumentation
  */
 
 // =============================================================================

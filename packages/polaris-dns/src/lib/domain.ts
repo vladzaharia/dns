@@ -1,5 +1,28 @@
 /**
- * Domain builder and utilities
+ * Domain Builder Module
+ *
+ * Provides utilities for creating and managing DNS domains in Polaris DNS.
+ * This module wraps DNSControl's D() function with a type-safe, ergonomic API.
+ *
+ * @example
+ * ```typescript
+ * import { createDomain, CLOUDFLARE, NO_REGISTRAR } from "./lib/domain.js";
+ * import { createARecord, createCNAMERecord } from "./lib/record.js";
+ *
+ * createDomain(
+ *   {
+ *     name: "example.com",
+ *     category: "personal",
+ *     registrar: NO_REGISTRAR,
+ *     dnsProvider: CLOUDFLARE,
+ *   },
+ *   createARecord("@", "192.0.2.1"),
+ *   createCNAMERecord("www", "@")
+ * );
+ * ```
+ *
+ * @module lib/domain
+ * @packageDocumentation
  */
 
 import type { DomainCategory, DomainConfig } from "./types.js";
@@ -34,23 +57,97 @@ export const CLOUDFLARE = NewDnsProvider("cloudflare");
 // Domain Builder
 // =============================================================================
 
+/**
+ * Configuration options for creating a domain.
+ *
+ * @example
+ * ```typescript
+ * const options: DomainBuilderOptions = {
+ *   name: "example.com",
+ *   category: "personal",
+ *   registrar: NO_REGISTRAR,
+ *   dnsProvider: CLOUDFLARE,
+ *   ignorePatterns: ["_acme-challenge"],
+ *   defaultTTL: 300,
+ * };
+ * ```
+ */
 export interface DomainBuilderOptions {
-  /** Domain name (e.g., "example.com") */
+  /**
+   * The fully qualified domain name (e.g., "example.com").
+   * This should not include a trailing dot.
+   */
   name: string;
-  /** Domain category */
+
+  /**
+   * Category for organizing domains.
+   * Used for grouping and filtering in the documentation and logs.
+   */
   category: DomainCategory;
-  /** Registrar to use (default: NO_REGISTRAR) */
+
+  /**
+   * Registrar provider instance.
+   * Use `NO_REGISTRAR` for DNS-only management (most common).
+   * @default NO_REGISTRAR
+   */
   registrar?: unknown;
-  /** DNS provider to use (default: CLOUDFLARE) */
+
+  /**
+   * DNS provider instance.
+   * Use `CLOUDFLARE` for Cloudflare DNS.
+   * @default CLOUDFLARE
+   */
   dnsProvider?: unknown;
-  /** Patterns to ignore (externally managed records) */
+
+  /**
+   * Patterns for records to ignore during sync.
+   * Useful for records managed outside of Polaris DNS (e.g., ACME challenges).
+   * @example ["_acme-challenge", "*.dkim"]
+   */
   ignorePatterns?: string[];
-  /** Default TTL for records (default: 1 = automatic) */
+
+  /**
+   * Default TTL for all records in this domain.
+   * Set to 1 for automatic TTL (Cloudflare).
+   * @default 1
+   */
   defaultTTL?: number;
 }
 
 /**
- * Create a domain with the given configuration and records
+ * Creates a DNS domain with the specified configuration and records.
+ *
+ * This is the primary function for defining domains in Polaris DNS.
+ * It wraps DNSControl's `D()` function with sensible defaults and
+ * automatic handling of ignore patterns.
+ *
+ * @param options - Domain configuration options
+ * @param records - DNS records to add to the domain (created with record builders)
+ *
+ * @example
+ * ```typescript
+ * // Basic domain with A and CNAME records
+ * createDomain(
+ *   { name: "example.com", category: "personal" },
+ *   createARecord("@", "192.0.2.1"),
+ *   createCNAMERecord("www", "@")
+ * );
+ *
+ * // Domain with custom TTL and ignore patterns
+ * createDomain(
+ *   {
+ *     name: "example.com",
+ *     category: "infrastructure",
+ *     defaultTTL: 300,
+ *     ignorePatterns: ["_acme-challenge"],
+ *   },
+ *   createARecord("@", "192.0.2.1"),
+ *   ...createFastmailRecords()
+ * );
+ * ```
+ *
+ * @see {@link DomainBuilderOptions} for configuration options
+ * @see {@link createARecord}, {@link createCNAMERecord} for record builders
  */
 export function createDomain(options: DomainBuilderOptions, ...records: unknown[]): void {
   const {

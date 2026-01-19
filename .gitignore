@@ -1,9 +1,21 @@
+# Dependencies
 node_modules/
+
+# Build outputs
 out/
 dist/
+
+# Logs
 *.log
+
+# Environment files
 .env
+.env.local
+.env.*.local
+
+# OS files
 .DS_Store
+Thumbs.db
 
 # DNSControl binaries (downloaded at install time)
 packages/dnscontrol-download/bin/dnscontrol-*
@@ -12,14 +24,27 @@ packages/dnscontrol-download/bin/dnscontrol-VERSION
 # Testing (Vitest)
 coverage/
 
+# Mutation testing (Stryker)
+.stryker-tmp/
+reports/
+
 # pnpm
 .pnpm-store/
 
-# Local secrets for act (local GitHub Actions testing)
-.secrets
+# TypeScript
+*.tsbuildinfo
 
-# Lefthook local overrides
-lefthook-local.yml
+# ESLint
+.eslintcache
+
+# Prettier
+.prettiercache
+
+# VitePress (docs)
+**/.vitepress/**
+
+# TypeDoc generated API docs
+docs/*/api/generated/
 
 # Local secrets for act (local GitHub Actions testing)
 .secrets

@@ -1,4 +1,27 @@
 #!/usr/bin/env tsx
+/**
+ * DNSControl Binary Downloader
+ *
+ * This script automatically downloads the appropriate DNSControl binary
+ * for the current platform from GitHub releases. It handles:
+ *
+ * - Platform detection (macOS, Linux, Windows, FreeBSD)
+ * - Architecture detection (amd64, arm64)
+ * - Version management (downloads latest or specified version)
+ * - Caching (skips download if already present)
+ *
+ * @example
+ * ```bash
+ * # Download latest version
+ * pnpm --filter dnscontrol-download download
+ *
+ * # Force re-download
+ * pnpm --filter dnscontrol-download download --force
+ * ```
+ *
+ * @module dnscontrol-download
+ * @packageDocumentation
+ */
 
 import { execSync } from "child_process";
 import {
@@ -19,25 +42,53 @@ import { extract } from "tar";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+/** GitHub repository for DNSControl */
 const GITHUB_REPO = "StackExchange/dnscontrol";
+
+/** Base URL for GitHub releases */
 const GITHUB_RELEASES_URL = `https://github.com/${GITHUB_REPO}/releases`;
 
+/**
+ * GitHub release response structure.
+ * @internal
+ */
 interface GitHubRelease {
+  /** Release tag name (e.g., "v4.30.0") */
   tag_name: string;
 }
 
+/**
+ * Information about a platform-specific artifact.
+ * @internal
+ */
 interface ArtifactInfo {
+  /** Filename of the release artifact */
   filename: string;
+  /** Name to use for the downloaded binary */
   binaryName: string;
+  /** Full download URL */
   url: string;
+  /** Archive format */
   archiveType: "tar.gz" | "zip";
 }
 
-// Supported platforms based on DNSControl releases
+/**
+ * Supported platforms for DNSControl binaries.
+ * Maps to Node.js `process.platform` values.
+ */
 type Platform = "darwin" | "linux" | "win32" | "freebsd";
 
 /**
- * Get the latest DNSControl version from GitHub
+ * Fetches the latest DNSControl version from GitHub releases.
+ *
+ * @returns The latest version string (without 'v' prefix)
+ * @throws Error if the GitHub API request fails
+ *
+ * @example
+ * ```typescript
+ * const version = await getLatestVersion();
+ * console.log(version); // "4.30.0"
+ * ```
  */
 async function getLatestVersion(): Promise<string> {
   const response = await fetch(`${GITHUB_RELEASES_URL}/latest`, {
