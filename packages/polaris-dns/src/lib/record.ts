@@ -78,15 +78,15 @@ export interface ServiceRecordOptions {
 
 /**
  * Build modifiers array from options
- * Uses the global CF_PROXY_ON() and CF_PROXY_OFF() functions from DNSControl
+ * Uses the global CF_PROXY_ON and CF_PROXY_OFF constants from DNSControl
  */
 function buildModifiers(options?: RecordOptions): RecordModifier[] {
   const modifiers: RecordModifier[] = [];
 
   if (options?.proxy === "on") {
-    modifiers.push(CF_PROXY_ON());
+    modifiers.push(CF_PROXY_ON);
   } else if (options?.proxy === "off") {
-    modifiers.push(CF_PROXY_OFF());
+    modifiers.push(CF_PROXY_OFF);
   }
 
   if (options?.ttl !== undefined) {

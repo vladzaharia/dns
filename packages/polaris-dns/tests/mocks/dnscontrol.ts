@@ -118,9 +118,9 @@ export const mockDnsControl = {
   NewRegistrar: vi.fn((name: string) => name),
   NewDnsProvider: vi.fn((name: string) => name),
 
-  // Cloudflare proxy functions (return RecordModifier objects)
-  CF_PROXY_ON: vi.fn(() => ({ proxy: true })),
-  CF_PROXY_OFF: vi.fn(() => ({ proxy: false })),
+  // Cloudflare proxy constants (RecordModifier objects)
+  CF_PROXY_ON: { cloudflare_proxy: "on" },
+  CF_PROXY_OFF: { cloudflare_proxy: "off" },
 
   // TTL modifier
   TTL: vi.fn((ttl: number) => ({ ttl })),

@@ -158,14 +158,29 @@ declare function IGNORE(pattern: string, recordTypes?: string, targets?: string)
 declare function IGNORE_NAME(pattern: string, recordTypes?: string): DomainModifier;
 
 // =============================================================================
-// CLOUDFLARE-SPECIFIC FUNCTIONS
+// CLOUDFLARE-SPECIFIC CONSTANTS AND FUNCTIONS
 // =============================================================================
 
-/** CF_PROXY_ON() enables Cloudflare proxy (orange cloud) for a record */
-declare function CF_PROXY_ON(): RecordModifier;
+/** CF_PROXY_ON enables Cloudflare proxy (orange cloud) for a record */
+declare const CF_PROXY_ON: RecordModifier;
 
-/** CF_PROXY_OFF() disables Cloudflare proxy (grey cloud) for a record */
-declare function CF_PROXY_OFF(): RecordModifier;
+/** CF_PROXY_OFF disables Cloudflare proxy (grey cloud) for a record */
+declare const CF_PROXY_OFF: RecordModifier;
+
+/** CF_PROXY_FULL enables Cloudflare proxy with Railgun for a record */
+declare const CF_PROXY_FULL: RecordModifier;
+
+/** CF_PROXY_DEFAULT_OFF sets proxy default off for entire domain */
+declare const CF_PROXY_DEFAULT_OFF: DomainModifier;
+
+/** CF_PROXY_DEFAULT_ON sets proxy default on for entire domain */
+declare const CF_PROXY_DEFAULT_ON: DomainModifier;
+
+/** CF_UNIVERSALSSL_OFF disables Universal SSL for entire domain */
+declare const CF_UNIVERSALSSL_OFF: DomainModifier;
+
+/** CF_UNIVERSALSSL_ON enables Universal SSL for entire domain */
+declare const CF_UNIVERSALSSL_ON: DomainModifier;
 
 /** CF_REDIRECT() creates a 301 permanent redirect using Cloudflare Page Rules */
 declare function CF_REDIRECT(source: string, destination: string): DomainModifier;

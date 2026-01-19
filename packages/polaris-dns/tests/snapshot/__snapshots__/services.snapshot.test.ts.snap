@@ -6,7 +6,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
     "ip": "10.10.0.1",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "router",
@@ -16,7 +16,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
     "ip": "10.10.0.10",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "truenas",
@@ -25,7 +25,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "auth",
@@ -35,7 +35,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "vault",
@@ -45,7 +45,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "docker",
@@ -56,7 +56,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
     "ip": "20.64.176.83",
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "up",
@@ -65,7 +65,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "net",
@@ -75,7 +75,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "atuin",
@@ -85,7 +85,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "cloud",
@@ -95,7 +95,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "docs",
@@ -105,7 +105,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "code",
@@ -115,7 +115,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "*.code",
@@ -125,7 +125,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "mqtt",
@@ -135,7 +135,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "chat",
@@ -146,7 +146,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
     "ip": "10.11.2.123",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "kiwix",
@@ -155,7 +155,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "books",
@@ -165,7 +165,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "calibre",
@@ -175,7 +175,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "manga",
@@ -185,7 +185,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "stash",
@@ -195,7 +195,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "games",
@@ -205,7 +205,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "retro",
@@ -215,7 +215,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "code",
@@ -225,7 +225,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "*.code",
@@ -235,7 +235,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "garage",
@@ -245,7 +245,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "s3",
@@ -255,7 +255,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "*.s3",
@@ -265,7 +265,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "k2v",
@@ -275,7 +275,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "d",
@@ -285,7 +285,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "log",
@@ -295,7 +295,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "ingest.log",
@@ -305,7 +305,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "kasm",
@@ -315,7 +315,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "registry.kasm",
@@ -325,7 +325,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "registry",
@@ -335,7 +335,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "z",
@@ -345,7 +345,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "*.z",
@@ -355,7 +355,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "ai",
@@ -366,7 +366,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "traefik",
@@ -376,7 +376,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "netbootxyz",
@@ -386,7 +386,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "portainer",
@@ -396,7 +396,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "pgadmin",
@@ -405,7 +405,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "media",
@@ -415,7 +415,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "request",
@@ -425,7 +425,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "invite",
@@ -435,7 +435,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "xteve",
@@ -445,7 +445,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "threadfin",
@@ -455,7 +455,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "tunarr",
@@ -465,7 +465,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "logos",
@@ -475,7 +475,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "guide",
@@ -485,7 +485,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "mirror",
@@ -495,7 +495,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "flows",
@@ -505,7 +505,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "metube",
@@ -515,7 +515,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "maintain",
@@ -525,7 +525,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "rec",
@@ -535,7 +535,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "sonarr",
@@ -545,7 +545,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "radarr",
@@ -555,7 +555,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "lidarr",
@@ -565,7 +565,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "readarr",
@@ -575,7 +575,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "prowlarr",
@@ -585,7 +585,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "sabnzbd",
@@ -595,7 +595,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "decryptarr",
@@ -605,7 +605,7 @@ exports[`Service Record Snapshot Tests > All Services Combined > all services co
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "tautulli",
@@ -622,7 +622,7 @@ exports[`Service Record Snapshot Tests > Individual Service Records > custom CNA
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "test-cname",
@@ -638,7 +638,7 @@ exports[`Service Record Snapshot Tests > Individual Service Records > custom IP 
     "ip": "10.0.0.100",
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "test-ip",
@@ -652,7 +652,7 @@ exports[`Service Record Snapshot Tests > Individual Service Records > direct rou
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "test-direct",
@@ -668,7 +668,7 @@ exports[`Service Record Snapshot Tests > Individual Service Records > internal r
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "test-internal",
@@ -682,7 +682,7 @@ exports[`Service Record Snapshot Tests > Individual Service Records > proxied ro
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "test-proxied",
@@ -697,7 +697,7 @@ exports[`Service Record Snapshot Tests > Individual Service Records > tunnel rou
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "test-tunnel",
@@ -712,7 +712,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > gaming servi
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "games",
@@ -722,7 +722,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > gaming servi
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "retro",
@@ -737,7 +737,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "code",
@@ -747,7 +747,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "*.code",
@@ -757,7 +757,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "garage",
@@ -767,7 +767,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "s3",
@@ -777,7 +777,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "*.s3",
@@ -787,7 +787,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "k2v",
@@ -797,7 +797,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "d",
@@ -807,7 +807,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "log",
@@ -817,7 +817,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "ingest.log",
@@ -827,7 +827,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "kasm",
@@ -837,7 +837,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "registry.kasm",
@@ -847,7 +847,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "registry",
@@ -857,7 +857,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "z",
@@ -867,7 +867,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "*.z",
@@ -877,7 +877,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > homelab serv
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "ai",
@@ -893,7 +893,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
     "ip": "10.10.0.1",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "router",
@@ -903,7 +903,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
     "ip": "10.10.0.10",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "truenas",
@@ -912,7 +912,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "auth",
@@ -922,7 +922,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "vault",
@@ -932,7 +932,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "docker",
@@ -943,7 +943,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
     "ip": "20.64.176.83",
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "up",
@@ -952,7 +952,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > infrastructu
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "net",
@@ -968,7 +968,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > internal ser
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "traefik",
@@ -978,7 +978,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > internal ser
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "netbootxyz",
@@ -988,7 +988,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > internal ser
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "portainer",
@@ -998,7 +998,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > internal ser
     "ip": "10.10.1.20",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "pgadmin",
@@ -1012,7 +1012,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > media servic
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "books",
@@ -1022,7 +1022,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > media servic
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "calibre",
@@ -1032,7 +1032,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > media servic
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "manga",
@@ -1042,7 +1042,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > media servic
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "stash",
@@ -1057,7 +1057,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "media",
@@ -1067,7 +1067,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "request",
@@ -1077,7 +1077,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "invite",
@@ -1087,7 +1087,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "xteve",
@@ -1097,7 +1097,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "threadfin",
@@ -1107,7 +1107,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "tunarr",
@@ -1117,7 +1117,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "logos",
@@ -1127,7 +1127,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "guide",
@@ -1137,7 +1137,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "mirror",
@@ -1147,7 +1147,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "flows",
@@ -1157,7 +1157,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "metube",
@@ -1167,7 +1167,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "maintain",
@@ -1177,7 +1177,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "rec",
@@ -1187,7 +1187,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "sonarr",
@@ -1197,7 +1197,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "radarr",
@@ -1207,7 +1207,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "lidarr",
@@ -1217,7 +1217,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "readarr",
@@ -1227,7 +1227,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "prowlarr",
@@ -1237,7 +1237,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "sabnzbd",
@@ -1247,7 +1247,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "decryptarr",
@@ -1257,7 +1257,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > polaris vide
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "tautulli",
@@ -1272,7 +1272,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > productivity
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "atuin",
@@ -1282,7 +1282,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > productivity
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "cloud",
@@ -1292,7 +1292,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > productivity
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "docs",
@@ -1302,7 +1302,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > productivity
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "code",
@@ -1312,7 +1312,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > productivity
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "*.code",
@@ -1322,7 +1322,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > productivity
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "mqtt",
@@ -1332,7 +1332,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > productivity
   {
     "modifiers": [
       {
-        "proxy": true,
+        "cloudflare_proxy": "on",
       },
     ],
     "name": "chat",
@@ -1343,7 +1343,7 @@ exports[`Service Record Snapshot Tests > Service Category Records > productivity
     "ip": "10.11.2.123",
     "modifiers": [
       {
-        "proxy": false,
+        "cloudflare_proxy": "off",
       },
     ],
     "name": "kiwix",
