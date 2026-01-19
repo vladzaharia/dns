@@ -223,13 +223,23 @@ jobs:
         id: existing-rows
         shell: bash
         env:
-          EXISTING_BODY: ${{ steps.find-comment.outputs.comment-body }}
+          GH_TOKEN: ${{ github.token }}
+          COMMENT_ID: ${{ steps.find-comment.outputs.comment-id }}
+          REPO: ${{ github.repository }}
         run: |
+          # Fetch comment body via GitHub API to avoid "Argument list too long" error
+          # The comment body can be very large with many commits tracked
+          if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "" ]; then
+            gh api "/repos/${REPO}/issues/comments/${COMMENT_ID}" --jq '.body' > existing-comment.txt 2>/dev/null || echo "" > existing-comment.txt
+          else
+            echo "" > existing-comment.txt
+          fi
+
           # Extract existing status table rows (excluding header)
           # Expected format: | Commit | Build | Test | Validate | Preview | Changes | (6 columns = 7 pipes)
-          if [ -n "$EXISTING_BODY" ]; then
+          if [ -s "existing-comment.txt" ]; then
             # Extract rows between the table header separator and the next section
-            RAW_ROWS=$(echo "$EXISTING_BODY" | sed -n '/^|--------|/,/^$/p' | grep "^| \[" || echo "")
+            RAW_ROWS=$(cat existing-comment.txt | sed -n '/^|--------|/,/^$/p' | grep "^| \[" || echo "")
 
             # Filter to only include rows with the correct number of columns (7 pipes for 6 columns)
             VALID_ROWS=""
@@ -254,17 +264,14 @@ jobs:
         shell: bash
         env:
           VALIDATE_RESULT: ${{ needs.validate.outputs.validate-result }}
-          VALIDATE_OUTPUT: ${{ needs.validate.outputs.validate-output }}
           VALIDATE_PACKAGES: ${{ needs.validate.outputs.validate-packages }}
           PREPARE_RESULT: ${{ needs.prepare.result }}
           PREVIEW_RESULT: ${{ needs.preview.result }}
           HAS_CHANGES: ${{ needs.preview.outputs.has-changes }}
           CHANGES_SUMMARY: ${{ needs.preview.outputs.changes-summary }}
           CHANGES_TABLE: ${{ needs.preview.outputs.changes-table }}
-          BUILD_OUTPUT: ${{ needs.prepare.outputs.build-output }}
           BUILD_PACKAGES: ${{ needs.prepare.outputs.build-packages }}
           TEST_RESULT: ${{ needs.validate.outputs.test-result }}
-          TEST_OUTPUT: ${{ needs.validate.outputs.test-output }}
           TEST_PACKAGES: ${{ needs.validate.outputs.test-packages }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           RUN_ID: ${{ github.run_id }}
@@ -277,6 +284,11 @@ jobs:
           else
             PREVIEW_OUTPUT=""
           fi
+
+          # These outputs can be large - set defaults and note they're shown in workflow logs
+          BUILD_OUTPUT="See workflow logs for full output"
+          TEST_OUTPUT="See workflow logs for full output"
+          VALIDATE_OUTPUT="See workflow logs for full output"
 
           # Generate status icons
           get_icon() {
