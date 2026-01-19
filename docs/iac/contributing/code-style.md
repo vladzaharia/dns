@@ -13,14 +13,14 @@ Coding standards and conventions for the project.
 
 ### Naming Conventions
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Files | kebab-case | `dns-record.ts` |
-| Classes | PascalCase | `DnsRecordBuilder` |
-| Interfaces | PascalCase | `DnsRecord` |
-| Functions | camelCase | `createARecord` |
-| Constants | UPPER_SNAKE_CASE | `DEFAULT_TTL` |
-| Type Parameters | Single uppercase | `T`, `K`, `V` |
+| Type            | Convention       | Example            |
+| --------------- | ---------------- | ------------------ |
+| Files           | kebab-case       | `dns-record.ts`    |
+| Classes         | PascalCase       | `DnsRecordBuilder` |
+| Interfaces      | PascalCase       | `DnsRecord`        |
+| Functions       | camelCase        | `createARecord`    |
+| Constants       | UPPER_SNAKE_CASE | `DEFAULT_TTL`      |
+| Type Parameters | Single uppercase | `T`, `K`, `V`      |
 
 ### Interfaces vs Types
 
@@ -72,7 +72,7 @@ function createARecord(name, ip) {
 
 ### Functions
 
-```typescript
+````typescript
 /**
  * Brief description of what the function does.
  *
@@ -85,7 +85,7 @@ function createARecord(name, ip) {
  * const result = myFunction("arg");
  * ```
  */
-```
+````
 
 ### Interfaces
 
@@ -181,4 +181,3 @@ throw new Error("Invalid");
 
 - [Development Setup](./development) - Environment setup
 - [Testing Guide](./testing) - Writing tests
-

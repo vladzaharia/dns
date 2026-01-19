@@ -24,12 +24,12 @@ git checkout -b fix/issue-description
 
 ### Branch Naming
 
-| Type | Format | Example |
-|------|--------|---------|
-| Feature | `feature/description` | `feature/add-srv-records` |
-| Fix | `fix/description` | `fix/ttl-validation` |
-| Docs | `docs/description` | `docs/update-readme` |
-| Refactor | `refactor/description` | `refactor/schema-types` |
+| Type     | Format                 | Example                   |
+| -------- | ---------------------- | ------------------------- |
+| Feature  | `feature/description`  | `feature/add-srv-records` |
+| Fix      | `fix/description`      | `fix/ttl-validation`      |
+| Docs     | `docs/description`     | `docs/update-readme`      |
+| Refactor | `refactor/description` | `refactor/schema-types`   |
 
 ## Making Changes
 
@@ -71,15 +71,15 @@ Fixes #123
 
 ### Types
 
-| Type | Description |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `style` | Formatting, no code change |
+| Type       | Description                 |
+| ---------- | --------------------------- |
+| `feat`     | New feature                 |
+| `fix`      | Bug fix                     |
+| `docs`     | Documentation only          |
+| `style`    | Formatting, no code change  |
 | `refactor` | Code change, no new feature |
-| `test` | Adding tests |
-| `chore` | Maintenance |
+| `test`     | Adding tests                |
+| `chore`    | Maintenance                 |
 
 ### Examples
 
@@ -181,4 +181,3 @@ git push origin feature/my-feature
 - [Development Setup](./development) - Environment setup
 - [Code Style](./code-style) - Coding standards
 - [Testing Guide](./testing) - Writing tests
-

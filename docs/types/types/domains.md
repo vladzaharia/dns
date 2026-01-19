@@ -64,7 +64,7 @@ declare function D(
   registrar: string,
   dnsProviders: DnsProviderConfig,
   ...records: DomainModifier[]
-): void
+): void;
 ```
 
 ### DomainModifier
@@ -93,4 +93,3 @@ if (!result.success) {
 - [Record Types](./records) - DNS record types
 - [Provider Types](./providers) - Provider configurations
 - [Validators](../validators/) - Schema validation
-

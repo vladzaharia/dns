@@ -40,14 +40,14 @@ interface ZodIssue {
 
 ## Common Error Codes
 
-| Code | Description | Example |
-|------|-------------|---------|
-| `invalid_type` | Wrong type provided | String instead of number |
-| `invalid_string` | String format invalid | Invalid IPv4 address |
-| `too_small` | Value below minimum | TTL < 1 |
-| `too_big` | Value above maximum | Priority > 65535 |
-| `invalid_enum_value` | Invalid enum value | Unknown record type |
-| `invalid_literal` | Wrong literal value | type: "X" instead of "A" |
+| Code                 | Description           | Example                  |
+| -------------------- | --------------------- | ------------------------ |
+| `invalid_type`       | Wrong type provided   | String instead of number |
+| `invalid_string`     | String format invalid | Invalid IPv4 address     |
+| `too_small`          | Value below minimum   | TTL < 1                  |
+| `too_big`            | Value above maximum   | Priority > 65535         |
+| `invalid_enum_value` | Invalid enum value    | Unknown record type      |
+| `invalid_literal`    | Wrong literal value   | type: "X" instead of "A" |
 
 ## Safe Parsing
 
@@ -64,7 +64,7 @@ const result = aRecordSchema.safeParse({
 
 if (!result.success) {
   // Handle errors without exceptions
-  result.error.issues.forEach(issue => {
+  result.error.issues.forEach((issue) => {
     console.error(`${issue.path.join(".")}: ${issue.message}`);
   });
 } else {
@@ -142,7 +142,7 @@ function validateAndCreate(data: unknown): Result<DnsRecord> {
 
   return {
     ok: false,
-    error: result.error.issues.map(i => i.message).join(", "),
+    error: result.error.issues.map((i) => i.message).join(", "),
   };
 }
 ```
@@ -161,7 +161,7 @@ function validateAll(records: unknown[]): AggregatedResult {
     } else {
       errors.push({
         index,
-        errors: result.error.issues.map(i => i.message),
+        errors: result.error.issues.map((i) => i.message),
       });
     }
   });
@@ -175,4 +175,3 @@ function validateAll(records: unknown[]): AggregatedResult {
 - [Validators Overview](./index) - Validation functions
 - [Record Validators](./records) - Record validation
 - [Zod Documentation](https://zod.dev) - Full Zod docs
-

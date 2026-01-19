@@ -34,11 +34,7 @@ Create a new file in the appropriate category folder:
  */
 
 import { createDomain, CLOUDFLARE, NO_REGISTRAR } from "../../lib/domain.js";
-import {
-  createARecord,
-  createCNAMERecord,
-  createTXTRecord,
-} from "../../lib/record.js";
+import { createARecord, createCNAMERecord, createTXTRecord } from "../../lib/record.js";
 
 const DOMAIN = "my-domain.com";
 
@@ -55,10 +51,10 @@ export function registerMyDomainCom(): void {
 
     // Root domain
     createARecord("@", "192.0.2.1"),
-    
+
     // Subdomains
     createCNAMERecord("www", "@"),
-    
+
     // Verification records
     createTXTRecord("@", "google-site-verification=abc123")
   );
@@ -77,7 +73,7 @@ import { registerMyDomainCom } from "./personal/my-domain-com.js";
 export function registerAllZones(): void {
   // Personal domains
   registerMyDomainCom();
-  
+
   // ... other zones
 }
 ```
@@ -125,12 +121,12 @@ createDomain(
     dnsProvider: CLOUDFLARE,
     ignorePatterns: [],
   },
-  
+
   // Records...
-  
+
   // Ignore Cloudflare-managed records
   IGNORE_NAME("status", "A,CNAME,AAAA"),
-  IGNORE_NAME("*._domainkey"),
+  IGNORE_NAME("*._domainkey")
 );
 ```
 

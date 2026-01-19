@@ -234,6 +234,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run build"
   },
@@ -272,13 +274,10 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "eslint": "^9.39.2",
-    "globals": "^16.0.0",
+    "@vladzaharia/dns-config": "workspace:*",
+    "@vitest/coverage-v8": "^4.0.17",
     "tsup": "^8.3.0",
-    "typescript": "^5.7.0",
-    "typescript-eslint": "^8.53.0",
-    "vitest": "^2.1.0"
+    "vitest": "^4.0.17"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0"

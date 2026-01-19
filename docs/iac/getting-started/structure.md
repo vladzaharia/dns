@@ -129,7 +129,7 @@ import { registerPlrsIm } from "./infrastructure/plrs-im.js";
 export function registerAllZones(): void {
   // Personal domains
   registerVladGg();
-  
+
   // Infrastructure domains
   registerPlrsIm();
 }
@@ -151,22 +151,21 @@ export function registerVladGg(): void {
       dnsProvider: CLOUDFLARE,
     },
     createARecord("@", "192.0.2.1"),
-    createCNAMERecord("www", "@"),
+    createCNAMERecord("www", "@")
   );
 }
 ```
 
 ## Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `pnpm-workspace.yaml` | Defines monorepo packages |
-| `tsconfig.json` | TypeScript compiler options |
-| `webpack.config.js` | Webpack bundler configuration |
-| `creds.json` | Provider credentials (not in git) |
+| File                  | Purpose                           |
+| --------------------- | --------------------------------- |
+| `pnpm-workspace.yaml` | Defines monorepo packages         |
+| `tsconfig.json`       | TypeScript compiler options       |
+| `webpack.config.js`   | Webpack bundler configuration     |
+| `creds.json`          | Provider credentials (not in git) |
 
 ## Next Steps
 
 - [Quick Start](./quick-start) - Create your first zone
 - [Managing Zones](../guides/zones) - Zone configuration guide
-

@@ -6,12 +6,12 @@ The `@vladzaharia/dnscontrol-types` package provides comprehensive TypeScript ty
 
 The types are organized into several categories:
 
-| Category | Description | File |
-|----------|-------------|------|
-| [Record Types](./records) | DNS record function types (A, AAAA, CNAME, MX, etc.) | `types/records.d.ts` |
-| [Domain Types](./domains) | Domain and zone configuration types | `types/base.d.ts` |
-| [Provider Types](./providers) | Provider-specific type definitions | `types/providers/*.d.ts` |
-| [DSL Functions](./dsl) | Global DSL function declarations | `types/*.d.ts` |
+| Category                      | Description                                          | File                     |
+| ----------------------------- | ---------------------------------------------------- | ------------------------ |
+| [Record Types](./records)     | DNS record function types (A, AAAA, CNAME, MX, etc.) | `types/records.d.ts`     |
+| [Domain Types](./domains)     | Domain and zone configuration types                  | `types/base.d.ts`        |
+| [Provider Types](./providers) | Provider-specific type definitions                   | `types/providers/*.d.ts` |
+| [DSL Functions](./dsl)        | Global DSL function declarations                     | `types/*.d.ts`           |
 
 ## Global Type Declarations
 
@@ -31,11 +31,7 @@ declare function NewDnsProvider(name: string, meta?: object): string;
 
 ```typescript
 // Define a domain with records
-declare function D(
-  name: string,
-  registrar: string,
-  ...modifiers: DomainModifier[]
-): void;
+declare function D(name: string, registrar: string, ...modifiers: DomainModifier[]): void;
 
 // Specify the DNS provider
 declare function DnsProvider(provider: string, nsCount?: number): DomainModifier;
@@ -51,14 +47,31 @@ declare function A(name: string, ip: string, ...modifiers: RecordModifier[]): Do
 declare function AAAA(name: string, ip: string, ...modifiers: RecordModifier[]): DomainModifier;
 
 // Alias records
-declare function CNAME(name: string, target: string, ...modifiers: RecordModifier[]): DomainModifier;
-declare function ALIAS(name: string, target: string, ...modifiers: RecordModifier[]): DomainModifier;
+declare function CNAME(
+  name: string,
+  target: string,
+  ...modifiers: RecordModifier[]
+): DomainModifier;
+declare function ALIAS(
+  name: string,
+  target: string,
+  ...modifiers: RecordModifier[]
+): DomainModifier;
 
 // Mail records
-declare function MX(name: string, priority: number, target: string, ...modifiers: RecordModifier[]): DomainModifier;
+declare function MX(
+  name: string,
+  priority: number,
+  target: string,
+  ...modifiers: RecordModifier[]
+): DomainModifier;
 
 // Text records
-declare function TXT(name: string, contents: string | string[], ...modifiers: RecordModifier[]): DomainModifier;
+declare function TXT(
+  name: string,
+  contents: string | string[],
+  ...modifiers: RecordModifier[]
+): DomainModifier;
 
 // And many more...
 ```
@@ -70,10 +83,7 @@ declare function TXT(name: string, contents: string | string[], ...modifiers: Re
 The `DomainModifier` type represents anything that can be passed to the `D()` function:
 
 ```typescript
-type DomainModifier = 
-  | RecordConfig
-  | DomainConfig
-  | (() => void);
+type DomainModifier = RecordConfig | DomainConfig | (() => void);
 ```
 
 ### RecordModifier
@@ -111,14 +121,18 @@ The types support full inference for complex patterns:
 const ttl: DomainModifier = TTL(300);
 
 // Record modifiers are type-checked
-const record = A("@", "192.0.2.1", 
-  TTL(60),           // ✅ Valid modifier
-  { invalid: true }  // ❌ Type error
+const record = A(
+  "@",
+  "192.0.2.1",
+  TTL(60), // ✅ Valid modifier
+  { invalid: true } // ❌ Type error
 );
 
 // Provider-specific modifiers
-const cfRecord = A("@", "192.0.2.1",
-  CF_PROXY_ON,       // ✅ Cloudflare proxy modifier
+const cfRecord = A(
+  "@",
+  "192.0.2.1",
+  CF_PROXY_ON // ✅ Cloudflare proxy modifier
 );
 ```
 
@@ -133,11 +147,7 @@ interface CustomRecordModifier extends RecordModifier {
 }
 
 // Use in your configuration
-function createRecord(
-  name: string, 
-  ip: string, 
-  options: CustomRecordModifier
-): DomainModifier {
+function createRecord(name: string, ip: string, options: CustomRecordModifier): DomainModifier {
   return A(name, ip, TTL(options.ttl ?? 300));
 }
 ```
@@ -148,4 +158,3 @@ function createRecord(
 - [Domain Types](./domains) - Domain configuration types
 - [Provider Types](./providers) - Provider-specific types
 - [DSL Functions](./dsl) - Complete DSL function reference
-

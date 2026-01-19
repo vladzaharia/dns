@@ -45,17 +45,16 @@
  */
 
 // Re-export all schemas as a namespace
-import * as schemas from './schemas/index.js';
+import * as schemas from "./schemas/index.js";
 export { schemas };
 
 // Re-export all validators as a namespace
-import * as validators from './validators/index.js';
+import * as validators from "./validators/index.js";
 export { validators };
 
 // Also export individual items for tree-shaking
-export * from './schemas/index.js';
-export * from './validators/index.js';
+export * from "./schemas/index.js";
+export * from "./validators/index.js";
 
 // Export Zod for convenience (users don't need to install it separately)
-export { z } from 'zod';
-
+export { z } from "zod";

@@ -108,6 +108,7 @@ caaRecordSchema.parse({
 ```
 
 **CAA Tags:**
+
 - `issue` - Authorize CA for domain
 - `issuewild` - Authorize CA for wildcards
 - `iodef` - Incident reporting URL
@@ -146,4 +147,3 @@ recordSchema.parse({ type: "CNAME", name: "www", target: "@" });
 - [Base Schemas](./base) - Core validation schemas
 - [Record Types](../types/records) - Type definitions
 - [Validators](../validators/) - Validation utilities
-

@@ -10,15 +10,15 @@ The Domain Name System (DNS) translates human-readable domain names (like `examp
 
 ### Record Types
 
-| Type | Purpose | Example |
-|------|---------|---------|
-| **A** | Maps name to IPv4 address | `@ → 192.0.2.1` |
-| **AAAA** | Maps name to IPv6 address | `@ → 2001:db8::1` |
-| **CNAME** | Alias to another name | `www → @` |
-| **MX** | Mail server | `@ → mail.example.com` |
-| **TXT** | Text data (SPF, DKIM, etc.) | `@ → "v=spf1 ..."` |
-| **CAA** | Certificate authority authorization | `@ → letsencrypt.org` |
-| **SRV** | Service location | `_sip._tcp → sipserver` |
+| Type      | Purpose                             | Example                 |
+| --------- | ----------------------------------- | ----------------------- |
+| **A**     | Maps name to IPv4 address           | `@ → 192.0.2.1`         |
+| **AAAA**  | Maps name to IPv6 address           | `@ → 2001:db8::1`       |
+| **CNAME** | Alias to another name               | `www → @`               |
+| **MX**    | Mail server                         | `@ → mail.example.com`  |
+| **TXT**   | Text data (SPF, DKIM, etc.)         | `@ → "v=spf1 ..."`      |
+| **CAA**   | Certificate authority authorization | `@ → letsencrypt.org`   |
+| **SRV**   | Service location                    | `_sip._tcp → sipserver` |
 
 ### TTL (Time to Live)
 
@@ -83,6 +83,7 @@ DNS Provider API (Cloudflare, etc.)
 ### Zones
 
 A zone represents a DNS domain. Each zone file:
+
 - Defines the domain name
 - Specifies the registrar and DNS provider
 - Contains all DNS records for that domain
@@ -90,6 +91,7 @@ A zone represents a DNS domain. Each zone file:
 ### Services
 
 Services are reusable definitions that can be deployed across multiple domains:
+
 - Define once, use everywhere
 - Consistent subdomain naming
 - Automatic record generation
@@ -97,6 +99,7 @@ Services are reusable definitions that can be deployed across multiple domains:
 ### Servers
 
 The server registry provides:
+
 - Centralized IP address management
 - Hostname standardization
 - Location-based organization
@@ -104,6 +107,7 @@ The server registry provides:
 ### Providers
 
 Polaris DNS supports multiple DNS providers:
+
 - **Cloudflare** - Primary provider with proxy support
 - **Route53** - AWS DNS
 - **Google Cloud DNS** - GCP DNS
@@ -113,4 +117,3 @@ Polaris DNS supports multiple DNS providers:
 - [DNS Basics](./dns-basics) - Deep dive into DNS
 - [DNSControl Overview](./dnscontrol) - Learn DNSControl DSL
 - [Architecture](./architecture) - Detailed architecture guide
-

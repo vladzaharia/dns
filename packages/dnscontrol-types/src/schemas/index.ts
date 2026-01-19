@@ -81,7 +81,7 @@ export {
   type PseudoRecordType,
   AllRecordTypesSchema,
   type AllRecordTypes,
-} from './base.js';
+} from "./base.js";
 
 // DNS validation schemas
 export {
@@ -107,7 +107,7 @@ export {
   type HexString,
   Base64StringSchema,
   type Base64String,
-} from './dns.js';
+} from "./dns.js";
 
 // Record schemas
 export {
@@ -165,7 +165,7 @@ export {
   type FrameRecord,
   DnsRecordSchema,
   type DnsRecord,
-} from './records.js';
+} from "./records.js";
 
 // Builder configuration schemas
 export {
@@ -187,7 +187,7 @@ export {
   type LocBuilderDDConfig,
   LocBuilderStrConfigSchema,
   type LocBuilderStrConfig,
-} from './builders.js';
+} from "./builders.js";
 
 // Domain configuration schemas
 export {
@@ -205,5 +205,4 @@ export {
   type DefaultsConfig,
   DnsControlConfigSchema,
   type DnsControlConfig,
-} from './domain.js';
-
+} from "./domain.js";

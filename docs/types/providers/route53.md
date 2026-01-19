@@ -56,15 +56,17 @@ Route53 supports alias records to AWS resources:
 
 ```typescript
 // Alias to CloudFront
-ALIAS("@", "d111111abcdef8.cloudfront.net.", ROUTE53_ALIAS("Z2FDTNDATAQYW2"))
+ALIAS("@", "d111111abcdef8.cloudfront.net.", ROUTE53_ALIAS("Z2FDTNDATAQYW2"));
 
 // Alias to ELB
-ALIAS("api", "my-loadbalancer-1234567890.us-east-1.elb.amazonaws.com.", 
-  ROUTE53_ALIAS("Z35SXDOTRQ7X7K"))
+ALIAS(
+  "api",
+  "my-loadbalancer-1234567890.us-east-1.elb.amazonaws.com.",
+  ROUTE53_ALIAS("Z35SXDOTRQ7X7K")
+);
 
 // Alias to S3 website
-ALIAS("www", "s3-website-us-east-1.amazonaws.com.", 
-  ROUTE53_ALIAS("Z3AQBSTGFYJSTF"))
+ALIAS("www", "s3-website-us-east-1.amazonaws.com.", ROUTE53_ALIAS("Z3AQBSTGFYJSTF"));
 ```
 
 ### Health Checks
@@ -72,7 +74,7 @@ ALIAS("www", "s3-website-us-east-1.amazonaws.com.",
 Route53 can perform health checks:
 
 ```typescript
-A("@", "192.0.2.1", ROUTE53_HEALTH_CHECK_ID("abcd1234-5678-90ab-cdef-example"))
+A("@", "192.0.2.1", ROUTE53_HEALTH_CHECK_ID("abcd1234-5678-90ab-cdef-example"));
 ```
 
 ### Geolocation Routing
@@ -81,28 +83,28 @@ Route traffic based on user location:
 
 ```typescript
 // US traffic
-A("@", "192.0.2.1", ROUTE53_GEOLOCATION_COUNTRY("US"))
+A("@", "192.0.2.1", ROUTE53_GEOLOCATION_COUNTRY("US"));
 
 // European traffic
-A("@", "192.0.2.2", ROUTE53_GEOLOCATION_CONTINENT("EU"))
+A("@", "192.0.2.2", ROUTE53_GEOLOCATION_CONTINENT("EU"));
 
 // Default
-A("@", "192.0.2.3", ROUTE53_GEOLOCATION_DEFAULT())
+A("@", "192.0.2.3", ROUTE53_GEOLOCATION_DEFAULT());
 ```
 
 ### Supported Record Types
 
-| Type | Notes |
-|------|-------|
-| A | IPv4 address |
-| AAAA | IPv6 address |
-| CNAME | Aliases |
-| MX | Mail exchange |
-| TXT | Text records |
-| CAA | CA authorization |
-| SRV | Service discovery |
-| NS | Nameservers |
-| ALIAS | AWS-specific |
+| Type  | Notes             |
+| ----- | ----------------- |
+| A     | IPv4 address      |
+| AAAA  | IPv6 address      |
+| CNAME | Aliases           |
+| MX    | Mail exchange     |
+| TXT   | Text records      |
+| CAA   | CA authorization  |
+| SRV   | Service discovery |
+| NS    | Nameservers       |
+| ALIAS | AWS-specific      |
 
 ## IAM Permissions
 
@@ -161,4 +163,3 @@ D("example.com", REG_NONE, DnsProvider(R53),
 - [Provider Support](./index) - All providers
 - [Cloudflare](./cloudflare) - Cloudflare provider
 - [AWS Route53 Docs](https://docs.aws.amazon.com/route53/)
-

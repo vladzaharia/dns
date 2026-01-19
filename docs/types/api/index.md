@@ -54,45 +54,41 @@ import {
 Validation utility functions.
 
 ```typescript
-import {
-  validateRecord,
-  validateDomain,
-  validateConfig,
-} from "@vladzaharia/dnscontrol-types";
+import { validateRecord, validateDomain, validateConfig } from "@vladzaharia/dnscontrol-types";
 ```
 
 ## Quick Reference
 
 ### Record Types
 
-| Type | Schema | Description |
-|------|--------|-------------|
-| `ARecord` | `aRecordSchema` | IPv4 address record |
-| `AAAARecord` | `aaaaRecordSchema` | IPv6 address record |
-| `CNAMERecord` | `cnameRecordSchema` | Canonical name |
-| `MXRecord` | `mxRecordSchema` | Mail exchange |
-| `TXTRecord` | `txtRecordSchema` | Text record |
-| `CAARecord` | `caaRecordSchema` | CA authorization |
-| `SRVRecord` | `srvRecordSchema` | Service location |
+| Type          | Schema              | Description         |
+| ------------- | ------------------- | ------------------- |
+| `ARecord`     | `aRecordSchema`     | IPv4 address record |
+| `AAAARecord`  | `aaaaRecordSchema`  | IPv6 address record |
+| `CNAMERecord` | `cnameRecordSchema` | Canonical name      |
+| `MXRecord`    | `mxRecordSchema`    | Mail exchange       |
+| `TXTRecord`   | `txtRecordSchema`   | Text record         |
+| `CAARecord`   | `caaRecordSchema`   | CA authorization    |
+| `SRVRecord`   | `srvRecordSchema`   | Service location    |
 
 ### Base Schemas
 
-| Schema | Validates |
-|--------|-----------|
-| `ipv4Schema` | IPv4 addresses |
-| `ipv6Schema` | IPv6 addresses |
-| `hostnameSchema` | DNS hostnames |
-| `ttlSchema` | TTL values (1-604800) |
-| `prioritySchema` | Priority (0-65535) |
-| `portSchema` | Port numbers (0-65535) |
+| Schema           | Validates              |
+| ---------------- | ---------------------- |
+| `ipv4Schema`     | IPv4 addresses         |
+| `ipv6Schema`     | IPv6 addresses         |
+| `hostnameSchema` | DNS hostnames          |
+| `ttlSchema`      | TTL values (1-604800)  |
+| `prioritySchema` | Priority (0-65535)     |
+| `portSchema`     | Port numbers (0-65535) |
 
 ### Domain Schemas
 
-| Schema | Description |
-|--------|-------------|
-| `domainSchema` | Complete domain config |
-| `domainModifierSchema` | Domain modifiers |
-| `unmanagedSchema` | Ignore patterns |
+| Schema                 | Description            |
+| ---------------------- | ---------------------- |
+| `domainSchema`         | Complete domain config |
+| `domainModifierSchema` | Domain modifiers       |
+| `unmanagedSchema`      | Ignore patterns        |
 
 ## Usage Examples
 
@@ -150,4 +146,3 @@ API documentation is automatically generated from TSDoc comments using TypeDoc.
 - [Types Overview](../types/) - Type documentation
 - [Schemas Overview](../schemas/) - Schema documentation
 - [Validators Overview](../validators/) - Validation utilities
-

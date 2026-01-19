@@ -36,11 +36,11 @@ interface Service {
 type RoutingStrategy = "direct" | "tunnel" | "proxied";
 ```
 
-| Strategy | Description | Record Type |
-|----------|-------------|-------------|
-| `direct` | Direct to server IP | A record |
+| Strategy  | Description              | Record Type         |
+| --------- | ------------------------ | ------------------- |
+| `direct`  | Direct to server IP      | A record            |
 | `proxied` | Through Cloudflare proxy | A record + CF proxy |
-| `tunnel` | Through Azure tunnel | CNAME to tunnel |
+| `tunnel`  | Through Azure tunnel     | CNAME to tunnel     |
 
 ### ServiceCategory
 

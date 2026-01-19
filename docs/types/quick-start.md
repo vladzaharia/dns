@@ -51,7 +51,10 @@ var DNS_CLOUDFLARE = NewDnsProvider("cloudflare");
 // Domain: example.com
 // =============================================================================
 
-D("example.com", REG_NONE, DnsProvider(DNS_CLOUDFLARE),
+D(
+  "example.com",
+  REG_NONE,
+  DnsProvider(DNS_CLOUDFLARE),
   // Root domain
   A("@", "192.0.2.1"),
   AAAA("@", "2001:db8::1"),
@@ -78,7 +81,11 @@ D("example.com", REG_NONE, DnsProvider(DNS_CLOUDFLARE),
 For runtime validation, import the Zod schemas:
 
 ```typescript
-import { ARecordSchema, validateRecord, formatValidationErrors } from "@vladzaharia/dnscontrol-types";
+import {
+  ARecordSchema,
+  validateRecord,
+  formatValidationErrors,
+} from "@vladzaharia/dnscontrol-types";
 
 // Validate a single record
 const aRecord = {
@@ -118,15 +125,18 @@ dnscontrol push --config dist/dnsconfig.js
 With types installed, you get:
 
 ### ✅ Autocomplete
+
 Your IDE suggests valid record types, functions, and parameters.
 
 ### ✅ Error Detection
+
 ```typescript
-A("@", "not-an-ip");  // Error: Argument is not a valid IPv4 address
-MX("@", "high");      // Error: Priority must be a number
+A("@", "not-an-ip"); // Error: Argument is not a valid IPv4 address
+MX("@", "high"); // Error: Priority must be a number
 ```
 
 ### ✅ Documentation on Hover
+
 Hover over any function to see its documentation and parameters.
 
 ## Common Patterns
@@ -134,19 +144,25 @@ Hover over any function to see its documentation and parameters.
 ### Using TTL
 
 ```typescript
-D("example.com", REG_NONE, DnsProvider(DNS_CLOUDFLARE),
-  DefaultTTL(3600),  // Set default TTL for all records
+D(
+  "example.com",
+  REG_NONE,
+  DnsProvider(DNS_CLOUDFLARE),
+  DefaultTTL(3600), // Set default TTL for all records
   A("@", "192.0.2.1"),
-  A("fast", "192.0.2.2", TTL(60)),  // Override for specific record
+  A("fast", "192.0.2.2", TTL(60)) // Override for specific record
 );
 ```
 
 ### Cloudflare Proxy
 
 ```typescript
-D("example.com", REG_NONE, DnsProvider(DNS_CLOUDFLARE),
-  A("@", "192.0.2.1", CF_PROXY_ON),   // Proxied through Cloudflare
-  A("api", "192.0.2.2", CF_PROXY_OFF), // Direct connection
+D(
+  "example.com",
+  REG_NONE,
+  DnsProvider(DNS_CLOUDFLARE),
+  A("@", "192.0.2.1", CF_PROXY_ON), // Proxied through Cloudflare
+  A("api", "192.0.2.2", CF_PROXY_OFF) // Direct connection
 );
 ```
 
@@ -156,9 +172,11 @@ D("example.com", REG_NONE, DnsProvider(DNS_CLOUDFLARE),
 var DNS_CLOUDFLARE = NewDnsProvider("cloudflare");
 var DNS_ROUTE53 = NewDnsProvider("route53");
 
-D("example.com", REG_NONE, 
+D(
+  "example.com",
+  REG_NONE,
   DnsProvider(DNS_CLOUDFLARE),
-  DnsProvider(DNS_ROUTE53),  // Replicate to Route53
+  DnsProvider(DNS_ROUTE53), // Replicate to Route53
   A("@", "192.0.2.1")
 );
 ```

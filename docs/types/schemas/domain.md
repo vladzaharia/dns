@@ -89,13 +89,11 @@ const domain = domainWithRecordsSchema.parse({
   name: "example.com",
   registrar: "none",
   dnsProviders: { cloudflare: 1 },
-  records: [
-    { type: "A", name: "@", address: "192.0.2.1" },
-  ],
+  records: [{ type: "A", name: "@", address: "192.0.2.1" }],
 });
 
 // Records are typed as union of all record types
-domain.records.forEach(record => {
+domain.records.forEach((record) => {
   if (record.type === "A") {
     console.log(record.address);
   }
@@ -112,9 +110,7 @@ const config = dnsConfigSchema.parse({
     { name: "none", type: "NONE" },
     { name: "cloudflare", type: "CLOUDFLARE" },
   ],
-  dns_providers: [
-    { name: "cloudflare", type: "CLOUDFLARE" },
-  ],
+  dns_providers: [{ name: "cloudflare", type: "CLOUDFLARE" }],
   domains: [
     {
       name: "example.com",
@@ -146,4 +142,3 @@ if (!result.success) {
 - [Base Schemas](./base) - Core schemas
 - [Record Schemas](./records) - Record validation
 - [Domain Types](../types/domains) - Type definitions
-

@@ -7,9 +7,14 @@
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview",
-    "typedoc": "typedoc --options typedoc.json"
+    "typedoc": "typedoc --options typedoc.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{md,ts,mts,json}\"",
+    "format:check": "prettier --check \"**/*.{md,ts,mts,json}\""
   },
   "devDependencies": {
+    "@vladzaharia/dns-config": "workspace:*",
     "typedoc": "^0.28.16",
     "typedoc-plugin-markdown": "^4.9.0",
     "vitepress": "^1.6.4"

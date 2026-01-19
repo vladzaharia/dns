@@ -6,13 +6,13 @@ Complete API reference for Polaris DNS.
 
 Polaris DNS provides a type-safe API for managing DNS records. The API is organized into several modules:
 
-| Module | Description |
-|--------|-------------|
-| [Domain Builders](./domains) | Create and configure domains |
-| [Record Builders](./records) | Create DNS records |
+| Module                       | Description                      |
+| ---------------------------- | -------------------------------- |
+| [Domain Builders](./domains) | Create and configure domains     |
+| [Record Builders](./records) | Create DNS records               |
 | [Server Registry](./servers) | Server definitions and utilities |
-| [Service Types](./services) | Service configuration types |
-| [Mail Providers](./mail) | Email provider helpers |
+| [Service Types](./services)  | Service configuration types      |
+| [Mail Providers](./mail)     | Email provider helpers           |
 
 ## Quick Reference
 
@@ -103,12 +103,12 @@ createFastmailSubdomainRecords(domain: string, subdomain: string): DomainModifie
 
 ```typescript
 interface DomainBuilderOptions {
-  name: string;              // Domain name
-  category: DomainCategory;  // Domain category
-  registrar?: unknown;       // Registrar (default: NO_REGISTRAR)
-  dnsProvider?: unknown;     // DNS provider (default: CLOUDFLARE)
+  name: string; // Domain name
+  category: DomainCategory; // Domain category
+  registrar?: unknown; // Registrar (default: NO_REGISTRAR)
+  dnsProvider?: unknown; // DNS provider (default: CLOUDFLARE)
   ignorePatterns?: string[]; // Patterns to ignore
-  defaultTTL?: number;       // Default TTL (default: 1)
+  defaultTTL?: number; // Default TTL (default: 1)
 }
 ```
 
@@ -116,8 +116,8 @@ interface DomainBuilderOptions {
 
 ```typescript
 interface RecordOptions {
-  proxy?: ProxyStatus;  // Cloudflare proxy ("on" | "off" | "full")
-  ttl?: number;         // TTL in seconds
+  proxy?: ProxyStatus; // Cloudflare proxy ("on" | "off" | "full")
+  ttl?: number; // TTL in seconds
 }
 ```
 
@@ -125,9 +125,9 @@ interface RecordOptions {
 
 ```typescript
 interface ServiceRecordOptions {
-  proxy?: ProxyStatus;  // Cloudflare proxy
-  useTunnel?: boolean;  // Use tunnel instead of direct
-  ttl?: number;         // Custom TTL
+  proxy?: ProxyStatus; // Cloudflare proxy
+  useTunnel?: boolean; // Use tunnel instead of direct
+  ttl?: number; // Custom TTL
 }
 ```
 
@@ -178,4 +178,3 @@ type ServerName =
 
 - [Domain Builders](./domains) - Detailed domain API
 - [Record Builders](./records) - Detailed record API
-

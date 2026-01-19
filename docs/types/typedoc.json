@@ -1,14 +1,10 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "name": "API Reference",
-  "entryPoints": [
-    "../../packages/dnscontrol-types/src/index.ts"
-  ],
+  "entryPoints": ["../../packages/dnscontrol-types/src/index.ts"],
   "entryPointStrategy": "expand",
   "out": "./api/generated",
-  "plugin": [
-    "typedoc-plugin-markdown"
-  ],
+  "plugin": ["typedoc-plugin-markdown"],
   "tsconfig": "../../packages/dnscontrol-types/tsconfig.json",
   "readme": "none",
   "excludePrivate": true,
@@ -26,24 +22,7 @@
     "Utilities",
     "*"
   ],
-  "sort": [
-    "alphabetical",
-    "source-order"
-  ],
-  "kindSortOrder": [
-    "Function",
-    "Variable",
-    "TypeAlias",
-    "Interface",
-    "Class",
-    "Enum"
-  ],
-  "groupOrder": [
-    "Functions",
-    "Variables",
-    "Type Aliases",
-    "Interfaces",
-    "Classes",
-    "Enums"
-  ]
+  "sort": ["alphabetical", "source-order"],
+  "kindSortOrder": ["Function", "Variable", "TypeAlias", "Interface", "Class", "Enum"],
+  "groupOrder": ["Functions", "Variables", "Type Aliases", "Interfaces", "Classes", "Enums"]
 }

@@ -9,18 +9,15 @@ API reference for domain builder functions.
 Creates a DNS domain with the specified configuration and records.
 
 ```typescript
-function createDomain(
-  options: DomainBuilderOptions,
-  ...records: DomainModifier[]
-): void
+function createDomain(options: DomainBuilderOptions, ...records: DomainModifier[]): void;
 ```
 
 #### Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `options` | `DomainBuilderOptions` | Domain configuration options |
-| `records` | `DomainModifier[]` | DNS records to add to the domain |
+| Parameter | Type                   | Description                      |
+| --------- | ---------------------- | -------------------------------- |
+| `options` | `DomainBuilderOptions` | Domain configuration options     |
+| `records` | `DomainModifier[]`     | DNS records to add to the domain |
 
 #### Example
 
@@ -36,7 +33,7 @@ createDomain(
     dnsProvider: CLOUDFLARE,
   },
   createARecord("@", "192.0.2.1"),
-  createCNAMERecord("www", "@"),
+  createCNAMERecord("www", "@")
 );
 ```
 

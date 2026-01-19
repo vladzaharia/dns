@@ -6,9 +6,9 @@
  * @packageDocumentation
  */
 
-import { z } from 'zod';
-import { TtlSchema, RecordMetaSchema } from './base.js';
-import { DomainNameSchema } from './dns.js';
+import { z } from "zod";
+import { TtlSchema, RecordMetaSchema } from "./base.js";
+import { DomainNameSchema } from "./dns.js";
 
 // =============================================================================
 // DOMAIN CONFIGURATION
@@ -123,4 +123,3 @@ export const DnsControlConfigSchema = z.object({
   defaults: DefaultsConfigSchema.optional(),
 });
 export type DnsControlConfig = z.infer<typeof DnsControlConfigSchema>;
-

@@ -49,22 +49,22 @@ export const SERVICES: Service[] = [
 
 ### Service Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `name` | `string` | Human-readable service name |
-| `subdomain` | `string` | Subdomain for the service |
-| `server` | `ServerName` | Target server from registry |
-| `routing` | `RoutingStrategy` | How traffic is routed |
-| `internal` | `boolean?` | Internal-only service |
-| `internalSuffix` | `string?` | Custom internal suffix |
+| Property         | Type              | Description                 |
+| ---------------- | ----------------- | --------------------------- |
+| `name`           | `string`          | Human-readable service name |
+| `subdomain`      | `string`          | Subdomain for the service   |
+| `server`         | `ServerName`      | Target server from registry |
+| `routing`        | `RoutingStrategy` | How traffic is routed       |
+| `internal`       | `boolean?`        | Internal-only service       |
+| `internalSuffix` | `string?`         | Custom internal suffix      |
 
 ### Routing Strategies
 
-| Strategy | Description | Record Type |
-|----------|-------------|-------------|
-| `direct` | Direct to server IP | A record |
+| Strategy  | Description              | Record Type         |
+| --------- | ------------------------ | ------------------- |
+| `direct`  | Direct to server IP      | A record            |
 | `proxied` | Through Cloudflare proxy | A record + CF proxy |
-| `tunnel` | Through Azure tunnel | CNAME to tunnel |
+| `tunnel`  | Through Azure tunnel     | CNAME to tunnel     |
 
 ## Using Services in Zones
 
@@ -92,7 +92,7 @@ export function registerVladGg(): void {
         proxy: service.routing === "proxied" ? "on" : "off",
         useTunnel: service.routing === "tunnel",
       })
-    ),
+    )
 
     // Other records...
   );
@@ -103,15 +103,13 @@ export function registerVladGg(): void {
 
 ```typescript
 // Deploy only specific services
-const selectedServices = INFRASTRUCTURE_SERVICES.filter(
-  (s) => ["traefik", "portainer"].includes(s.subdomain)
+const selectedServices = INFRASTRUCTURE_SERVICES.filter((s) =>
+  ["traefik", "portainer"].includes(s.subdomain)
 );
 
 createDomain(
   { name: "example.com", category: "personal" },
-  ...selectedServices.map((service) =>
-    createServiceRecord(service.subdomain, service.server)
-  )
+  ...selectedServices.map((service) => createServiceRecord(service.subdomain, service.server))
 );
 ```
 
@@ -120,6 +118,7 @@ createDomain(
 ### Infrastructure Services
 
 Core infrastructure components:
+
 - Reverse proxies (Traefik, Nginx)
 - Container management (Portainer)
 - Monitoring (Grafana, Prometheus)
@@ -127,6 +126,7 @@ Core infrastructure components:
 ### Media Services
 
 Media and streaming:
+
 - Plex, Jellyfin
 - Sonarr, Radarr
 - Overseerr
@@ -134,6 +134,7 @@ Media and streaming:
 ### Productivity Services
 
 Productivity tools:
+
 - Nextcloud
 - Vaultwarden
 - Bookstack

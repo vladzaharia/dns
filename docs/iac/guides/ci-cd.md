@@ -4,11 +4,11 @@ Polaris DNS uses GitHub Actions for automated testing and deployment.
 
 ## Workflow Overview
 
-| Workflow | Trigger | Purpose |
-|----------|---------|---------|
-| **Preview** | Pull Request | Show DNS changes |
-| **Deploy** | Push to main | Apply DNS changes |
-| **Validate** | All pushes | Type checking & linting |
+| Workflow     | Trigger      | Purpose                 |
+| ------------ | ------------ | ----------------------- |
+| **Preview**  | Pull Request | Show DNS changes        |
+| **Deploy**   | Push to main | Apply DNS changes       |
+| **Validate** | All pushes   | Type checking & linting |
 
 ## GitHub Actions Setup
 
@@ -16,10 +16,10 @@ Polaris DNS uses GitHub Actions for automated testing and deployment.
 
 Configure these secrets in your repository:
 
-| Secret | Description |
-|--------|-------------|
-| `CLOUDFLARE_API_TOKEN` | Cloudflare API token |
-| `AWS_ACCESS_KEY_ID` | AWS access key (if using Route53) |
+| Secret                  | Description                       |
+| ----------------------- | --------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token              |
+| `AWS_ACCESS_KEY_ID`     | AWS access key (if using Route53) |
 | `AWS_SECRET_ACCESS_KEY` | AWS secret key (if using Route53) |
 
 ### Preview Workflow
@@ -32,7 +32,7 @@ name: DNS Preview
 on:
   pull_request:
     paths:
-      - 'packages/polaris-dns/**'
+      - "packages/polaris-dns/**"
 
 jobs:
   preview:
@@ -46,8 +46,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - run: pnpm install
 
@@ -81,7 +81,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/polaris-dns/**'
+      - "packages/polaris-dns/**"
 
 jobs:
   deploy:
@@ -96,8 +96,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - run: pnpm install
 
@@ -213,4 +213,3 @@ Done. 1 correction.
 
 - [Managing Zones](./zones) - Zone configuration
 - [Contributing](../../contributing/) - Development workflow
-

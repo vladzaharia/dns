@@ -4,11 +4,11 @@ Polaris DNS provides built-in support for configuring email providers with prope
 
 ## Supported Providers
 
-| Provider | Use Case | Module |
-|----------|----------|--------|
-| **Fastmail** | Personal email | `mail/fastmail.ts` |
-| **Cloudflare Email Routing** | Email forwarding | `mail/cloudflare.ts` |
-| **Postal** | Self-hosted email | `mail/postal.ts` |
+| Provider                     | Use Case          | Module               |
+| ---------------------------- | ----------------- | -------------------- |
+| **Fastmail**                 | Personal email    | `mail/fastmail.ts`   |
+| **Cloudflare Email Routing** | Email forwarding  | `mail/cloudflare.ts` |
+| **Postal**                   | Self-hosted email | `mail/postal.ts`     |
 
 ## Fastmail
 
@@ -21,10 +21,10 @@ import { createFastmailRecords } from "../../mail/fastmail.js";
 
 createDomain(
   { name: "example.com", category: "personal" },
-  
+
   // Add all Fastmail records
-  ...createFastmailRecords({ domain: "example.com" }),
-  
+  ...createFastmailRecords({ domain: "example.com" })
+
   // Other records...
 );
 ```
@@ -35,13 +35,13 @@ createDomain(
 interface FastmailOptions {
   /** The domain name (required for DKIM) */
   domain: string;
-  
+
   /** Root record name (default: "@") */
   rootRecord?: string;
-  
+
   /** Include wildcard MX records (default: true) */
   includeWildcard?: boolean;
-  
+
   /** DMARC policy (default: "none") */
   dmarcPolicy?: "none" | "quarantine" | "reject";
 }
@@ -51,17 +51,17 @@ interface FastmailOptions {
 
 `createFastmailRecords()` generates:
 
-| Record | Type | Purpose |
-|--------|------|---------|
-| `mail` | CNAME | Webmail access |
-| `@` | MX (10) | Primary mail server |
-| `@` | MX (20) | Secondary mail server |
-| `*` | MX (10, 20) | Subdomain mail |
-| `@` | TXT | SPF record |
-| `_dmarc` | TXT | DMARC policy |
-| `fm1._domainkey` | CNAME | DKIM key 1 |
-| `fm2._domainkey` | CNAME | DKIM key 2 |
-| `fm3._domainkey` | CNAME | DKIM key 3 |
+| Record           | Type        | Purpose               |
+| ---------------- | ----------- | --------------------- |
+| `mail`           | CNAME       | Webmail access        |
+| `@`              | MX (10)     | Primary mail server   |
+| `@`              | MX (20)     | Secondary mail server |
+| `*`              | MX (10, 20) | Subdomain mail        |
+| `@`              | TXT         | SPF record            |
+| `_dmarc`         | TXT         | DMARC policy          |
+| `fm1._domainkey` | CNAME       | DKIM key 1            |
+| `fm2._domainkey` | CNAME       | DKIM key 2            |
+| `fm3._domainkey` | CNAME       | DKIM key 3            |
 
 ### Subdomain Email
 
@@ -72,9 +72,9 @@ import { createFastmailSubdomainRecords } from "../../mail/fastmail.js";
 
 createDomain(
   { name: "example.com", category: "personal" },
-  
+
   // Email for notifications.example.com
-  ...createFastmailSubdomainRecords("example.com", "notifications"),
+  ...createFastmailSubdomainRecords("example.com", "notifications")
 );
 ```
 
@@ -89,18 +89,18 @@ import { createCloudflareEmailRecords } from "../../mail/cloudflare.js";
 
 createDomain(
   { name: "example.com", category: "personal" },
-  
+
   // Add Cloudflare Email Routing records
-  ...createCloudflareEmailRecords(),
+  ...createCloudflareEmailRecords()
 );
 ```
 
 ### Generated Records
 
-| Record | Type | Purpose |
-|--------|------|---------|
-| `@` | MX | Cloudflare mail servers |
-| `@` | TXT | SPF for Cloudflare |
+| Record | Type | Purpose                 |
+| ------ | ---- | ----------------------- |
+| `@`    | MX   | Cloudflare mail servers |
+| `@`    | TXT  | SPF for Cloudflare      |
 
 ## Postal (Self-Hosted)
 
@@ -113,13 +113,13 @@ import { createPostalRecords } from "../../mail/postal.js";
 
 createDomain(
   { name: "example.com", category: "infrastructure" },
-  
+
   ...createPostalRecords({
     domain: "example.com",
     postalHostname: "postal.example.com",
     returnPath: "rp.postal.example.com",
     dkimKey: "MIIBIjANBgkq...",
-  }),
+  })
 );
 ```
 

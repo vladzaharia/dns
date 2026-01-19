@@ -9,7 +9,7 @@ API reference for server registry and utilities.
 Get a server by name.
 
 ```typescript
-function getServer(name: ServerName): Server
+function getServer(name: ServerName): Server;
 ```
 
 ### getServerIP
@@ -17,7 +17,7 @@ function getServer(name: ServerName): Server
 Get the IP address for a server.
 
 ```typescript
-function getServerIP(name: ServerName): string
+function getServerIP(name: ServerName): string;
 ```
 
 ### getServerHostname
@@ -25,7 +25,7 @@ function getServerIP(name: ServerName): string
 Get the hostname for a server.
 
 ```typescript
-function getServerHostname(name: ServerName): string
+function getServerHostname(name: ServerName): string;
 ```
 
 ### getServerPrefix
@@ -33,7 +33,7 @@ function getServerHostname(name: ServerName): string
 Get the prefix for a server.
 
 ```typescript
-function getServerPrefix(name: ServerName): string
+function getServerPrefix(name: ServerName): string;
 ```
 
 ### isServerDDNS
@@ -41,7 +41,7 @@ function getServerPrefix(name: ServerName): string
 Check if a server uses DDNS.
 
 ```typescript
-function isServerDDNS(name: ServerName): boolean
+function isServerDDNS(name: ServerName): boolean;
 ```
 
 ### getServersByLocation
@@ -49,7 +49,7 @@ function isServerDDNS(name: ServerName): boolean
 Get all servers in a specific location.
 
 ```typescript
-function getServersByLocation(location: ServerLocation): Server[]
+function getServersByLocation(location: ServerLocation): Server[];
 ```
 
 ### getAllServerNames
@@ -57,7 +57,7 @@ function getServersByLocation(location: ServerLocation): Server[]
 Get all server names.
 
 ```typescript
-function getAllServerNames(): ServerName[]
+function getAllServerNames(): ServerName[];
 ```
 
 ## Types
@@ -114,7 +114,7 @@ import { getServer, getServerIP, getServersByLocation } from "./lib/server.js";
 
 // Get full server info
 const server = getServer("greenwood");
-console.log(server.ip);       // "67.185.194.56"
+console.log(server.ip); // "67.185.194.56"
 console.log(server.hostname); // "gw.sea.plrs.im"
 
 // Get specific properties

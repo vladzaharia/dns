@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // =============================================================================
 // DOMAIN NAME VALIDATION
@@ -23,10 +23,10 @@ export const DnsLabelSchema = z
   .string()
   .min(1)
   .max(63)
-  .regex(
-    /^(?!-)[a-zA-Z0-9-]{1,63}(?<!-)$/,
-    { error: 'DNS label must be 1-63 characters, alphanumeric and hyphens, cannot start or end with hyphen' }
-  );
+  .regex(/^(?!-)[a-zA-Z0-9-]{1,63}(?<!-)$/, {
+    error:
+      "DNS label must be 1-63 characters, alphanumeric and hyphens, cannot start or end with hyphen",
+  });
 export type DnsLabel = z.infer<typeof DnsLabelSchema>;
 
 /**
@@ -39,10 +39,9 @@ export const FqdnSchema = z
   .string()
   .min(1)
   .max(253)
-  .regex(
-    /^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/,
-    { error: 'Invalid FQDN format' }
-  );
+  .regex(/^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/, {
+    error: "Invalid FQDN format",
+  });
 export type Fqdn = z.infer<typeof FqdnSchema>;
 
 /**
@@ -52,10 +51,9 @@ export const DomainNameSchema = z
   .string()
   .min(1)
   .max(253)
-  .regex(
-    /^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/,
-    { error: 'Invalid domain name format' }
-  );
+  .regex(/^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/, {
+    error: "Invalid domain name format",
+  });
 export type DomainName = z.infer<typeof DomainNameSchema>;
 
 // =============================================================================
@@ -69,16 +67,15 @@ export type DomainName = z.infer<typeof DomainNameSchema>;
  * - Can be a subdomain label or path
  */
 export const RecordNameSchema = z.union([
-  z.literal('@'),
-  z.literal('*'),
+  z.literal("@"),
+  z.literal("*"),
   z
     .string()
     .min(1)
     .max(253)
-    .regex(
-      /^(?:\*\.)?(?:(?!-)[a-zA-Z0-9_-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9_-]{1,63}(?<!-)$/,
-      { error: 'Invalid record name format' }
-    ),
+    .regex(/^(?:\*\.)?(?:(?!-)[a-zA-Z0-9_-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9_-]{1,63}(?<!-)$/, {
+      error: "Invalid record name format",
+    }),
 ]);
 export type RecordName = z.infer<typeof RecordNameSchema>;
 
@@ -90,10 +87,9 @@ export const HostnameSchema = z
   .string()
   .min(1)
   .max(253)
-  .regex(
-    /^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/,
-    { error: 'Invalid hostname format' }
-  );
+  .regex(/^(?=.{1,253}$)(?:(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)*(?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.?$/, {
+    error: "Invalid hostname format",
+  });
 export type Hostname = z.infer<typeof HostnameSchema>;
 
 // =============================================================================
@@ -126,10 +122,7 @@ export type Weight = z.infer<typeof WeightSchema>;
  * Validates TXT record content
  * Can be a single string or array of strings
  */
-export const TxtContentSchema = z.union([
-  z.string().max(65535),
-  z.array(z.string().max(255)),
-]);
+export const TxtContentSchema = z.union([z.string().max(65535), z.array(z.string().max(255))]);
 export type TxtContent = z.infer<typeof TxtContentSchema>;
 
 // =============================================================================
@@ -139,13 +132,14 @@ export type TxtContent = z.infer<typeof TxtContentSchema>;
 /**
  * Validates a hexadecimal string (used in TLSA, SSHFP, DS records)
  */
-export const HexStringSchema = z.string().regex(/^[a-fA-F0-9]+$/, { error: 'Must be a valid hexadecimal string' });
+export const HexStringSchema = z
+  .string()
+  .regex(/^[a-fA-F0-9]+$/, { error: "Must be a valid hexadecimal string" });
 export type HexString = z.infer<typeof HexStringSchema>;
 
 /**
  * Validates a base64-encoded string (used in DNSKEY, DKIM records)
  * Uses Zod 4's native z.base64() for validation
  */
-export const Base64StringSchema = z.base64({ error: 'Must be a valid base64 string' });
+export const Base64StringSchema = z.base64({ error: "Must be a valid base64 string" });
 export type Base64String = z.infer<typeof Base64StringSchema>;
-

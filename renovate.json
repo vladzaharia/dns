@@ -1,0 +1,129 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":preserveSemverRanges",
+    "group:monorepos",
+    "group:recommended"
+  ],
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "timezone": "America/Los_Angeles",
+  "schedule": ["before 9am on monday"],
+  "prHourlyLimit": 5,
+  "prConcurrentLimit": 10,
+  "packageRules": [
+    {
+      "description": "Auto-merge devDependencies (non-major)",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    },
+    {
+      "description": "Auto-merge lint/format/test tooling",
+      "matchPackagePatterns": [
+        "^eslint",
+        "^@eslint/",
+        "^typescript-eslint",
+        "^prettier",
+        "^vitest",
+        "^@vitest/",
+        "^@types/",
+        "^typedoc",
+        "^vitepress"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    },
+    {
+      "description": "Auto-merge build tooling",
+      "matchPackagePatterns": [
+        "^webpack",
+        "^tsup",
+        "^ts-loader",
+        "^copy-webpack-plugin"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    },
+    {
+      "description": "Group TypeScript ecosystem updates",
+      "groupName": "TypeScript ecosystem",
+      "matchPackagePatterns": [
+        "^typescript",
+        "^@types/",
+        "^typescript-eslint",
+        "^ts-loader",
+        "^tsup",
+        "^tsx"
+      ]
+    },
+    {
+      "description": "Group ESLint ecosystem updates",
+      "groupName": "ESLint ecosystem",
+      "matchPackagePatterns": [
+        "^eslint",
+        "^@eslint/",
+        "^typescript-eslint",
+        "^globals"
+      ]
+    },
+    {
+      "description": "Group Vitest ecosystem updates",
+      "groupName": "Vitest ecosystem",
+      "matchPackagePatterns": [
+        "^vitest",
+        "^@vitest/"
+      ]
+    },
+    {
+      "description": "Group documentation tooling updates",
+      "groupName": "Documentation tooling",
+      "matchPackagePatterns": [
+        "^vitepress",
+        "^typedoc"
+      ]
+    },
+    {
+      "description": "DNS-affecting packages - require manual review",
+      "groupName": "DNS-affecting dependencies",
+      "matchPackagePatterns": [
+        "^zod"
+      ],
+      "matchPackageNames": [
+        "@vladzaharia/dnscontrol-types",
+        "@vladzaharia/dnscontrol-download"
+      ],
+      "automerge": false,
+      "labels": ["dependencies", "dns-affecting"]
+    },
+    {
+      "description": "Major version updates - require manual review",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "major"]
+    },
+    {
+      "description": "Pin GitHub Actions to SHA",
+      "matchManagers": ["github-actions"],
+      "pinDigests": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security", "dependencies"]
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 9am on the first day of the month"],
+    "automerge": true
+  }
+}
+

@@ -13,7 +13,14 @@
     "postinstall": "tsx src/download.ts",
     "download": "tsx src/download.ts",
     "download:force": "tsx src/download.ts --force",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "test": "echo 'No tests for dnscontrol-download'",
+    "test:watch": "echo 'No tests for dnscontrol-download'",
+    "test:coverage": "echo 'No tests for dnscontrol-download'"
   },
   "files": [
     "src/",
@@ -42,8 +49,7 @@
     "tsx": "^4.19.2"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "typescript": "^5.7.3"
+    "@vladzaharia/dns-config": "workspace:*"
   },
   "engines": {
     "node": ">=18.18.0"

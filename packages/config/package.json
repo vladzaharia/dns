@@ -1,0 +1,47 @@
+{
+  "name": "@vladzaharia/dns-config",
+  "version": "1.0.0",
+  "description": "Shared configuration for DNS Infrastructure-as-Code monorepo",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint.config.base.mjs",
+    "./prettier": "./prettier.config.mjs",
+    "./tsconfig": "./tsconfig.base.json",
+    "./vitest": "./vitest.config.base.ts"
+  },
+  "files": [
+    "*.mjs",
+    "*.json",
+    "*.ts"
+  ],
+  "keywords": [
+    "config",
+    "eslint",
+    "prettier",
+    "typescript",
+    "vitest"
+  ],
+  "author": "Vlad Zaharia",
+  "license": "MIT",
+  "dependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2",
+    "globals": "^16.0.0",
+    "prettier": "^3.8.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.0"
+  },
+  "peerDependencies": {
+    "vitest": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}
+

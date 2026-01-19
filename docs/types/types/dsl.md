@@ -9,11 +9,7 @@ Type definitions for DNSControl domain-specific language.
 Main function for defining a domain.
 
 ```typescript
-declare function D(
-  name: string,
-  registrar: Registrar,
-  ...modifiers: DomainModifier[]
-): void
+declare function D(name: string, registrar: Registrar, ...modifiers: DomainModifier[]): void;
 ```
 
 ### DEFAULTS
@@ -21,9 +17,7 @@ declare function D(
 Set default values for subsequent domains.
 
 ```typescript
-declare function DEFAULTS(
-  ...modifiers: DomainModifier[]
-): void
+declare function DEFAULTS(...modifiers: DomainModifier[]): void;
 ```
 
 ### DOMAIN_ELSEWHERE
@@ -31,11 +25,7 @@ declare function DEFAULTS(
 Reference a domain managed elsewhere.
 
 ```typescript
-declare function DOMAIN_ELSEWHERE(
-  name: string,
-  registrar: Registrar,
-  dnsProvider: string[]
-): void
+declare function DOMAIN_ELSEWHERE(name: string, registrar: Registrar, dnsProvider: string[]): void;
 ```
 
 ### DOMAIN_ELSEWHERE_AUTO
@@ -43,10 +33,7 @@ declare function DOMAIN_ELSEWHERE(
 Auto-detect nameservers for external domain.
 
 ```typescript
-declare function DOMAIN_ELSEWHERE_AUTO(
-  name: string,
-  registrar: Registrar
-): void
+declare function DOMAIN_ELSEWHERE_AUTO(name: string, registrar: Registrar): void;
 ```
 
 ## Record Functions
@@ -56,8 +43,8 @@ declare function DOMAIN_ELSEWHERE_AUTO(
 Address records.
 
 ```typescript
-declare function A(name: string, ip: string, ...modifiers: RecordModifier[]): DomainModifier
-declare function AAAA(name: string, ip: string, ...modifiers: RecordModifier[]): DomainModifier
+declare function A(name: string, ip: string, ...modifiers: RecordModifier[]): DomainModifier;
+declare function AAAA(name: string, ip: string, ...modifiers: RecordModifier[]): DomainModifier;
 ```
 
 ### CNAME
@@ -65,7 +52,11 @@ declare function AAAA(name: string, ip: string, ...modifiers: RecordModifier[]):
 Canonical name records.
 
 ```typescript
-declare function CNAME(name: string, target: string, ...modifiers: RecordModifier[]): DomainModifier
+declare function CNAME(
+  name: string,
+  target: string,
+  ...modifiers: RecordModifier[]
+): DomainModifier;
 ```
 
 ### MX
@@ -73,7 +64,12 @@ declare function CNAME(name: string, target: string, ...modifiers: RecordModifie
 Mail exchange records.
 
 ```typescript
-declare function MX(name: string, priority: number, target: string, ...modifiers: RecordModifier[]): DomainModifier
+declare function MX(
+  name: string,
+  priority: number,
+  target: string,
+  ...modifiers: RecordModifier[]
+): DomainModifier;
 ```
 
 ### TXT
@@ -81,7 +77,7 @@ declare function MX(name: string, priority: number, target: string, ...modifiers
 Text records.
 
 ```typescript
-declare function TXT(name: string, content: string, ...modifiers: RecordModifier[]): DomainModifier
+declare function TXT(name: string, content: string, ...modifiers: RecordModifier[]): DomainModifier;
 ```
 
 ### CAA
@@ -89,7 +85,12 @@ declare function TXT(name: string, content: string, ...modifiers: RecordModifier
 Certificate Authority Authorization.
 
 ```typescript
-declare function CAA(name: string, tag: CAATag, value: string, ...modifiers: RecordModifier[]): DomainModifier
+declare function CAA(
+  name: string,
+  tag: CAATag,
+  value: string,
+  ...modifiers: RecordModifier[]
+): DomainModifier;
 ```
 
 ### SRV
@@ -97,7 +98,14 @@ declare function CAA(name: string, tag: CAATag, value: string, ...modifiers: Rec
 Service records.
 
 ```typescript
-declare function SRV(name: string, priority: number, weight: number, port: number, target: string, ...modifiers: RecordModifier[]): DomainModifier
+declare function SRV(
+  name: string,
+  priority: number,
+  weight: number,
+  port: number,
+  target: string,
+  ...modifiers: RecordModifier[]
+): DomainModifier;
 ```
 
 ## Record Modifiers
@@ -107,7 +115,7 @@ declare function SRV(name: string, priority: number, weight: number, port: numbe
 Set time-to-live.
 
 ```typescript
-declare function TTL(seconds: number): RecordModifier
+declare function TTL(seconds: number): RecordModifier;
 ```
 
 ### CF_PROXY_ON / CF_PROXY_OFF
@@ -115,8 +123,8 @@ declare function TTL(seconds: number): RecordModifier
 Cloudflare proxy control.
 
 ```typescript
-declare function CF_PROXY_ON(): RecordModifier
-declare function CF_PROXY_OFF(): RecordModifier
+declare function CF_PROXY_ON(): RecordModifier;
+declare function CF_PROXY_OFF(): RecordModifier;
 ```
 
 ### IGNORE
@@ -124,11 +132,10 @@ declare function CF_PROXY_OFF(): RecordModifier
 Ignore during sync.
 
 ```typescript
-declare function IGNORE(pattern: string): DomainModifier
+declare function IGNORE(pattern: string): DomainModifier;
 ```
 
 ## See Also
 
 - [Record Types](./records) - Record definitions
 - [Domain Types](./domains) - Domain structures
-

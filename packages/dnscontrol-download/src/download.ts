@@ -117,7 +117,10 @@ function getArtifactInfo(version: string): ArtifactInfo {
   const platform = process.platform as Platform;
   const arch = process.arch === "arm64" ? "arm64" : "amd64";
 
-  const artifacts: Record<Platform, { filename: string; binaryName: string; archiveType: "tar.gz" | "zip" }> = {
+  const artifacts: Record<
+    Platform,
+    { filename: string; binaryName: string; archiveType: "tar.gz" | "zip" }
+  > = {
     darwin: {
       filename: `dnscontrol_${version}_darwin_all.tar.gz`,
       binaryName: "dnscontrol-Darwin",
@@ -154,10 +157,13 @@ function getArtifactInfo(version: string): ArtifactInfo {
 /**
  * Extract a zip file (for Windows)
  */
-async function extractZip(archivePath: string, outputDir: string): Promise<void> {
+function extractZip(archivePath: string, outputDir: string): void {
   // Use unzip command on Unix-like systems, or PowerShell on Windows
   if (process.platform === "win32") {
-    execSync(`powershell -command "Expand-Archive -Path '${archivePath}' -DestinationPath '${outputDir}' -Force"`, { stdio: "inherit" });
+    execSync(
+      `powershell -command "Expand-Archive -Path '${archivePath}' -DestinationPath '${outputDir}' -Force"`,
+      { stdio: "inherit" }
+    );
   } else {
     execSync(`unzip -o "${archivePath}" -d "${outputDir}"`, { stdio: "inherit" });
   }
@@ -166,11 +172,7 @@ async function extractZip(archivePath: string, outputDir: string): Promise<void>
 /**
  * Download and extract the DNSControl binary
  */
-async function downloadBinary(
-  version: string,
-  outputDir: string,
-  force = false
-): Promise<string> {
+async function downloadBinary(version: string, outputDir: string, force = false): Promise<string> {
   const artifact = getArtifactInfo(version);
   const binaryPath = join(outputDir, artifact.binaryName);
   const versionFile = join(outputDir, "dnscontrol-VERSION");
@@ -212,7 +214,7 @@ async function downloadBinary(
     // Extract based on archive type
     console.log("Extracting...");
     if (artifact.archiveType === "zip") {
-      await extractZip(archivePath, tempDir);
+      extractZip(archivePath, tempDir);
     } else {
       await extract({ file: archivePath, cwd: tempDir });
     }
@@ -248,7 +250,7 @@ async function main(): Promise<void> {
   const force = args.includes("--force") || args.includes("-f");
 
   // Output to package's bin directory by default, or custom path
-  const outputDir = process.env.DNSCONTROL_BIN_DIR || join(__dirname, "..", "bin");
+  const outputDir = process.env.DNSCONTROL_BIN_DIR ?? join(__dirname, "..", "bin");
   mkdirSync(outputDir, { recursive: true });
 
   try {
@@ -260,5 +262,4 @@ async function main(): Promise<void> {
   }
 }
 
-main();
-
+void main();

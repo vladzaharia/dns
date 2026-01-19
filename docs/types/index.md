@@ -25,9 +25,12 @@ Get full autocomplete and type checking for DNSControl's JavaScript DSL:
 var REG_NONE = NewRegistrar("none");
 var DNS_CLOUDFLARE = NewDnsProvider("cloudflare");
 
-D("example.com", REG_NONE, DnsProvider(DNS_CLOUDFLARE),
-  A("@", "192.0.2.1"),                    // ✅ Type-safe
-  A("@", "invalid"),                       // ❌ TypeScript error
+D(
+  "example.com",
+  REG_NONE,
+  DnsProvider(DNS_CLOUDFLARE),
+  A("@", "192.0.2.1"), // ✅ Type-safe
+  A("@", "invalid"), // ❌ TypeScript error
   CNAME("www", "@"),
   MX("@", 10, "mail.example.com."),
   TXT("@", "v=spf1 include:_spf.example.com ~all")
@@ -84,7 +87,7 @@ const record: CloudflareRecordMeta = {
 ## Compatibility
 
 | Package Version | DNSControl Version | TypeScript Version |
-|-----------------|--------------------|--------------------|
+| --------------- | ------------------ | ------------------ |
 | 2.x             | 4.x                | 5.0+               |
 | 1.x             | 3.x                | 4.7+               |
 

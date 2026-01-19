@@ -7,8 +7,8 @@
  * @packageDocumentation
  */
 
-import { z } from 'zod';
-import { TtlSchema } from './base.js';
+import { z } from "zod";
+import { TtlSchema } from "./base.js";
 
 // =============================================================================
 // CAA BUILDER
@@ -52,9 +52,9 @@ export const DkimBuilderConfigSchema = z.object({
   /** Record name label (default: constructs from selector + "_domainkey") */
   label: z.string().optional(),
   /** Hash algorithm (default: "sha256") */
-  hash: z.enum(['sha1', 'sha256']).optional(),
+  hash: z.enum(["sha1", "sha256"]).optional(),
   /** Key type (default: "rsa") */
-  keyType: z.enum(['rsa', 'ed25519']).optional(),
+  keyType: z.enum(["rsa", "ed25519"]).optional(),
   /** Flags (e.g., "y" for testing) */
   flags: z.string().optional(),
   /** Service type (default: "*" for all) */
@@ -73,13 +73,13 @@ export type DkimBuilderConfig = z.infer<typeof DkimBuilderConfigSchema>;
 /**
  * DMARC policy values
  */
-export const DmarcPolicySchema = z.enum(['none', 'quarantine', 'reject']);
+export const DmarcPolicySchema = z.enum(["none", "quarantine", "reject"]);
 export type DmarcPolicy = z.infer<typeof DmarcPolicySchema>;
 
 /**
  * DMARC alignment mode
  */
-export const DmarcAlignmentSchema = z.enum(['r', 's']); // relaxed or strict
+export const DmarcAlignmentSchema = z.enum(["r", "s"]); // relaxed or strict
 export type DmarcAlignment = z.infer<typeof DmarcAlignmentSchema>;
 
 /**
@@ -232,4 +232,3 @@ export const LocBuilderStrConfigSchema = z.object({
   ttl: TtlSchema.optional(),
 });
 export type LocBuilderStrConfig = z.infer<typeof LocBuilderStrConfigSchema>;
-

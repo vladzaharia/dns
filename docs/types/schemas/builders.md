@@ -73,11 +73,11 @@ Validates Cloudflare proxy status.
 ```typescript
 import { proxyStatusSchema } from "@vladzaharia/dnscontrol-types";
 
-proxyStatusSchema.parse("on");    // ✓ Valid
-proxyStatusSchema.parse("off");   // ✓ Valid
-proxyStatusSchema.parse("full");  // ✓ Valid
-proxyStatusSchema.parse(true);    // ✓ Valid (coerced)
-proxyStatusSchema.parse(false);   // ✓ Valid (coerced)
+proxyStatusSchema.parse("on"); // ✓ Valid
+proxyStatusSchema.parse("off"); // ✓ Valid
+proxyStatusSchema.parse("full"); // ✓ Valid
+proxyStatusSchema.parse(true); // ✓ Valid (coerced)
+proxyStatusSchema.parse(false); // ✓ Valid (coerced)
 ```
 
 **Values:**
@@ -98,9 +98,9 @@ Validates CAA record tags.
 ```typescript
 import { caaTagSchema } from "@vladzaharia/dnscontrol-types";
 
-caaTagSchema.parse("issue");      // ✓ Valid
-caaTagSchema.parse("issuewild");  // ✓ Valid
-caaTagSchema.parse("iodef");      // ✓ Valid
+caaTagSchema.parse("issue"); // ✓ Valid
+caaTagSchema.parse("issuewild"); // ✓ Valid
+caaTagSchema.parse("iodef"); // ✓ Valid
 ```
 
 ## Example
@@ -130,4 +130,3 @@ const domainConfig = domainBuilderOptionsSchema.parse({
 - [Base Schemas](./base) - Core validation
 - [Record Schemas](./records) - Record validation
 - [Domain Schemas](./domain) - Domain validation
-

@@ -33,7 +33,7 @@ export function registerMyDomain(): void {
     createCNAMERecord("www", "@"),
 
     // Verification record
-    createTXTRecord("@", "google-site-verification=abc123"),
+    createTXTRecord("@", "google-site-verification=abc123")
   );
 }
 ```
@@ -49,7 +49,7 @@ import { registerMyDomain } from "./personal/my-domain.js";
 // Add to registration function
 export function registerAllZones(): void {
   // ... existing zones ...
-  
+
   registerMyDomain();
 }
 ```
@@ -98,10 +98,10 @@ Always preview before pushing! DNS changes can affect production services.
 ```typescript
 createDomain(
   { name: "my-domain.com", category: "personal" },
-  
+
   createARecord("@", "192.0.2.1"),
   createARecord("api", "192.0.2.2"),
-  createARecord("staging", "192.0.2.3"),
+  createARecord("staging", "192.0.2.3")
 );
 ```
 
@@ -122,9 +122,9 @@ import { createFastmailRecords } from "../../mail/fastmail.js";
 
 createDomain(
   { name: "my-domain.com", category: "personal" },
-  
+
   // All Fastmail records
-  ...createFastmailRecords({ domain: "my-domain.com" }),
+  ...createFastmailRecords({ domain: "my-domain.com" })
 );
 ```
 
@@ -135,9 +135,9 @@ import { createServiceRecord } from "../../lib/record.js";
 
 createDomain(
   { name: "my-domain.com", category: "personal" },
-  
+
   // Point to a server
-  createServiceRecord("app", "greenwood", { proxy: "on" }),
+  createServiceRecord("app", "greenwood", { proxy: "on" })
 );
 ```
 
@@ -169,4 +169,3 @@ createCNAMERecord("docs", "cname.vercel-dns.com."),
 - [DNS Records](../guides/records) - All record types
 - [Services](../guides/services) - Reusable service definitions
 - [Email Setup](../guides/mail) - Configure email providers
-

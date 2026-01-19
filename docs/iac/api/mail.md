@@ -9,7 +9,7 @@ API reference for email provider helpers.
 Creates all Fastmail DNS records for a domain.
 
 ```typescript
-function createFastmailRecords(options: FastmailOptions): DomainModifier[]
+function createFastmailRecords(options: FastmailOptions): DomainModifier[];
 ```
 
 #### FastmailOptions
@@ -32,27 +32,24 @@ interface FastmailOptions {
 
 #### Generated Records
 
-| Record | Type | Purpose |
-|--------|------|---------|
-| `mail` | CNAME | Webmail access |
-| `@` | MX (10) | Primary mail server |
-| `@` | MX (20) | Secondary mail server |
-| `*` | MX | Subdomain mail (if enabled) |
-| `@` | TXT | SPF record |
-| `_dmarc` | TXT | DMARC policy |
-| `fm1._domainkey` | CNAME | DKIM key 1 |
-| `fm2._domainkey` | CNAME | DKIM key 2 |
-| `fm3._domainkey` | CNAME | DKIM key 3 |
+| Record           | Type    | Purpose                     |
+| ---------------- | ------- | --------------------------- |
+| `mail`           | CNAME   | Webmail access              |
+| `@`              | MX (10) | Primary mail server         |
+| `@`              | MX (20) | Secondary mail server       |
+| `*`              | MX      | Subdomain mail (if enabled) |
+| `@`              | TXT     | SPF record                  |
+| `_dmarc`         | TXT     | DMARC policy                |
+| `fm1._domainkey` | CNAME   | DKIM key 1                  |
+| `fm2._domainkey` | CNAME   | DKIM key 2                  |
+| `fm3._domainkey` | CNAME   | DKIM key 3                  |
 
 ### createFastmailSubdomainRecords
 
 Creates Fastmail records for a subdomain.
 
 ```typescript
-function createFastmailSubdomainRecords(
-  domain: string,
-  subdomain: string
-): DomainModifier[]
+function createFastmailSubdomainRecords(domain: string, subdomain: string): DomainModifier[];
 ```
 
 ## Cloudflare Email Routing
@@ -62,7 +59,7 @@ function createFastmailSubdomainRecords(
 Creates Cloudflare Email Routing records.
 
 ```typescript
-function createCloudflareEmailRecords(): DomainModifier[]
+function createCloudflareEmailRecords(): DomainModifier[];
 ```
 
 ## Postal (Self-Hosted)
@@ -72,7 +69,7 @@ function createCloudflareEmailRecords(): DomainModifier[]
 Creates Postal self-hosted email records.
 
 ```typescript
-function createPostalRecords(options: PostalOptions): DomainModifier[]
+function createPostalRecords(options: PostalOptions): DomainModifier[];
 ```
 
 #### PostalOptions
@@ -105,7 +102,7 @@ createDomain(
   ...createFastmailRecords({
     domain: "example.com",
     dmarcPolicy: "quarantine",
-  }),
+  })
 
   // Other records...
 );

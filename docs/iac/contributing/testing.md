@@ -161,12 +161,12 @@ describe("with mocked server", () => {
 
 Aim for these coverage thresholds:
 
-| Metric | Threshold |
-|--------|-----------|
-| Statements | 80% |
-| Branches | 75% |
-| Functions | 80% |
-| Lines | 80% |
+| Metric     | Threshold |
+| ---------- | --------- |
+| Statements | 80%       |
+| Branches   | 75%       |
+| Functions  | 80%       |
+| Lines      | 80%       |
 
 ## Writing Good Tests
 
@@ -190,4 +190,3 @@ Aim for these coverage thresholds:
 - [Development Setup](./development) - Environment setup
 - [Code Style](./code-style) - Coding standards
 - [Pull Requests](./pull-requests) - PR process
-

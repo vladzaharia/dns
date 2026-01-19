@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 import {
   TtlSchema,
   IpAddressSchema,
@@ -23,7 +23,7 @@ import {
   LatitudeDirectionSchema,
   LongitudeDirectionSchema,
   RecordMetaSchema,
-} from './base.js';
+} from "./base.js";
 import {
   RecordNameSchema,
   HostnameSchema,
@@ -33,7 +33,7 @@ import {
   TxtContentSchema,
   HexStringSchema,
   Base64StringSchema,
-} from './dns.js';
+} from "./dns.js";
 
 // =============================================================================
 // BASE RECORD SCHEMA
@@ -56,7 +56,7 @@ const BaseRecordSchema = z.object({
  * A record schema (IPv4 address)
  */
 export const ARecordSchema = BaseRecordSchema.extend({
-  type: z.literal('A').default('A'),
+  type: z.literal("A").default("A"),
   address: IpAddressSchema,
 });
 export type ARecord = z.infer<typeof ARecordSchema>;
@@ -65,7 +65,7 @@ export type ARecord = z.infer<typeof ARecordSchema>;
  * AAAA record schema (IPv6 address)
  */
 export const AAAARecordSchema = BaseRecordSchema.extend({
-  type: z.literal('AAAA').default('AAAA'),
+  type: z.literal("AAAA").default("AAAA"),
   address: Ipv6AddressSchema,
 });
 export type AAAARecord = z.infer<typeof AAAARecordSchema>;
@@ -78,7 +78,7 @@ export type AAAARecord = z.infer<typeof AAAARecordSchema>;
  * ALIAS record schema (ANAME/flattened CNAME at apex)
  */
 export const AliasRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('ALIAS').default('ALIAS'),
+  type: z.literal("ALIAS").default("ALIAS"),
   target: HostnameSchema,
 });
 export type AliasRecord = z.infer<typeof AliasRecordSchema>;
@@ -87,7 +87,7 @@ export type AliasRecord = z.infer<typeof AliasRecordSchema>;
  * CNAME record schema
  */
 export const CnameRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('CNAME').default('CNAME'),
+  type: z.literal("CNAME").default("CNAME"),
   target: HostnameSchema,
 });
 export type CnameRecord = z.infer<typeof CnameRecordSchema>;
@@ -96,7 +96,7 @@ export type CnameRecord = z.infer<typeof CnameRecordSchema>;
  * DNAME record schema (delegation name for entire subtree)
  */
 export const DnameRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('DNAME').default('DNAME'),
+  type: z.literal("DNAME").default("DNAME"),
   target: HostnameSchema,
 });
 export type DnameRecord = z.infer<typeof DnameRecordSchema>;
@@ -109,7 +109,7 @@ export type DnameRecord = z.infer<typeof DnameRecordSchema>;
  * MX record schema (mail exchange)
  */
 export const MxRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('MX').default('MX'),
+  type: z.literal("MX").default("MX"),
   priority: PrioritySchema,
   target: HostnameSchema,
 });
@@ -123,7 +123,7 @@ export type MxRecord = z.infer<typeof MxRecordSchema>;
  * NS record schema (nameserver delegation)
  */
 export const NsRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('NS').default('NS'),
+  type: z.literal("NS").default("NS"),
   target: HostnameSchema,
 });
 export type NsRecord = z.infer<typeof NsRecordSchema>;
@@ -136,7 +136,7 @@ export type NsRecord = z.infer<typeof NsRecordSchema>;
  * TXT record schema
  */
 export const TxtRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('TXT').default('TXT'),
+  type: z.literal("TXT").default("TXT"),
   content: TxtContentSchema,
 });
 export type TxtRecord = z.infer<typeof TxtRecordSchema>;
@@ -149,7 +149,7 @@ export type TxtRecord = z.infer<typeof TxtRecordSchema>;
  * PTR record schema (reverse DNS)
  */
 export const PtrRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('PTR').default('PTR'),
+  type: z.literal("PTR").default("PTR"),
   target: HostnameSchema,
 });
 export type PtrRecord = z.infer<typeof PtrRecordSchema>;
@@ -162,7 +162,7 @@ export type PtrRecord = z.infer<typeof PtrRecordSchema>;
  * SRV record schema (service location)
  */
 export const SrvRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('SRV').default('SRV'),
+  type: z.literal("SRV").default("SRV"),
   priority: PrioritySchema,
   weight: WeightSchema,
   port: PortSchema,
@@ -174,7 +174,7 @@ export type SrvRecord = z.infer<typeof SrvRecordSchema>;
  * NAPTR record schema (Naming Authority Pointer)
  */
 export const NaptrRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('NAPTR').default('NAPTR'),
+  type: z.literal("NAPTR").default("NAPTR"),
   order: z.number().int().min(0).max(65535),
   preference: z.number().int().min(0).max(65535),
   flags: z.string().max(255),
@@ -192,7 +192,7 @@ export type NaptrRecord = z.infer<typeof NaptrRecordSchema>;
  * SVCB record schema (Service Binding)
  */
 export const SvcbRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('SVCB').default('SVCB'),
+  type: z.literal("SVCB").default("SVCB"),
   priority: PrioritySchema,
   target: HostnameSchema,
   params: z.string().optional(),
@@ -203,7 +203,7 @@ export type SvcbRecord = z.infer<typeof SvcbRecordSchema>;
  * HTTPS record schema (HTTPS service binding)
  */
 export const HttpsRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('HTTPS').default('HTTPS'),
+  type: z.literal("HTTPS").default("HTTPS"),
   priority: PrioritySchema,
   target: HostnameSchema,
   params: z.string().optional(),
@@ -218,7 +218,7 @@ export type HttpsRecord = z.infer<typeof HttpsRecordSchema>;
  * CAA record schema (Certificate Authority Authorization)
  */
 export const CaaRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('CAA').default('CAA'),
+  type: z.literal("CAA").default("CAA"),
   tag: CaaTagSchema,
   value: z.string(),
   critical: z.boolean().optional(),
@@ -229,7 +229,7 @@ export type CaaRecord = z.infer<typeof CaaRecordSchema>;
  * TLSA record schema (TLS Authentication)
  */
 export const TlsaRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('TLSA').default('TLSA'),
+  type: z.literal("TLSA").default("TLSA"),
   usage: TlsaCertUsageSchema,
   selector: TlsaSelectorSchema,
   matchingType: TlsaMatchingTypeSchema,
@@ -241,7 +241,7 @@ export type TlsaRecord = z.infer<typeof TlsaRecordSchema>;
  * SSHFP record schema (SSH Fingerprint)
  */
 export const SshfpRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('SSHFP').default('SSHFP'),
+  type: z.literal("SSHFP").default("SSHFP"),
   algorithm: SshfpAlgorithmSchema,
   fingerprintType: SshfpFingerprintTypeSchema,
   fingerprint: HexStringSchema,
@@ -252,7 +252,7 @@ export type SshfpRecord = z.infer<typeof SshfpRecordSchema>;
  * SMIMEA record schema (S/MIME Certificate Association)
  */
 export const SmimeaRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('SMIMEA').default('SMIMEA'),
+  type: z.literal("SMIMEA").default("SMIMEA"),
   usage: TlsaCertUsageSchema,
   selector: TlsaSelectorSchema,
   matchingType: TlsaMatchingTypeSchema,
@@ -264,7 +264,7 @@ export type SmimeaRecord = z.infer<typeof SmimeaRecordSchema>;
  * OPENPGPKEY record schema (OpenPGP public key)
  */
 export const OpenpgpkeyRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('OPENPGPKEY').default('OPENPGPKEY'),
+  type: z.literal("OPENPGPKEY").default("OPENPGPKEY"),
   publicKey: Base64StringSchema,
 });
 export type OpenpgpkeyRecord = z.infer<typeof OpenpgpkeyRecordSchema>;
@@ -277,7 +277,7 @@ export type OpenpgpkeyRecord = z.infer<typeof OpenpgpkeyRecordSchema>;
  * DNSKEY record schema (DNSSEC public key)
  */
 export const DnskeyRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('DNSKEY').default('DNSKEY'),
+  type: z.literal("DNSKEY").default("DNSKEY"),
   flags: z.union([z.literal(256), z.literal(257), z.number().int()]),
   protocol: z.union([z.literal(3), z.number().int()]),
   algorithm: z.union([DnssecAlgorithmSchema, z.number().int()]),
@@ -289,7 +289,7 @@ export type DnskeyRecord = z.infer<typeof DnskeyRecordSchema>;
  * DS record schema (Delegation Signer for DNSSEC)
  */
 export const DsRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('DS').default('DS'),
+  type: z.literal("DS").default("DS"),
   keyTag: z.number().int().min(0).max(65535),
   algorithm: z.union([DnssecAlgorithmSchema, z.number().int()]),
   digestType: z.union([DnssecDigestTypeSchema, z.number().int()]),
@@ -305,7 +305,7 @@ export type DsRecord = z.infer<typeof DsRecordSchema>;
  * LOC record schema (geographic location)
  */
 export const LocRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('LOC').default('LOC'),
+  type: z.literal("LOC").default("LOC"),
   latitude: z.object({
     degrees: z.number().int().min(0).max(90),
     minutes: z.number().int().min(0).max(59),
@@ -329,7 +329,7 @@ export type LocRecord = z.infer<typeof LocRecordSchema>;
  * RP record schema (Responsible Person)
  */
 export const RpRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('RP').default('RP'),
+  type: z.literal("RP").default("RP"),
   mbox: HostnameSchema,
   txt: HostnameSchema,
 });
@@ -339,7 +339,7 @@ export type RpRecord = z.infer<typeof RpRecordSchema>;
  * DHCID record schema (DHCP Identifier)
  */
 export const DhcidRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('DHCID').default('DHCID'),
+  type: z.literal("DHCID").default("DHCID"),
   digest: Base64StringSchema,
 });
 export type DhcidRecord = z.infer<typeof DhcidRecordSchema>;
@@ -353,8 +353,8 @@ export type DhcidRecord = z.infer<typeof DhcidRecordSchema>;
  * Uses Zod 4's native z.url() for validation
  */
 export const UrlRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('URL').default('URL'),
-  target: z.url({ error: 'Invalid URL format' }),
+  type: z.literal("URL").default("URL"),
+  target: z.url({ error: "Invalid URL format" }),
 });
 export type UrlRecord = z.infer<typeof UrlRecordSchema>;
 
@@ -363,8 +363,8 @@ export type UrlRecord = z.infer<typeof UrlRecordSchema>;
  * Uses Zod 4's native z.url() for validation
  */
 export const Url301RecordSchema = BaseRecordSchema.extend({
-  type: z.literal('URL301').default('URL301'),
-  target: z.url({ error: 'Invalid URL format' }),
+  type: z.literal("URL301").default("URL301"),
+  target: z.url({ error: "Invalid URL format" }),
 });
 export type Url301Record = z.infer<typeof Url301RecordSchema>;
 
@@ -373,8 +373,8 @@ export type Url301Record = z.infer<typeof Url301RecordSchema>;
  * Uses Zod 4's native z.url() for validation
  */
 export const FrameRecordSchema = BaseRecordSchema.extend({
-  type: z.literal('FRAME').default('FRAME'),
-  target: z.url({ error: 'Invalid URL format' }),
+  type: z.literal("FRAME").default("FRAME"),
+  target: z.url({ error: "Invalid URL format" }),
 });
 export type FrameRecord = z.infer<typeof FrameRecordSchema>;
 
@@ -385,7 +385,7 @@ export type FrameRecord = z.infer<typeof FrameRecordSchema>;
 /**
  * Union of all DNS record schemas
  */
-export const DnsRecordSchema = z.discriminatedUnion('type', [
+export const DnsRecordSchema = z.discriminatedUnion("type", [
   ARecordSchema.required({ type: true }),
   AAAARecordSchema.required({ type: true }),
   AliasRecordSchema.required({ type: true }),
@@ -414,4 +414,3 @@ export const DnsRecordSchema = z.discriminatedUnion('type', [
   FrameRecordSchema.required({ type: true }),
 ]);
 export type DnsRecord = z.infer<typeof DnsRecordSchema>;
-

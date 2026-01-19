@@ -41,10 +41,10 @@ Cloudflare proxy (orange cloud) for CDN and security.
 
 ```typescript
 // Enable proxy
-A("@", "192.0.2.1", CF_PROXY_ON())
+A("@", "192.0.2.1", CF_PROXY_ON());
 
 // Disable proxy
-A("api", "192.0.2.1", CF_PROXY_OFF())
+A("api", "192.0.2.1", CF_PROXY_OFF());
 ```
 
 **Proxy Modes:**
@@ -59,33 +59,33 @@ With proxy enabled, TTL is automatic:
 
 ```typescript
 // TTL is automatic when proxied
-A("@", "192.0.2.1", CF_PROXY_ON())
+A("@", "192.0.2.1", CF_PROXY_ON());
 
 // Custom TTL when not proxied
-A("direct", "192.0.2.1", CF_PROXY_OFF(), TTL(300))
+A("direct", "192.0.2.1", CF_PROXY_OFF(), TTL(300));
 ```
 
 ### Supported Record Types
 
-| Type | Proxy Support | Notes |
-|------|--------------|-------|
-| A | ✅ | IPv4 address |
-| AAAA | ✅ | IPv6 address |
-| CNAME | ✅ | Aliases |
-| MX | ❌ | Mail exchange |
-| TXT | ❌ | Text records |
-| CAA | ❌ | CA authorization |
-| SRV | ❌ | Service discovery |
-| NS | ❌ | Nameservers |
+| Type  | Proxy Support | Notes             |
+| ----- | ------------- | ----------------- |
+| A     | ✅            | IPv4 address      |
+| AAAA  | ✅            | IPv6 address      |
+| CNAME | ✅            | Aliases           |
+| MX    | ❌            | Mail exchange     |
+| TXT   | ❌            | Text records      |
+| CAA   | ❌            | CA authorization  |
+| SRV   | ❌            | Service discovery |
+| NS    | ❌            | Nameservers       |
 
 ## API Token Permissions
 
 Required permissions for your API token:
 
 | Permission | Access |
-|------------|--------|
-| Zone.Zone | Read |
-| Zone.DNS | Edit |
+| ---------- | ------ |
+| Zone.Zone  | Read   |
+| Zone.DNS   | Edit   |
 
 ### Creating an API Token
 
@@ -131,4 +131,3 @@ D("example.com", REG_NONE, DnsProvider(CF),
 - [Provider Support](./index) - All providers
 - [Route53](./route53) - AWS Route53
 - [Cloudflare Docs](https://developers.cloudflare.com/dns/)
-

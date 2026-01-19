@@ -10,35 +10,35 @@ Different DNS providers support different features. This matrix helps you choose
 
 ### Record Type Support
 
-| Provider | A | AAAA | CNAME | MX | TXT | CAA | SRV | NS | ALIAS |
-|----------|---|------|-------|----|----|-----|-----|----|----|
-| Cloudflare | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Route53 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Google Cloud | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Azure DNS | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| DigitalOcean | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| BIND | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Provider     | A   | AAAA | CNAME | MX  | TXT | CAA | SRV | NS  | ALIAS |
+| ------------ | --- | ---- | ----- | --- | --- | --- | --- | --- | ----- |
+| Cloudflare   | ✅  | ✅   | ✅    | ✅  | ✅  | ✅  | ✅  | ✅  | ❌    |
+| Route53      | ✅  | ✅   | ✅    | ✅  | ✅  | ✅  | ✅  | ✅  | ✅    |
+| Google Cloud | ✅  | ✅   | ✅    | ✅  | ✅  | ✅  | ✅  | ✅  | ❌    |
+| Azure DNS    | ✅  | ✅   | ✅    | ✅  | ✅  | ✅  | ✅  | ✅  | ✅    |
+| DigitalOcean | ✅  | ✅   | ✅    | ✅  | ✅  | ✅  | ✅  | ✅  | ❌    |
+| BIND         | ✅  | ✅   | ✅    | ✅  | ✅  | ✅  | ✅  | ✅  | ❌    |
 
 ### Feature Support
 
-| Provider | Proxy/CDN | DNSSEC | Geo Routing | Health Checks | API |
-|----------|-----------|--------|-------------|---------------|-----|
-| Cloudflare | ✅ | ✅ | ❌ | ❌ | ✅ |
-| Route53 | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Google Cloud | ❌ | ✅ | ✅ | ❌ | ✅ |
-| Azure DNS | ❌ | ✅ | ✅ | ✅ | ✅ |
-| DigitalOcean | ❌ | ❌ | ❌ | ❌ | ✅ |
-| BIND | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Provider     | Proxy/CDN | DNSSEC | Geo Routing | Health Checks | API |
+| ------------ | --------- | ------ | ----------- | ------------- | --- |
+| Cloudflare   | ✅        | ✅     | ❌          | ❌            | ✅  |
+| Route53      | ❌        | ✅     | ✅          | ✅            | ✅  |
+| Google Cloud | ❌        | ✅     | ✅          | ❌            | ✅  |
+| Azure DNS    | ❌        | ✅     | ✅          | ✅            | ✅  |
+| DigitalOcean | ❌        | ❌     | ❌          | ❌            | ✅  |
+| BIND         | ❌        | ✅     | ❌          | ❌            | ❌  |
 
 ### Pricing Comparison
 
-| Provider | Zones | Records | Queries |
-|----------|-------|---------|---------|
-| Cloudflare | Free | Unlimited | Unlimited |
-| Route53 | $0.50/zone | $0.0015/record | $0.40/M |
-| Google Cloud | $0.20/zone | Included | $0.40/M |
-| Azure DNS | $0.50/zone | $0.0005/record | $0.40/M |
-| DigitalOcean | Free | Unlimited | Unlimited |
+| Provider     | Zones      | Records        | Queries   |
+| ------------ | ---------- | -------------- | --------- |
+| Cloudflare   | Free       | Unlimited      | Unlimited |
+| Route53      | $0.50/zone | $0.0015/record | $0.40/M   |
+| Google Cloud | $0.20/zone | Included       | $0.40/M   |
+| Azure DNS    | $0.50/zone | $0.0005/record | $0.40/M   |
+| DigitalOcean | Free       | Unlimited      | Unlimited |
 
 ## Provider-Specific Features
 
@@ -95,4 +95,3 @@ Different DNS providers support different features. This matrix helps you choose
 - [Cloudflare](./cloudflare) - Cloudflare setup
 - [Route53](./route53) - AWS Route53 setup
 - [Provider Support](./index) - All providers
-

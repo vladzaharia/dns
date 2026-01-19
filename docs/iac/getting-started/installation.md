@@ -143,6 +143,7 @@ If DNSControl isn't found, it will be downloaded automatically on first build.
 ### API Token Errors
 
 If you see authentication errors:
+
 1. Verify your API token has correct permissions
 2. Check the token hasn't expired
 3. Ensure `creds.json` is properly formatted
@@ -150,6 +151,7 @@ If you see authentication errors:
 ### Build Errors
 
 If the build fails:
+
 1. Ensure Node.js 18+ is installed
 2. Run `pnpm install` again
 3. Check for TypeScript errors with `pnpm lint`
@@ -159,4 +161,3 @@ If the build fails:
 - [Quick Start](./quick-start) - Create your first zone
 - [Project Structure](./structure) - Understand the codebase
 - [Concepts](../concepts/) - Learn DNS fundamentals
-

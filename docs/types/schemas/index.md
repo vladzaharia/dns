@@ -13,12 +13,12 @@ Zod schemas provide:
 
 ## Schema Categories
 
-| Category | Description | Import Path |
-|----------|-------------|-------------|
-| [Base Schemas](./base) | Primitive types (TTL, IP addresses, etc.) | `@vladzaharia/dnscontrol-types/schemas` |
-| [Record Schemas](./records) | DNS record validation | `@vladzaharia/dnscontrol-types/schemas` |
-| [Builder Schemas](./builders) | Domain builder configurations | `@vladzaharia/dnscontrol-types/schemas` |
-| [Domain Schemas](./domain) | Complete domain configuration | `@vladzaharia/dnscontrol-types/schemas` |
+| Category                      | Description                               | Import Path                             |
+| ----------------------------- | ----------------------------------------- | --------------------------------------- |
+| [Base Schemas](./base)        | Primitive types (TTL, IP addresses, etc.) | `@vladzaharia/dnscontrol-types/schemas` |
+| [Record Schemas](./records)   | DNS record validation                     | `@vladzaharia/dnscontrol-types/schemas` |
+| [Builder Schemas](./builders) | Domain builder configurations             | `@vladzaharia/dnscontrol-types/schemas` |
+| [Domain Schemas](./domain)    | Complete domain configuration             | `@vladzaharia/dnscontrol-types/schemas` |
 
 ## Basic Usage
 
@@ -85,11 +85,11 @@ type ARecord = z.infer<typeof ARecordSchema>;
 
 ```typescript
 import {
-  TtlSchema,           // TTL values (number or duration string)
-  Ipv4AddressSchema,   // IPv4 addresses
-  Ipv6AddressSchema,   // IPv6 addresses
-  IpAddressSchema,     // IPv4 or IPv6
-  CaaTagSchema,        // CAA record tags
+  TtlSchema, // TTL values (number or duration string)
+  Ipv4AddressSchema, // IPv4 addresses
+  Ipv6AddressSchema, // IPv6 addresses
+  IpAddressSchema, // IPv4 or IPv6
+  CaaTagSchema, // CAA record tags
   DnssecAlgorithmSchema,
 } from "@vladzaharia/dnscontrol-types/schemas";
 ```
@@ -106,7 +106,7 @@ import {
   TXTRecordSchema,
   NSRecordSchema,
   PTRRecordSchema,
-  
+
   // Extended records
   CAARecordSchema,
   SRVRecordSchema,
@@ -114,7 +114,7 @@ import {
   TLSARecordSchema,
   SSHFPRecordSchema,
   LOCRecordSchema,
-  
+
   // Pseudo records
   ALIASRecordSchema,
 } from "@vladzaharia/dnscontrol-types/schemas";
@@ -143,7 +143,7 @@ ARecordSchema.parse({
 // ❌ Invalid - bad IP
 ARecordSchema.parse({
   name: "@",
-  target: "not-an-ip",  // Error: Invalid IPv4 address
+  target: "not-an-ip", // Error: Invalid IPv4 address
 });
 ```
 
@@ -162,7 +162,7 @@ MXRecordSchema.parse({
 // ❌ Invalid - missing priority
 MXRecordSchema.parse({
   name: "@",
-  target: "mail.example.com.",  // Error: priority is required
+  target: "mail.example.com.", // Error: priority is required
 });
 ```
 
@@ -181,7 +181,7 @@ CAARecordSchema.parse({
 // ❌ Invalid - bad tag
 CAARecordSchema.parse({
   name: "@",
-  tag: "invalid",  // Error: must be issue, issuewild, or iodef
+  tag: "invalid", // Error: must be issue, issuewild, or iodef
   value: "letsencrypt.org",
 });
 ```
@@ -191,4 +191,3 @@ CAARecordSchema.parse({
 - [Base Schemas](./base) - Primitive type schemas
 - [Record Schemas](./records) - DNS record schemas
 - [Validators](../validators/) - Validation utilities
-

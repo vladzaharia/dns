@@ -53,9 +53,9 @@ The **Domain Name System (DNS)** is the internet's phone book. It translates hum
 Maps a hostname to an IPv4 address.
 
 ```typescript
-createARecord("@", "192.0.2.1");      // Root domain
-createARecord("www", "192.0.2.1");    // Subdomain
-createARecord("api", "192.0.2.2");    // Different IP
+createARecord("@", "192.0.2.1"); // Root domain
+createARecord("www", "192.0.2.1"); // Subdomain
+createARecord("api", "192.0.2.2"); // Different IP
 ```
 
 #### AAAA Record (IPv6)
@@ -74,8 +74,8 @@ createAAAARecord("ipv6", "2001:db8::2");
 Creates an alias pointing to another hostname.
 
 ```typescript
-createCNAMERecord("www", "@");                    // Points to root
-createCNAMERecord("blog", "hashnode.network.");   // External service
+createCNAMERecord("www", "@"); // Points to root
+createCNAMERecord("blog", "hashnode.network."); // External service
 ```
 
 ::: warning
@@ -90,8 +90,8 @@ Never use CNAME at the apex (root) domain.
 Specifies mail servers for the domain.
 
 ```typescript
-createMXRecord("@", 10, "mail1.example.com.");  // Primary (priority 10)
-createMXRecord("@", 20, "mail2.example.com.");  // Backup (priority 20)
+createMXRecord("@", 10, "mail1.example.com."); // Primary (priority 10)
+createMXRecord("@", 20, "mail2.example.com."); // Backup (priority 20)
 ```
 
 Lower priority numbers = higher preference.
@@ -126,7 +126,7 @@ Specifies which Certificate Authorities can issue certificates.
 
 ```typescript
 createCAARecord("@", "issue", "letsencrypt.org");
-createCAARecord("@", "issuewild", ";");  // Disallow wildcards
+createCAARecord("@", "issuewild", ";"); // Disallow wildcards
 createCAARecord("@", "iodef", "mailto:security@example.com");
 ```
 
@@ -146,12 +146,12 @@ createSRVRecord("_minecraft._tcp", 0, 0, 25565, "mc.example.com.");
 
 TTL specifies how long records are cached (in seconds).
 
-| TTL | Duration | Use Case |
-|-----|----------|----------|
-| 60 | 1 minute | Failover, testing |
-| 300 | 5 minutes | Dynamic content |
-| 3600 | 1 hour | Standard records |
-| 86400 | 1 day | Stable records |
+| TTL   | Duration  | Use Case          |
+| ----- | --------- | ----------------- |
+| 60    | 1 minute  | Failover, testing |
+| 300   | 5 minutes | Dynamic content   |
+| 3600  | 1 hour    | Standard records  |
+| 86400 | 1 day     | Stable records    |
 
 ```typescript
 // Low TTL for frequently changing records
@@ -185,4 +185,3 @@ When you change DNS records, the changes don't take effect immediately:
 
 - [DNSControl Overview](./dnscontrol) - Learn the underlying tool
 - [Architecture](./architecture) - Polaris DNS architecture
-

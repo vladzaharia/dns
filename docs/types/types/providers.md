@@ -9,10 +9,7 @@ Type definitions for DNS providers and registrars.
 DNS provider function for creating provider instances.
 
 ```typescript
-declare function DNS_PROVIDER(
-  name: string,
-  config?: ProviderConfig
-): DnsProviderInstance
+declare function DNS_PROVIDER(name: string, config?: ProviderConfig): DnsProviderInstance;
 ```
 
 ### ProviderConfig
@@ -31,14 +28,14 @@ interface ProviderConfig {
 
 ### Supported Providers
 
-| Provider | Type | Features |
-|----------|------|----------|
-| Cloudflare | `CLOUDFLAREAPI` | Proxy, Workers |
-| Route 53 | `ROUTE53` | Alias records |
-| Google Cloud | `GCLOUD` | GCP integration |
-| Azure DNS | `AZURE_DNS` | Azure integration |
-| DigitalOcean | `DIGITALOCEAN` | Simple DNS |
-| Bind | `BIND` | Zone files |
+| Provider     | Type            | Features          |
+| ------------ | --------------- | ----------------- |
+| Cloudflare   | `CLOUDFLAREAPI` | Proxy, Workers    |
+| Route 53     | `ROUTE53`       | Alias records     |
+| Google Cloud | `GCLOUD`        | GCP integration   |
+| Azure DNS    | `AZURE_DNS`     | Azure integration |
+| DigitalOcean | `DIGITALOCEAN`  | Simple DNS        |
+| Bind         | `BIND`          | Zone files        |
 
 ## Registrars
 
@@ -47,10 +44,7 @@ interface ProviderConfig {
 Registrar function for creating registrar instances.
 
 ```typescript
-declare function REGISTRAR(
-  name: string,
-  config?: RegistrarConfig
-): RegistrarInstance
+declare function REGISTRAR(name: string, config?: RegistrarConfig): RegistrarInstance;
 ```
 
 ### RegistrarConfig
@@ -67,13 +61,13 @@ interface RegistrarConfig {
 
 ### Supported Registrars
 
-| Registrar | Type |
-|-----------|------|
-| None | `NONE` |
+| Registrar  | Type            |
+| ---------- | --------------- |
+| None       | `NONE`          |
 | Cloudflare | `CLOUDFLAREAPI` |
-| Gandi | `GANDI_V5` |
-| Namecheap | `NAMECHEAP` |
-| Route 53 | `ROUTE53` |
+| Gandi      | `GANDI_V5`      |
+| Namecheap  | `NAMECHEAP`     |
+| Route 53   | `ROUTE53`       |
 
 ## Provider Instances
 
@@ -117,4 +111,3 @@ const registrar: Registrar = REGISTRAR("none");
 
 - [Domain Types](./domains) - Domain configuration
 - [Provider Support](../providers/) - Provider details
-

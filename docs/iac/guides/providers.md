@@ -4,12 +4,12 @@ Polaris DNS supports multiple DNS providers through DNSControl's provider system
 
 ## Supported Providers
 
-| Provider | Type | Features |
-|----------|------|----------|
-| **Cloudflare** | DNS + Registrar | Proxy, Page Rules, Workers |
-| **AWS Route53** | DNS | Health Checks, Alias Records |
-| **Google Cloud DNS** | DNS | Private Zones |
-| **None** | Registrar | DNS-only management |
+| Provider             | Type            | Features                     |
+| -------------------- | --------------- | ---------------------------- |
+| **Cloudflare**       | DNS + Registrar | Proxy, Page Rules, Workers   |
+| **AWS Route53**      | DNS             | Health Checks, Alias Records |
+| **Google Cloud DNS** | DNS             | Private Zones                |
+| **None**             | Registrar       | DNS-only management          |
 
 ## Provider Configuration
 
@@ -69,7 +69,7 @@ createDomain(
     category: "personal",
     registrar: NO_REGISTRAR,
     dnsProvider: CLOUDFLARE,
-  },
+  }
   // Records...
 );
 ```
@@ -132,7 +132,7 @@ createDomain(
     category: "infrastructure",
     registrar: NO_REGISTRAR,
     dnsProvider: ROUTE53,
-  },
+  }
   // Records...
 );
 ```
@@ -146,13 +146,13 @@ Use different providers for different domains:
 ```typescript
 // Personal domains on Cloudflare
 createDomain(
-  { name: "personal.com", dnsProvider: CLOUDFLARE },
+  { name: "personal.com", dnsProvider: CLOUDFLARE }
   // ...
 );
 
 // Infrastructure on Route53
 createDomain(
-  { name: "infra.example.com", dnsProvider: ROUTE53 },
+  { name: "infra.example.com", dnsProvider: ROUTE53 }
   // ...
 );
 ```
@@ -170,16 +170,15 @@ To migrate between providers:
 
 Some record types are provider-specific:
 
-| Record | Cloudflare | Route53 | Google |
-|--------|------------|---------|--------|
-| A | ✅ | ✅ | ✅ |
-| CNAME | ✅ | ✅ | ✅ |
-| ALIAS | ✅ (CNAME flatten) | ✅ | ❌ |
-| CF_REDIRECT | ✅ | ❌ | ❌ |
-| CF_WORKER_ROUTE | ✅ | ❌ | ❌ |
+| Record          | Cloudflare         | Route53 | Google |
+| --------------- | ------------------ | ------- | ------ |
+| A               | ✅                 | ✅      | ✅     |
+| CNAME           | ✅                 | ✅      | ✅     |
+| ALIAS           | ✅ (CNAME flatten) | ✅      | ❌     |
+| CF_REDIRECT     | ✅                 | ❌      | ❌     |
+| CF_WORKER_ROUTE | ✅                 | ❌      | ❌     |
 
 ## Next Steps
 
 - [CI/CD Workflows](./ci-cd) - Automated deployments
 - [Managing Zones](./zones) - Zone configuration
-

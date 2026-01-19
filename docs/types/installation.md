@@ -68,21 +68,21 @@ import type { DomainModifier, RecordConfig } from "@vladzaharia/dnscontrol-types
 
 The package provides multiple entry points:
 
-| Import Path | Description |
-|-------------|-------------|
-| `@vladzaharia/dnscontrol-types` | Main entry - types and utilities |
-| `@vladzaharia/dnscontrol-types/schemas` | Zod validation schemas |
-| `@vladzaharia/dnscontrol-types/validators` | Validation utilities |
-| `@vladzaharia/dnscontrol-types/providers/cloudflare` | Cloudflare-specific types |
+| Import Path                                          | Description                      |
+| ---------------------------------------------------- | -------------------------------- |
+| `@vladzaharia/dnscontrol-types`                      | Main entry - types and utilities |
+| `@vladzaharia/dnscontrol-types/schemas`              | Zod validation schemas           |
+| `@vladzaharia/dnscontrol-types/validators`           | Validation utilities             |
+| `@vladzaharia/dnscontrol-types/providers/cloudflare` | Cloudflare-specific types        |
 
 ## Peer Dependencies
 
 This package has the following peer dependencies:
 
-| Dependency | Version | Required |
-|------------|---------|----------|
-| `zod` | `^3.23.0` | Optional* |
-| `typescript` | `^5.0.0` | Optional |
+| Dependency   | Version   | Required   |
+| ------------ | --------- | ---------- |
+| `zod`        | `^3.23.0` | Optional\* |
+| `typescript` | `^5.0.0`  | Optional   |
 
 \* Zod is only required if you use the schemas or validators.
 
@@ -97,10 +97,7 @@ Create a test file to verify the types are working:
 var REG_NONE = NewRegistrar("none");
 var DNS_CF = NewDnsProvider("cloudflare");
 
-D("test.example.com", REG_NONE, DnsProvider(DNS_CF),
-  A("@", "192.0.2.1"),
-  CNAME("www", "@")
-);
+D("test.example.com", REG_NONE, DnsProvider(DNS_CF), A("@", "192.0.2.1"), CNAME("www", "@"));
 ```
 
 If your IDE shows proper autocomplete for `NewRegistrar`, `NewDnsProvider`, `D`, `A`, `CNAME`, etc., the installation is successful.

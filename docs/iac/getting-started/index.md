@@ -43,6 +43,7 @@ Polaris DNS is a TypeScript-based DNS Infrastructure-as-Code (IaC) solution buil
 ### Zones
 
 Zones represent DNS domains. Each zone file defines:
+
 - Domain name and category (personal, infrastructure, external)
 - Registrar and DNS provider
 - DNS records (A, CNAME, MX, TXT, etc.)
@@ -50,6 +51,7 @@ Zones represent DNS domains. Each zone file defines:
 ### Services
 
 Services are reusable definitions that can be deployed across domains:
+
 - Define subdomain, description, and target server
 - Automatically generate DNS records
 - Support for multiple routing strategies
@@ -57,6 +59,7 @@ Services are reusable definitions that can be deployed across domains:
 ### Servers
 
 The server registry defines physical/virtual servers:
+
 - Name, location, hostname, IP address
 - Used by services for routing
 
@@ -92,4 +95,3 @@ packages/polaris-dns/
 - [Quick Start](./quick-start) - Create your first DNS zone
 - [Project Structure](./structure) - Detailed project organization
 - [Concepts](../concepts/) - DNS and architecture fundamentals
-

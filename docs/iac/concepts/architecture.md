@@ -126,6 +126,7 @@ createDomain({ name: "example.com", ... }, ...records)
 ### Domain Builder
 
 Responsible for:
+
 - Creating domain definitions
 - Setting default TTL
 - Configuring registrar and DNS provider
@@ -134,6 +135,7 @@ Responsible for:
 ### Record Builders
 
 Provide type-safe wrappers for:
+
 - Standard DNS records (A, AAAA, CNAME, MX, TXT, etc.)
 - Service records (pointing to servers)
 - Provider-specific features (Cloudflare proxy)
@@ -141,6 +143,7 @@ Provide type-safe wrappers for:
 ### Server Registry
 
 Centralized definition of:
+
 - Server names and locations
 - IP addresses and hostnames
 - DDNS flags
@@ -148,6 +151,7 @@ Centralized definition of:
 ### Mail Providers
 
 Pre-configured record sets for:
+
 - Fastmail (MX, SPF, DKIM, DMARC)
 - Postal (self-hosted)
 - Cloudflare Email Routing
@@ -157,6 +161,7 @@ Pre-configured record sets for:
 ### @vladzaharia/dnscontrol-types
 
 Public NPM package providing:
+
 - TypeScript type definitions
 - Zod validation schemas
 - Runtime validators
@@ -164,6 +169,7 @@ Public NPM package providing:
 ### Internal Types
 
 Polaris DNS internal types:
+
 - `DomainCategory` - Domain classification
 - `ServerName` - Server identifiers
 - `Service` - Service definitions
@@ -188,4 +194,3 @@ Polaris DNS internal types:
 
 - [Managing Zones](../guides/zones) - Create DNS zones
 - [Creating Records](../guides/records) - Add DNS records
-

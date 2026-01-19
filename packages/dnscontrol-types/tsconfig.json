@@ -1,18 +1,9 @@
 {
+  "extends": "@vladzaharia/dns-config/tsconfig",
   "compilerOptions": {
-    "target": "ES2020",
     "module": "ESNext",
-    "moduleResolution": "bundler",
-    "strict": true,
     "noEmit": true,
-    "skipLibCheck": true,
-    "declaration": true,
     "declarationMap": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "ES2020"
-    ],
     "types": []
   },
   "include": [

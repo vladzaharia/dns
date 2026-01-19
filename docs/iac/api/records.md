@@ -9,29 +9,21 @@ API reference for DNS record builder functions.
 Creates an A record (IPv4 address).
 
 ```typescript
-function createARecord(
-  name: string,
-  ip: string,
-  options?: RecordOptions
-): DomainModifier
+function createARecord(name: string, ip: string, options?: RecordOptions): DomainModifier;
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | `string` | Record name (`@` for apex) |
-| `ip` | `string` | IPv4 address |
-| `options` | `RecordOptions` | Optional modifiers |
+| Parameter | Type            | Description                |
+| --------- | --------------- | -------------------------- |
+| `name`    | `string`        | Record name (`@` for apex) |
+| `ip`      | `string`        | IPv4 address               |
+| `options` | `RecordOptions` | Optional modifiers         |
 
 ### createAAAARecord
 
 Creates an AAAA record (IPv6 address).
 
 ```typescript
-function createAAAARecord(
-  name: string,
-  ip: string,
-  options?: RecordOptions
-): DomainModifier
+function createAAAARecord(name: string, ip: string, options?: RecordOptions): DomainModifier;
 ```
 
 ## Alias Records
@@ -41,11 +33,7 @@ function createAAAARecord(
 Creates a CNAME record (canonical name).
 
 ```typescript
-function createCNAMERecord(
-  name: string,
-  target: string,
-  options?: RecordOptions
-): DomainModifier
+function createCNAMERecord(name: string, target: string, options?: RecordOptions): DomainModifier;
 ```
 
 ## Mail Records
@@ -60,15 +48,15 @@ function createMXRecord(
   priority: number,
   target: string,
   options?: RecordOptions
-): DomainModifier
+): DomainModifier;
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `name` | `string` | Record name |
-| `priority` | `number` | Mail server priority |
-| `target` | `string` | Mail server hostname |
-| `options` | `RecordOptions` | Optional modifiers |
+| Parameter  | Type            | Description          |
+| ---------- | --------------- | -------------------- |
+| `name`     | `string`        | Record name          |
+| `priority` | `number`        | Mail server priority |
+| `target`   | `string`        | Mail server hostname |
+| `options`  | `RecordOptions` | Optional modifiers   |
 
 ## Text Records
 
@@ -77,11 +65,7 @@ function createMXRecord(
 Creates a TXT record.
 
 ```typescript
-function createTXTRecord(
-  name: string,
-  content: string,
-  options?: RecordOptions
-): DomainModifier
+function createTXTRecord(name: string, content: string, options?: RecordOptions): DomainModifier;
 ```
 
 ## Security Records
@@ -96,7 +80,7 @@ function createCAARecord(
   tag: "issue" | "issuewild" | "iodef",
   value: string,
   options?: RecordOptions
-): DomainModifier
+): DomainModifier;
 ```
 
 ## Service Records
@@ -113,7 +97,7 @@ function createSRVRecord(
   port: number,
   target: string,
   options?: RecordOptions
-): DomainModifier
+): DomainModifier;
 ```
 
 ### createServiceRecord
@@ -125,7 +109,7 @@ function createServiceRecord(
   subdomain: string,
   server: ServerName,
   options?: ServiceRecordOptions
-): DomainModifier
+): DomainModifier;
 ```
 
 ## Types
@@ -134,7 +118,7 @@ function createServiceRecord(
 
 ```typescript
 interface RecordOptions {
-  proxy?: ProxyStatus;  // "on" | "off" | "full"
+  proxy?: ProxyStatus; // "on" | "off" | "full"
   ttl?: number;
 }
 ```

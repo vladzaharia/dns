@@ -181,4 +181,3 @@ DEBUG=dnscontrol:*
 - [Code Style](./code-style) - Coding standards
 - [Testing](./testing) - Testing guide
 - [Pull Requests](./pull-requests) - PR process
-
