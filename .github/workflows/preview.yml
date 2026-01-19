@@ -226,7 +226,10 @@ jobs:
           PREVIEW_ICON=$(get_icon "$PREVIEW_RESULT")
 
           # Changes icon and text
-          if [ "$HAS_CHANGES" == "true" ]; then
+          if [ "$PREVIEW_RESULT" != "success" ]; then
+            CHANGES_ICON="❌"
+            CHANGES_TEXT="Preview failed"
+          elif [ "$HAS_CHANGES" == "true" ]; then
             CHANGES_ICON="🔄"
             CHANGES_TEXT="${CHANGES_SUMMARY:-Changes detected}"
           else
@@ -243,9 +246,7 @@ jobs:
           # Build the comment using echo statements
           {
             echo "<!-- dns-preview-comment -->"
-            echo "## 🌐 DNS Preview Results"
-            echo ""
-            echo "### 📊 Status"
+            echo "## 🕒 Run History"
             echo ""
             echo "| Commit | Build | Test | Validate | Preview | Changes |"
             echo "|--------|-------|------|----------|---------|---------|"
@@ -254,6 +255,8 @@ jobs:
             if [ -n "$EXISTING_ROWS" ]; then
               echo "$EXISTING_ROWS"
             fi
+            echo ""
+            echo "## 🌐 Run Results"
             echo ""
             echo "### 🔨 Build"
             echo ""
@@ -311,18 +314,18 @@ jobs:
             echo ""
             echo "### ✅ Validation"
             echo ""
-            echo "| Package | Lint | Format | Typecheck |"
-            echo "|---------|------|--------|-----------|"
+            echo "| Package | Typecheck | Lint | Format |"
+            echo "|---------|-----------|------|--------|"
 
             # Parse validate packages JSON and generate rows
             if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
-              echo "$VALIDATE_PACKAGES" | jq -r '.[] | "\(.name)|\(.lint)|\(.format)|\(.typecheck)"' | while IFS='|' read -r pkg lint format typecheck; do
+              echo "$VALIDATE_PACKAGES" | jq -r '.[] | "\(.name)|\(.typecheck)|\(.lint)|\(.format)"' | while IFS='|' read -r pkg typecheck lint format; do
                 # Get short package name (remove @vladzaharia/ prefix)
                 SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+                TYPECHECK_ICON=$(if [ "$typecheck" == "success" ]; then echo "✅"; else echo "❌"; fi)
                 LINT_ICON=$(if [ "$lint" == "success" ]; then echo "✅"; else echo "❌"; fi)
                 FORMAT_ICON=$(if [ "$format" == "success" ]; then echo "✅"; else echo "❌"; fi)
-                TYPECHECK_ICON=$(if [ "$typecheck" == "success" ]; then echo "✅"; else echo "❌"; fi)
-                echo "| $SHORT_PKG | $LINT_ICON | $FORMAT_ICON | $TYPECHECK_ICON |"
+                echo "| $SHORT_PKG | $TYPECHECK_ICON | $LINT_ICON | $FORMAT_ICON |"
               done
             else
               echo "| No packages | - | - | - |"
@@ -340,12 +343,19 @@ jobs:
             echo ""
             echo "### 🔄 DNS Changes"
             echo ""
-            echo "**Summary:** ${CHANGES_SUMMARY:-**0** changes}"
-            echo ""
-            if [ -n "$CHANGES_TABLE" ] && [ "$CHANGES_TABLE" != "" ]; then
-              echo "| Type | Domain | Record | Old Value | New Value |"
-              echo "|------|--------|--------|-----------|-----------|"
-              echo "$CHANGES_TABLE"
+            if [ "$PREVIEW_RESULT" != "success" ]; then
+              echo "**Summary:** ❌ Preview completed with errors"
+              echo ""
+              echo "> [!WARNING]"
+              echo "> The DNS preview step failed. Check the output below for details."
+            else
+              echo "**Summary:** ${CHANGES_SUMMARY:-**0** changes}"
+              echo ""
+              if [ -n "$CHANGES_TABLE" ] && [ "$CHANGES_TABLE" != "" ]; then
+                echo "| Type | Domain | Record | Old Value | New Value |"
+                echo "|------|--------|--------|-----------|-----------|"
+                echo "$CHANGES_TABLE"
+              fi
             fi
             echo ""
             echo "<details>"
@@ -358,7 +368,7 @@ jobs:
             echo "</details>"
             echo ""
             echo "---"
-            echo "*Latest commit: \`$COMMIT_SHA\` | [View Run](https://github.com/$REPO/actions/runs/$RUN_ID)*"
+            echo "*Latest commit: \`$COMMIT_SHA\`* | [View Run](https://github.com/$REPO/actions/runs/$RUN_ID)"
           } > comment.md
 
           # Output the comment content

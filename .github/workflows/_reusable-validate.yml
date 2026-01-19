@@ -168,8 +168,8 @@ jobs:
           PACKAGES_JSON="["
           FIRST_PKG=true
 
-          # Find and parse all test-results.json files
-          for file in $(find ./packages -name "test-results.json" -type f 2>/dev/null); do
+          # Find and parse all test-results.json files (search in both packages and docs)
+          for file in $(find ./packages ./docs -name "test-results.json" -type f 2>/dev/null); do
             if [ -f "$file" ] && jq -e . "$file" > /dev/null 2>&1; then
               # Extract package name from path
               PKG_PATH=$(dirname "$file")
