@@ -6,6 +6,9 @@ on:
       build-result:
         description: "Build result (success/failure)"
         value: ${{ jobs.compile.outputs.build-result }}
+      build-output:
+        description: "Build output"
+        value: ${{ jobs.compile.outputs.build-output }}
 
 jobs:
   compile:
@@ -13,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build-result: ${{ steps.build.outcome }}
+      build-output: ${{ steps.build.outputs.output }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6.0.1
@@ -31,7 +35,17 @@ jobs:
 
       - name: Build JS files
         id: build
-        run: pnpm run build
+        shell: bash
+        run: |
+          set +e
+          OUTPUT=$(pnpm run build 2>&1)
+          EXIT_CODE=$?
+          set -e
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT"
+          exit $EXIT_CODE
 
       - name: Upload compiled JS
         uses: actions/upload-artifact@v4

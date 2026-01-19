@@ -6,15 +6,30 @@ on:
       lint-result:
         description: "Lint check result (success/failure)"
         value: ${{ jobs.validate.outputs.lint-result }}
+      lint-output:
+        description: "Lint output"
+        value: ${{ jobs.validate.outputs.lint-output }}
       format-result:
         description: "Format check result (success/failure)"
         value: ${{ jobs.validate.outputs.format-result }}
+      format-output:
+        description: "Format output"
+        value: ${{ jobs.validate.outputs.format-output }}
       typecheck-result:
         description: "Typecheck result (success/failure)"
         value: ${{ jobs.validate.outputs.typecheck-result }}
+      typecheck-output:
+        description: "Typecheck output"
+        value: ${{ jobs.validate.outputs.typecheck-output }}
       test-result:
         description: "Test result (success/failure)"
         value: ${{ jobs.validate.outputs.test-result }}
+      test-output:
+        description: "Test output"
+        value: ${{ jobs.validate.outputs.test-output }}
+      test-summary:
+        description: "Test summary JSON with counts"
+        value: ${{ jobs.validate.outputs.test-summary }}
 
 jobs:
   validate:
@@ -22,9 +37,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       lint-result: ${{ steps.lint.outcome }}
+      lint-output: ${{ steps.lint.outputs.output }}
       format-result: ${{ steps.format.outcome }}
+      format-output: ${{ steps.format.outputs.output }}
       typecheck-result: ${{ steps.typecheck.outcome }}
+      typecheck-output: ${{ steps.typecheck.outputs.output }}
       test-result: ${{ steps.test.outcome }}
+      test-output: ${{ steps.test.outputs.output }}
+      test-summary: ${{ steps.test-summary.outputs.summary }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6.0.1
@@ -46,23 +66,91 @@ jobs:
 
       - name: Run ESLint
         id: lint
-        run: pnpm run lint
+        shell: bash
         continue-on-error: true
+        run: |
+          set +e
+          OUTPUT=$(pnpm run lint 2>&1)
+          EXIT_CODE=$?
+          set -e
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          exit $EXIT_CODE
 
       - name: Check formatting
         id: format
-        run: pnpm run format:check
+        shell: bash
         continue-on-error: true
+        run: |
+          set +e
+          OUTPUT=$(pnpm run format:check 2>&1)
+          EXIT_CODE=$?
+          set -e
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          exit $EXIT_CODE
 
       - name: Run TypeScript type checking
         id: typecheck
-        run: pnpm run typecheck
+        shell: bash
         continue-on-error: true
+        run: |
+          set +e
+          OUTPUT=$(pnpm run typecheck 2>&1)
+          EXIT_CODE=$?
+          set -e
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          exit $EXIT_CODE
 
-      - name: Run tests
+      - name: Run tests with JSON reporter
         id: test
-        run: pnpm run test
+        shell: bash
         continue-on-error: true
+        run: |
+          set +e
+          # Run tests with both verbose and JSON reporters
+          OUTPUT=$(pnpm run test -- --reporter=verbose --reporter=json --outputFile=test-results.json 2>&1)
+          EXIT_CODE=$?
+          set -e
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          echo "$OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          exit $EXIT_CODE
+
+      - name: Parse test results
+        id: test-summary
+        if: always()
+        shell: bash
+        run: |
+          # Initialize counters
+          TOTAL_TESTS=0
+          PASSED_TESTS=0
+          FAILED_TESTS=0
+          SKIPPED_TESTS=0
+
+          # Find and parse all test-results.json files
+          for file in $(find . -name "test-results.json" -type f 2>/dev/null); do
+            if [ -f "$file" ] && jq -e . "$file" > /dev/null 2>&1; then
+              # Parse Vitest JSON output
+              FILE_TOTAL=$(jq '[.testResults[].assertionResults | length] | add // 0' "$file" 2>/dev/null || echo 0)
+              FILE_PASSED=$(jq '[.testResults[].assertionResults[] | select(.status == "passed")] | length // 0' "$file" 2>/dev/null || echo 0)
+              FILE_FAILED=$(jq '[.testResults[].assertionResults[] | select(.status == "failed")] | length // 0' "$file" 2>/dev/null || echo 0)
+              FILE_SKIPPED=$(jq '[.testResults[].assertionResults[] | select(.status == "skipped" or .status == "pending" or .status == "todo")] | length // 0' "$file" 2>/dev/null || echo 0)
+
+              TOTAL_TESTS=$((TOTAL_TESTS + FILE_TOTAL))
+              PASSED_TESTS=$((PASSED_TESTS + FILE_PASSED))
+              FAILED_TESTS=$((FAILED_TESTS + FILE_FAILED))
+              SKIPPED_TESTS=$((SKIPPED_TESTS + FILE_SKIPPED))
+            fi
+          done
+
+          # Create summary JSON
+          SUMMARY="{\"total\":$TOTAL_TESTS,\"passed\":$PASSED_TESTS,\"failed\":$FAILED_TESTS,\"skipped\":$SKIPPED_TESTS}"
+          echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
 
       - name: Check for failures
         if: steps.lint.outcome == 'failure' || steps.format.outcome == 'failure' || steps.typecheck.outcome == 'failure' || steps.test.outcome == 'failure'

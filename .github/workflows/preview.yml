@@ -30,7 +30,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       preview-output: ${{ steps.preview.outputs.preview-output }}
+      preview-report: ${{ steps.preview.outputs.preview-report }}
       has-changes: ${{ steps.preview.outputs.has-changes }}
+      changes-summary: ${{ steps.parse-changes.outputs.summary }}
+      changes-table: ${{ steps.parse-changes.outputs.table }}
     steps:
       - name: Download DNSControl binaries
         uses: actions/download-artifact@v4
@@ -57,7 +60,7 @@ jobs:
           CF_API: ${{ secrets.CF_API }}
         run: |
           set +e
-          OUTPUT=$(../bin/dnscontrol-Linux --diff2 preview 2>&1)
+          OUTPUT=$(../bin/dnscontrol-Linux --diff2 preview --report ../report.json 2>&1)
           EXIT_CODE=$?
           set -e
 
@@ -66,8 +69,18 @@ jobs:
           echo "$OUTPUT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+          # Save JSON report if it exists
+          if [ -f "../report.json" ]; then
+            REPORT=$(cat ../report.json)
+            echo "preview-report<<EOF" >> $GITHUB_OUTPUT
+            echo "$REPORT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "preview-report=[]" >> $GITHUB_OUTPUT
+          fi
+
           # Check if there are changes
-          if echo "$OUTPUT" | grep -q "CREATING\|MODIFY\|DELETE"; then
+          if echo "$OUTPUT" | grep -qE "CREATING|MODIFY|DELETE|\+ CREATE|\- DELETE|± MODIFY"; then
             echo "has-changes=true" >> $GITHUB_OUTPUT
           else
             echo "has-changes=false" >> $GITHUB_OUTPUT
@@ -79,67 +92,224 @@ jobs:
           # Exit with original code
           exit $EXIT_CODE
 
+      - name: Parse DNS changes
+        id: parse-changes
+        if: always()
+        shell: bash
+        run: |
+          # Parse the preview output to create a structured changes table
+          PREVIEW_OUTPUT='${{ steps.preview.outputs.preview-output }}'
+
+          # Count changes by type
+          CREATE_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^\+ CREATE|\bCREATING\b" || echo 0)
+          MODIFY_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^± MODIFY|\bMODIFY\b" || echo 0)
+          DELETE_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^\- DELETE|\bDELETE\b" || echo 0)
+          TOTAL_COUNT=$((CREATE_COUNT + MODIFY_COUNT + DELETE_COUNT))
+
+          # Create summary
+          SUMMARY="**$TOTAL_COUNT** changes"
+          if [ "$TOTAL_COUNT" -gt 0 ]; then
+            PARTS=""
+            [ "$CREATE_COUNT" -gt 0 ] && PARTS="$CREATE_COUNT create"
+            [ "$MODIFY_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS, }$MODIFY_COUNT modify"
+            [ "$DELETE_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS, }$DELETE_COUNT delete"
+            SUMMARY="$SUMMARY ($PARTS)"
+          fi
+          echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
+
+          # Create changes table from output
+          TABLE=""
+          while IFS= read -r line; do
+            # Parse CREATE lines: "+ CREATE domain.com TYPE value ttl=xxx"
+            if echo "$line" | grep -qE "^\+ CREATE|CREATING"; then
+              DOMAIN=$(echo "$line" | sed -E 's/.*CREATE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/' | head -1)
+              TYPE=$(echo "$line" | sed -E 's/.*CREATE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z]+)[[:space:]].*/\1/' | head -1)
+              VALUE=$(echo "$line" | sed -E 's/.*CREATE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | xargs)
+              TABLE="${TABLE}| ➕ | ${DOMAIN} | ${TYPE} | - | ${VALUE} |"$'\n'
+            # Parse MODIFY lines: "± MODIFY domain.com TYPE (old) -> (new)"
+            elif echo "$line" | grep -qE "^± MODIFY|MODIFY"; then
+              DOMAIN=$(echo "$line" | sed -E 's/.*MODIFY[^[:space:]]*[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/' | head -1)
+              TYPE=$(echo "$line" | sed -E 's/.*MODIFY[^[:space:]]*[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z]+)[[:space:]].*/\1/' | head -1)
+              OLD=$(echo "$line" | sed -E 's/.*\(([^)]+)\)[[:space:]]*->.*/\1/' | head -1)
+              NEW=$(echo "$line" | sed -E 's/.*->[[:space:]]*\(([^)]+)\).*/\1/' | head -1)
+              TABLE="${TABLE}| ✏️ | ${DOMAIN} | ${TYPE} | ${OLD} | ${NEW} |"$'\n'
+            # Parse DELETE lines: "- DELETE domain.com TYPE value"
+            elif echo "$line" | grep -qE "^\- DELETE|DELETE"; then
+              DOMAIN=$(echo "$line" | sed -E 's/.*DELETE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/' | head -1)
+              TYPE=$(echo "$line" | sed -E 's/.*DELETE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z]+)[[:space:]].*/\1/' | head -1)
+              VALUE=$(echo "$line" | sed -E 's/.*DELETE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | xargs)
+              TABLE="${TABLE}| 🗑️ | ${DOMAIN} | ${TYPE} | ${VALUE} | - |"$'\n'
+            fi
+          done <<< "$PREVIEW_OUTPUT"
+
+          # Output table (escape for GitHub Actions)
+          echo "table<<EOF" >> $GITHUB_OUTPUT
+          echo "$TABLE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
   comment:
     name: Update PR Comment
     needs: [validate, prepare, preview]
     if: always() && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Generate status icons
-        id: status
+      - name: Find existing PR comment
+        id: find-comment
+        uses: peter-evans/find-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "<!-- dns-preview-comment -->"
+
+      - name: Extract existing status rows
+        id: existing-rows
+        shell: bash
+        env:
+          EXISTING_BODY: ${{ steps.find-comment.outputs.comment-body }}
         run: |
-          # Validation status
-          if [ "${{ needs.validate.result }}" == "success" ]; then
-            echo "validate-icon=✅" >> $GITHUB_OUTPUT
+          # Extract existing status table rows (excluding header)
+          if [ -n "$EXISTING_BODY" ]; then
+            # Extract rows between the table header separator and the next section
+            ROWS=$(echo "$EXISTING_BODY" | sed -n '/^|--------|/,/^$/p' | grep "^| \[" || echo "")
+            echo "rows<<EOF" >> $GITHUB_OUTPUT
+            echo "$ROWS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
-            echo "validate-icon=❌" >> $GITHUB_OUTPUT
+            echo "rows=" >> $GITHUB_OUTPUT
           fi
 
-          # Build status
-          if [ "${{ needs.prepare.result }}" == "success" ]; then
-            echo "build-icon=✅" >> $GITHUB_OUTPUT
+      - name: Generate comment content
+        id: comment
+        shell: bash
+        env:
+          PREPARE_RESULT: ${{ needs.prepare.result }}
+          PREVIEW_RESULT: ${{ needs.preview.result }}
+          HAS_CHANGES: ${{ needs.preview.outputs.has-changes }}
+          CHANGES_SUMMARY: ${{ needs.preview.outputs.changes-summary }}
+          CHANGES_TABLE: ${{ needs.preview.outputs.changes-table }}
+          PREVIEW_OUTPUT: ${{ needs.preview.outputs.preview-output }}
+          BUILD_OUTPUT: ${{ needs.prepare.outputs.build-output }}
+          TEST_RESULT: ${{ needs.validate.outputs.test-result }}
+          TEST_OUTPUT: ${{ needs.validate.outputs.test-output }}
+          TEST_SUMMARY: ${{ needs.validate.outputs.test-summary }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          EXISTING_ROWS: ${{ steps.existing-rows.outputs.rows }}
+        run: |
+          # Generate status icons
+          get_icon() {
+            if [ "$1" == "success" ]; then echo "✅"; else echo "❌"; fi
+          }
+
+          BUILD_ICON=$(get_icon "$PREPARE_RESULT")
+          PREVIEW_ICON=$(get_icon "$PREVIEW_RESULT")
+          TEST_ICON=$(get_icon "$TEST_RESULT")
+
+          # Changes icon
+          if [ "$HAS_CHANGES" == "true" ]; then
+            CHANGES_ICON="🔄"
+            CHANGES_TEXT="Changes detected"
           else
-            echo "build-icon=❌" >> $GITHUB_OUTPUT
+            CHANGES_ICON="✨"
+            CHANGES_TEXT="No changes"
           fi
 
-          # Preview status
-          if [ "${{ needs.preview.result }}" == "success" ]; then
-            echo "preview-icon=✅" >> $GITHUB_OUTPUT
+          # Parse test summary
+          if [ -n "$TEST_SUMMARY" ] && [ "$TEST_SUMMARY" != "null" ]; then
+            TEST_TOTAL=$(echo "$TEST_SUMMARY" | jq -r '.total // 0')
+            TEST_PASSED=$(echo "$TEST_SUMMARY" | jq -r '.passed // 0')
+            TEST_FAILED=$(echo "$TEST_SUMMARY" | jq -r '.failed // 0')
+            TEST_SKIPPED=$(echo "$TEST_SUMMARY" | jq -r '.skipped // 0')
           else
-            echo "preview-icon=❌" >> $GITHUB_OUTPUT
+            TEST_TOTAL=0
+            TEST_PASSED=0
+            TEST_FAILED=0
+            TEST_SKIPPED=0
           fi
 
-          # Changes status
-          if [ "${{ needs.preview.outputs.has-changes }}" == "true" ]; then
-            echo "changes-icon=🔄" >> $GITHUB_OUTPUT
-            echo "changes-text=Changes detected" >> $GITHUB_OUTPUT
-          else
-            echo "changes-icon=✨" >> $GITHUB_OUTPUT
-            echo "changes-text=No changes" >> $GITHUB_OUTPUT
-          fi
+          # Short commit SHA
+          SHORT_SHA="${COMMIT_SHA:0:7}"
+
+          # Create new status row
+          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $TEST_ICON | $PREVIEW_ICON | $CHANGES_ICON $CHANGES_TEXT |"
+
+          # Build the comment using echo statements
+          {
+            echo "<!-- dns-preview-comment -->"
+            echo "## 🌐 DNS Preview Results"
+            echo ""
+            echo "### 📊 Status"
+            echo ""
+            echo "| Commit | Build | Test | Preview | Changes |"
+            echo "|--------|-------|------|---------|---------|"
+            echo "$NEW_ROW"
+            # Append existing rows (history)
+            if [ -n "$EXISTING_ROWS" ]; then
+              echo "$EXISTING_ROWS"
+            fi
+            echo ""
+            echo "### 🔨 Build"
+            echo ""
+            echo "| Status |"
+            echo "|--------|"
+            echo "| $BUILD_ICON |"
+            echo ""
+            echo "<details>"
+            echo "<summary>📋 Build Output</summary>"
+            echo ""
+            echo "\`\`\`"
+            echo "${BUILD_OUTPUT:-No output}"
+            echo "\`\`\`"
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "### 🧪 Tests"
+            echo ""
+            echo "| Total | Passed | Failed | Skipped |"
+            echo "|-------|--------|--------|---------|"
+            echo "| $TEST_TOTAL | $TEST_PASSED | $TEST_FAILED | $TEST_SKIPPED |"
+            echo ""
+            echo "<details>"
+            echo "<summary>📋 Test Output</summary>"
+            echo ""
+            echo "\`\`\`"
+            echo "${TEST_OUTPUT:-No output}"
+            echo "\`\`\`"
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "### 🔄 DNS Changes"
+            echo ""
+            echo "**Summary:** ${CHANGES_SUMMARY:-No changes}"
+            echo ""
+            if [ -n "$CHANGES_TABLE" ] && [ "$CHANGES_TABLE" != "" ]; then
+              echo "| Type | Domain | Record | Old Value | New Value |"
+              echo "|------|--------|--------|-----------|-----------|"
+              echo "$CHANGES_TABLE"
+            fi
+            echo ""
+            echo "<details>"
+            echo "<summary>📋 Full DNSControl Output</summary>"
+            echo ""
+            echo "\`\`\`"
+            echo "${PREVIEW_OUTPUT:-No output available}"
+            echo "\`\`\`"
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo "*Latest commit: \`$COMMIT_SHA\` | [View Run](https://github.com/$REPO/actions/runs/$RUN_ID)*"
+          } > comment.md
+
+          # Output the comment content
+          COMMENT_CONTENT=$(cat comment.md)
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMENT_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create or update PR comment
         uses: marocchino/sticky-pull-request-comment@v2.9.4
         with:
           header: dns-preview
-          message: |
-            ## 🌐 DNS Preview Results
-
-            | Step | Status |
-            |------|--------|
-            | Validation (lint, format, typecheck, test) | ${{ steps.status.outputs.validate-icon }} |
-            | Build | ${{ steps.status.outputs.build-icon }} |
-            | Preview | ${{ steps.status.outputs.preview-icon }} |
-            | **Changes** | ${{ steps.status.outputs.changes-icon }} ${{ steps.status.outputs.changes-text }} |
-
-            <details>
-            <summary>📋 DNSControl Preview Output</summary>
-
-            ```
-            ${{ needs.preview.outputs.preview-output || 'No output available' }}
-            ```
-
-            </details>
-
-            ---
-            *Commit: `${{ github.event.pull_request.head.sha }}`*
+          message: ${{ steps.comment.outputs.content }}
