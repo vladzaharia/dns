@@ -102,15 +102,23 @@ jobs:
           # Parse the preview output to create a structured changes table
           # Use env var to safely handle special characters in the output
 
-          # Count changes by type (handle empty/missing output)
+          # Strip ANSI color codes from output for parsing
+          # DNSControl outputs colored text which breaks grep patterns
           if [ -z "$PREVIEW_OUTPUT" ]; then
+            CLEAN_OUTPUT=""
+          else
+            CLEAN_OUTPUT=$(echo "$PREVIEW_OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
+          fi
+
+          # Count changes by type (handle empty/missing output)
+          if [ -z "$CLEAN_OUTPUT" ]; then
             CREATE_COUNT=0
             MODIFY_COUNT=0
             DELETE_COUNT=0
           else
-            CREATE_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^#[0-9]+: \+ CREATE" || echo 0)
-            MODIFY_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^#[0-9]+: ± MODIFY" || echo 0)
-            DELETE_COUNT=$(echo "$PREVIEW_OUTPUT" | grep -cE "^#[0-9]+: - DELETE" || echo 0)
+            CREATE_COUNT=$(echo "$CLEAN_OUTPUT" | grep -cE "^#[0-9]+: \+ CREATE" || echo 0)
+            MODIFY_COUNT=$(echo "$CLEAN_OUTPUT" | grep -cE "^#[0-9]+: ± MODIFY" || echo 0)
+            DELETE_COUNT=$(echo "$CLEAN_OUTPUT" | grep -cE "^#[0-9]+: - DELETE" || echo 0)
           fi
           TOTAL_COUNT=$((CREATE_COUNT + MODIFY_COUNT + DELETE_COUNT))
 
@@ -174,7 +182,7 @@ jobs:
               TABLE="${TABLE}| 🗑️ | ${DOMAIN} | ${TYPE} | ${VALUE} | - |"$'\n'
               CHANGE_COUNT=$((CHANGE_COUNT + 1))
             fi
-          done <<< "$PREVIEW_OUTPUT"
+          done <<< "$CLEAN_OUTPUT"
 
           # Add truncation notice if needed
           if [ "$TOTAL_COUNT" -gt "$MAX_CHANGES" ]; then

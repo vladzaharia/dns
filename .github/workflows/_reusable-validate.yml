@@ -140,7 +140,8 @@ jobs:
             echo "::group::Testing $pkg"
             set +e
             # Run test with JSON output
-            PKG_OUTPUT=$(pnpm --filter "$pkg" run test -- --reporter=verbose --reporter=json --outputFile=test-results.json 2>&1)
+            # Use --outputFile.json for Vitest 4+ dot notation to correctly output JSON file
+            PKG_OUTPUT=$(pnpm --filter "$pkg" run test -- --reporter=verbose --reporter=json --outputFile.json=test-results.json 2>&1)
             PKG_EXIT=$?
             if [ $PKG_EXIT -ne 0 ]; then
               OVERALL_EXIT=1
