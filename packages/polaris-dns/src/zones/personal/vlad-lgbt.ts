@@ -13,6 +13,7 @@ const DOMAIN = "vlad.lgbt";
 const NO_REGISTRAR = NewRegistrar("none");
 const CLOUDFLARE_WITH_REDIRECT = NewDnsProvider("cloudflare", undefined, {
   manage_redirects: true,
+  manage_single_redirects: true,
 });
 
 export function registerVladLGBT(): void {
