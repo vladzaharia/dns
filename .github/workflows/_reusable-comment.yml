@@ -250,9 +250,12 @@ jobs:
             fi
             echo "$NEW_ROW"
             echo ""
+            # Build URLs for linking headers to job runs
+            RUN_URL="https://github.com/$REPO/actions/runs/$RUN_ID"
+
             echo "## 🔨 Build Results"
             echo ""
-            echo "| Package | Build | Lint | Format | Typecheck |"
+            echo "| Package | [Build]($RUN_URL) | [Lint]($RUN_URL) | [Format]($RUN_URL) | [Typecheck]($RUN_URL) |"
             echo "|---------|-------|------|--------|-----------|"
 
             # Combine all package names from build, lint, format, typecheck
@@ -395,73 +398,84 @@ jobs:
             fi
 
             echo ""
-            echo "> 📈 For coverage delta and new code coverage, see the [Codecov Report](https://codecov.io/gh/$REPO/pull/${{ github.event.pull_request.number }})"
+            echo "> 📈 Coverage delta and new code coverage: [Codecov Report](https://codecov.io/gh/$REPO/pull/${{ github.event.pull_request.number }})"
+            echo ">"
+            echo "> 🔧 Full build output: [Workflow Logs]($RUN_URL)"
+            echo ">"
+            echo "> 🧪 Full test output: [Workflow Logs]($RUN_URL)"
             echo ""
-            
+
             echo ""
             echo "## 🌐 DNS Changes"
             echo ""
 
-            # Domain Summary Table
-            if [ -n "$DOMAIN_SUMMARY" ] && [ "$DOMAIN_SUMMARY" != "" ]; then
-              echo "| Domain | ➕ Additions | ✏️ Changes | 🗑️ Deletions |"
-              echo "|--------|-------------|-----------|--------------|"
-              echo "$DOMAIN_SUMMARY" | while IFS='|' read -r domain adds mods dels; do
-                [ -z "$domain" ] && continue
-                echo "| \`$domain\` | $adds | $mods | $dels |"
-              done
+            # Check if preview failed
+            if [ "$PREVIEW_RESULT" != "success" ]; then
+              echo "> ❌ **DNS Preview Failed**"
+              echo ">"
+              echo "> The DNS preview step failed. Check the [Workflow Logs]($RUN_URL) for details."
               echo ""
-            fi
-
-            # Per-domain detail sections (only domains with changes)
-            for domain in $BASE_DOMAINS; do
-              [ -z "$domain" ] && continue
-              DOMAIN_CHANGES=$(echo "$CHANGES_DATA" | grep "^${domain}|" || echo "")
-              [ -z "$DOMAIN_CHANGES" ] && continue
-
-              # Count changes for this domain
-              ADDS=$(echo "$DOMAIN_CHANGES" | grep -c '|➕|' || true)
-              MODS=$(echo "$DOMAIN_CHANGES" | grep -c '|✏️|' || true)
-              DELS=$(echo "$DOMAIN_CHANGES" | grep -c '|🗑️|' || true)
-              ADDS=${ADDS:-0}
-              MODS=${MODS:-0}
-              DELS=${DELS:-0}
-              TOTAL=$((ADDS + MODS + DELS))
-
-              echo "<details>"
-              echo "<summary><h3>$domain</h3> ($TOTAL change$( [ $TOTAL -ne 1 ] && echo 's'))</summary>"
-              echo ""
-              echo "| Type | Name | Record | Old Value | New Value |"
-              echo "|------|------|--------|-----------|-----------|"
-              # Output changes for this domain (already sorted by type, then name)
-              echo "$DOMAIN_CHANGES" | while IFS='|' read -r base subdomain rectype action old new; do
-                [ -z "$base" ] && continue
-                echo "| $action | $subdomain | $rectype | $old | $new |"
-              done
-              echo ""
-              echo "</details>"
-              echo ""
-            done
-            echo ""
-            echo "---"
-            echo ""
-            echo "<details>"
-            echo "<summary>📋 Full DNSControl Output</summary>"
-            echo ""
-            echo "\`\`\`"
-            # Truncate output to prevent excessively large comments (max ~50KB)
-            MAX_OUTPUT_LINES=500
-            OUTPUT_LINES=$(echo "${PREVIEW_OUTPUT:-No output available}" | wc -l)
-            if [ "$OUTPUT_LINES" -gt "$MAX_OUTPUT_LINES" ]; then
-              echo "${PREVIEW_OUTPUT}" | head -n "$MAX_OUTPUT_LINES"
-              echo ""
-              echo "... (truncated, $OUTPUT_LINES total lines - see workflow logs for full output)"
+              if [ -n "$PREVIEW_OUTPUT" ]; then
+                echo "<details>"
+                echo "<summary>Error Output</summary>"
+                echo ""
+                echo "\`\`\`"
+                echo "$PREVIEW_OUTPUT" | head -n 100
+                echo "\`\`\`"
+                echo ""
+                echo "</details>"
+                echo ""
+              fi
             else
-              echo "${PREVIEW_OUTPUT:-No output available}"
+              # Domain Summary Table
+              if [ -n "$DOMAIN_SUMMARY" ] && [ "$DOMAIN_SUMMARY" != "" ]; then
+                echo "| Domain | ➕ Additions | ✏️ Changes | 🗑️ Deletions |"
+                echo "|--------|-------------|-----------|--------------|"
+                echo "$DOMAIN_SUMMARY" | while IFS='|' read -r domain adds mods dels; do
+                  [ -z "$domain" ] && continue
+                  echo "| \`$domain\` | $adds | $mods | $dels |"
+                done
+                echo ""
+              fi
+
+              # Per-domain detail sections (only domains with changes)
+              for domain in $BASE_DOMAINS; do
+                [ -z "$domain" ] && continue
+                DOMAIN_CHANGES=$(echo "$CHANGES_DATA" | grep "^${domain}|" || echo "")
+                [ -z "$DOMAIN_CHANGES" ] && continue
+
+                # Count changes for this domain
+                ADDS=$(echo "$DOMAIN_CHANGES" | grep -c '|➕|' || true)
+                MODS=$(echo "$DOMAIN_CHANGES" | grep -c '|✏️|' || true)
+                DELS=$(echo "$DOMAIN_CHANGES" | grep -c '|🗑️|' || true)
+                ADDS=${ADDS:-0}
+                MODS=${MODS:-0}
+                DELS=${DELS:-0}
+                TOTAL=$((ADDS + MODS + DELS))
+
+                echo "<details>"
+                echo "<summary><h3>$domain</h3> ($TOTAL change$( [ $TOTAL -ne 1 ] && echo 's'))</summary>"
+                echo ""
+                echo "| Type | Name | Record | Old Value | New Value |"
+                echo "|------|------|--------|-----------|-----------|"
+                # Output changes for this domain (already sorted by type, then name)
+                echo "$DOMAIN_CHANGES" | while IFS='|' read -r base subdomain rectype action old new; do
+                  [ -z "$base" ] && continue
+                  echo "| $action | $subdomain | $rectype | $old | $new |"
+                done
+                echo ""
+                echo "</details>"
+                echo ""
+              done
+
+              if [ "$HAS_CHANGES" != "true" ]; then
+                echo "> ✅ No DNS changes detected"
+                echo ""
+              fi
             fi
-            echo "\`\`\`"
+
             echo ""
-            echo "</details>"
+            echo "> 📋 Full DNSControl output: [Workflow Logs]($RUN_URL)"
             echo ""
             echo "---"
             echo "*Latest commit: \`$COMMIT_SHA\`* | [View Run](https://github.com/$REPO/actions/runs/$RUN_ID)"

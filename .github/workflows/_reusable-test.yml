@@ -222,7 +222,8 @@ jobs:
           # TOTAL_COVERED is sum of coverage percentages, TOTAL_LINES is count * 100
           # So average coverage = TOTAL_COVERED / (TOTAL_LINES / 100) = TOTAL_COVERED * 100 / TOTAL_LINES
           if [ "$TOTAL_LINES" -gt 0 ]; then
-            TOTAL_COV_PCT=$(echo "scale=1; $TOTAL_COVERED * 100 / $TOTAL_LINES" | bc)
+            # Use awk for floating-point arithmetic (bc may not be installed)
+            TOTAL_COV_PCT=$(awk "BEGIN {printf \"%.1f\", $TOTAL_COVERED * 100 / $TOTAL_LINES}")
           else
             TOTAL_COV_PCT="0"
           fi
