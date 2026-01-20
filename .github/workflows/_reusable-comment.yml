@@ -151,17 +151,17 @@ jobs:
           fi
 
           # Extract existing status table rows (excluding header)
-          # Expected format: | Commit | Build | Test | Validate | Preview | Changes | (6 columns = 7 pipes)
+          # Expected format: | Commit | Build | Lint | Format | Typecheck | Test | Preview | (7 columns = 8 pipes)
           if [ -s "existing-comment.txt" ]; then
             # Extract rows between the table header separator and the next section
             RAW_ROWS=$(cat existing-comment.txt | sed -n '/^|--------|/,/^$/p' | grep "^| \[" || echo "")
 
-            # Filter to only include rows with the correct number of columns (7 pipes for 6 columns)
+            # Filter to only include rows with the correct number of columns (8 pipes for 7 columns)
             VALID_ROWS=""
             while IFS= read -r row; do
               if [ -n "$row" ]; then
                 PIPE_COUNT=$(echo "$row" | tr -cd '|' | wc -c)
-                if [ "$PIPE_COUNT" -eq 7 ]; then
+                if [ "$PIPE_COUNT" -eq 8 ]; then
                   VALID_ROWS="${VALID_ROWS}${row}"$'\n'
                 fi
               fi
@@ -221,31 +221,28 @@ jobs:
           TEST_ICON=$(get_icon "$TEST_RESULT")
           PREVIEW_ICON=$(get_icon "$PREVIEW_RESULT")
 
-          # Changes icon and text
+          # Preview column with changes info combined
           if [ "$PREVIEW_RESULT" != "success" ]; then
-            CHANGES_ICON="❌"
-            CHANGES_TEXT="Preview failed"
+            PREVIEW_TEXT="❌ Failed"
           elif [ "$HAS_CHANGES" == "true" ]; then
-            CHANGES_ICON=""
-            CHANGES_TEXT="${CHANGES_SUMMARY:-Changes detected}"
+            PREVIEW_TEXT="⚠️ ${CHANGES_SUMMARY:-Changes}"
           else
-            CHANGES_ICON="✅"
-            CHANGES_TEXT="no changes"
+            PREVIEW_TEXT="✅ No changes"
           fi
 
           # Short commit SHA
           SHORT_SHA="${COMMIT_SHA:0:7}"
 
           # Create new status row (order: Build > Lint > Format > Typecheck > Test > Preview)
-          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $LINT_ICON | $FORMAT_ICON | $TYPECHECK_ICON | $TEST_ICON | $PREVIEW_ICON | $CHANGES_ICON $CHANGES_TEXT |"
+          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $LINT_ICON | $FORMAT_ICON | $TYPECHECK_ICON | $TEST_ICON | $PREVIEW_TEXT |"
 
           # Build the comment using echo statements
           {
             echo "<!-- dns-preview-comment -->"
             echo "## 🕒 PR History"
             echo ""
-            echo "| Commit | Build | Lint | Format | Typecheck | Test | Preview | Changes |"
-            echo "|--------|-------|------|--------|-----------|------|---------|---------|"
+            echo "| Commit | Build | Lint | Format | Typecheck | Test | Preview |"
+            echo "|--------|-------|------|--------|-----------|------|---------|"
             # Output existing rows first (oldest), then new row (newest) - chronological order
             if [ -n "$EXISTING_ROWS" ]; then
               # Strip trailing newlines/whitespace to avoid blank lines in table

@@ -68,8 +68,9 @@ jobs:
             
             if [ -f "$PKG_PATH/package.json" ] && jq -e '.scripts.test' "$PKG_PATH/package.json" > /dev/null 2>&1; then
               set +e
+              # Use default reporter (not verbose) to get coverage text output
               pnpm --filter "$PKG_NAME" run test -- \
-                --reporter=verbose \
+                --reporter=default \
                 --reporter=junit \
                 --outputFile.junit="test-results.xml" \
                 --coverage 2>&1 | tee "test-results/${PKG_DIR}-output.txt"
@@ -120,14 +121,12 @@ jobs:
             FAILED=0
             SKIPPED=0
             COV_PCT="N/A"
-            COV_LINES=0
-            COV_COVERED=0
             HAS_TESTS=false
 
             OUTPUT_FILE="test-results/${PKG_DIR}-output.txt"
             if [ -f "$OUTPUT_FILE" ]; then
               HAS_TESTS=true
-              # Parse vitest output
+              # Parse vitest output for test counts
               while IFS= read -r line; do
                 if [[ "$line" =~ ([0-9]+)\ passed ]]; then
                   PASSED=${BASH_REMATCH[1]}
@@ -139,18 +138,23 @@ jobs:
                   SKIPPED=${BASH_REMATCH[1]}
                 fi
               done < "$OUTPUT_FILE"
-            fi
 
-            # Parse coverage
-            COV_FILE="$PKG_PATH/coverage/coverage-summary.json"
-            if [ -f "$COV_FILE" ] && jq -e . "$COV_FILE" > /dev/null 2>&1; then
-              COV_LINES=$(jq '.total.lines.total // 0' "$COV_FILE")
-              COV_COVERED=$(jq '.total.lines.covered // 0' "$COV_FILE")
-              if [ "$COV_LINES" -gt 0 ]; then
-                COV_PCT=$(echo "scale=1; $COV_COVERED * 100 / $COV_LINES" | bc)
+              # Parse coverage from "All files" line in output
+              # Format: All files          |   50.81 |    39.77 |   52.57 |    50.7 |
+              # Columns: Statements | Branches | Functions | Lines
+              ALL_FILES_LINE=$(grep "All files" "$OUTPUT_FILE" 2>/dev/null || echo "")
+              if [ -n "$ALL_FILES_LINE" ]; then
+                # Extract the Lines column (4th number after "All files")
+                COV_PCT=$(echo "$ALL_FILES_LINE" | awk -F'|' '{gsub(/[[:space:]]/, "", $5); print $5}')
+                if [ -n "$COV_PCT" ] && [ "$COV_PCT" != "" ]; then
+                  # Add to weighted total (use statements as proxy for lines count)
+                  STMTS_PCT=$(echo "$ALL_FILES_LINE" | awk -F'|' '{gsub(/[[:space:]]/, "", $2); print $2}')
+                  # Track total coverage weighted by a nominal 100 lines per package
+                  TOTAL_LINES=$((TOTAL_LINES + 100))
+                  COV_PCT_INT=$(echo "$COV_PCT" | cut -d. -f1)
+                  TOTAL_COVERED=$((TOTAL_COVERED + COV_PCT_INT))
+                fi
               fi
-              TOTAL_LINES=$((TOTAL_LINES + COV_LINES))
-              TOTAL_COVERED=$((TOTAL_COVERED + COV_COVERED))
             fi
 
             TOTAL_PASSED=$((TOTAL_PASSED + PASSED))
@@ -173,12 +177,14 @@ jobs:
             fi
 
             PACKAGES_JSON+="{\"name\":\"$PKG_NAME\",\"passed\":$PASSED,\"failed\":$FAILED,\"skipped\":$SKIPPED,\"status\":\"$STATUS\",\"coverage\":\"$COV_PCT\"}"
-            COVERAGE_JSON+="{\"name\":\"$PKG_NAME\",\"lines\":$COV_LINES,\"covered\":$COV_COVERED,\"pct\":\"$COV_PCT\"}"
+            COVERAGE_JSON+="{\"name\":\"$PKG_NAME\",\"pct\":\"$COV_PCT\"}"
           done
 
           PACKAGES_JSON+="]"
           COVERAGE_JSON+="]"
 
+          # TOTAL_COVERED is sum of coverage percentages, TOTAL_LINES is count * 100
+          # So average coverage = TOTAL_COVERED / (TOTAL_LINES / 100) = TOTAL_COVERED * 100 / TOTAL_LINES
           if [ "$TOTAL_LINES" -gt 0 ]; then
             TOTAL_COV_PCT=$(echo "scale=1; $TOTAL_COVERED * 100 / $TOTAL_LINES" | bc)
           else
