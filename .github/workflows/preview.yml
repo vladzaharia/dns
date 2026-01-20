@@ -139,48 +139,177 @@ jobs:
             esac
           }
 
-          # Function to clean value based on record type
+          # Function to clean value based on record type and domain
           clean_value() {
             local type="$1"
             local value="$2"
+            local domain="$3"
 
             # Strip trailing ttl= and id= metadata
             local clean_val=$(echo "$value" | sed -E 's/[[:space:]]+(ttl|id)=[^[:space:]]*//g' | sed 's/[[:space:]]*$//')
+
+            # Check for challenge/verification records (hide sensitive tokens)
+            # 1. Check domain-based patterns
+            if echo "$domain" | grep -qiE "^_acme-challenge|^_dmarc-challenge|^_amazonses|^_google-site-verification|^_github-challenge|^_github-pages|^_atproto|^_dnslink|^_cf-custom-hostname"; then
+              echo "\`<Challenge/Verification>\`"
+              return
+            fi
+            # 2. Check value-based patterns (verification tokens in TXT records)
+            if [ "$type" = "TXT" ]; then
+              # Known verification prefixes
+              if echo "$clean_val" | grep -qiE "^(google-site-verification|facebook-domain-verification|apple-domain-verification|adobe-idp-site-verification|atlassian-domain-verification|stripe-verification|webflow-site-verification|keybase-site-verification|brave-ledger-verification|notion-domain-verification|have-i-been-pwned-verification|docusign|msvalidate\.01|ZOOM_verify_|postmark-verification|brevo-code:|sendinblue-code:|bluesky-verification|cisco-ci-domain-verification|onetrust-domain-verification|miro-verification|hubspot-developer-verification|smartsheet-site-verification|pinterest-site-verification|yandex-verification|_globalsign-domain-verification|globalsign-domain-verification|logmein-verification-code|status-page-domain-verification|slack-domain-verification|workplace-domain-verification|canva-site-verification|ahrefs-site-verification|mongodb-site-verification)="; then
+                echo "\`<Verification Token>\`"
+                return
+              fi
+              # Detect random-looking tokens (base64/hex strings without known prefixes)
+              # Skip if it looks like SPF, DKIM, or DMARC
+              if ! echo "$clean_val" | grep -qE "^v=(spf1|DKIM1|DMARC1)"; then
+                # Check for pure base64-like or hex-like strings (32+ chars, alphanumeric only)
+                if echo "$clean_val" | grep -qE "^[A-Za-z0-9+/=_-]{32,}$"; then
+                  echo "\`<Verification Token>\`"
+                  return
+                fi
+              fi
+            fi
 
             case "$type" in
               # For A, AAAA, CNAME: strip everything after first space (removes proxy=, ttl=, etc.)
               A|AAAA|CNAME)
                 echo "$value" | awk '{print $1}'
                 ;;
+              # For MX records: parse priority and target
+              MX)
+                # MX format is typically: priority target (e.g., "10 mail.example.com.")
+                local priority=$(echo "$clean_val" | awk '{print $1}')
+                local target=$(echo "$clean_val" | awk '{print $2}')
+                if [ -n "$priority" ] && [ -n "$target" ]; then
+                  echo "**${priority}** → ${target}"
+                else
+                  echo "$clean_val"
+                fi
+                ;;
               # For redirects: parse name=(code,source,target) format
               CLOUDFLAREAPI_SINGLE_REDIRECT)
-                # Extract from name=(code,source,target) format
                 if echo "$value" | grep -q "name=("; then
                   local code=$(echo "$value" | sed -E 's/.*name=\(([0-9]+),.*/\1/')
                   local source=$(echo "$value" | sed -E 's/.*name=\([0-9]+,([^,]+),.*/\1/')
                   local target=$(echo "$value" | sed -E 's/.*name=\([0-9]+,[^,]+,([^)]+)\).*/\1/')
-                  echo "${code}: ${source} → ${target}"
+                  echo "**${code}**: ${source} → ${target}"
                 else
-                  echo "$value"
+                  echo "$clean_val"
+                fi
+                ;;
+              # For SRV records: parse priority weight port target
+              SRV)
+                local priority=$(echo "$clean_val" | awk '{print $1}')
+                local weight=$(echo "$clean_val" | awk '{print $2}')
+                local port=$(echo "$clean_val" | awk '{print $3}')
+                local target=$(echo "$clean_val" | awk '{print $4}')
+                if [ -n "$priority" ] && [ -n "$port" ] && [ -n "$target" ]; then
+                  echo "**${priority}/${weight}** :${port} → ${target}"
+                else
+                  echo "$clean_val"
+                fi
+                ;;
+              # For CAA records: parse flags tag value
+              CAA)
+                local flags=$(echo "$clean_val" | awk '{print $1}')
+                local tag=$(echo "$clean_val" | awk '{print $2}')
+                local caa_value=$(echo "$clean_val" | awk '{$1=$2=""; print $0}' | sed 's/^ *//')
+                if [ -n "$tag" ]; then
+                  echo "**${tag}**: ${caa_value}"
+                else
+                  echo "$clean_val"
                 fi
                 ;;
               # For TXT records: format based on content type (SPF, DKIM, DMARC)
               TXT)
                 # SPF record: v=spf1 ...
                 if echo "$clean_val" | grep -q "^v=spf1"; then
-                  # Split on spaces, join with <br>
-                  echo "$clean_val" | sed 's/ /<br>/g'
+                  local result=""
+                  # Parse SPF mechanisms
+                  for part in $clean_val; do
+                    case "$part" in
+                      v=spf1) result="**SPF v1**" ;;
+                      include:*) result="${result}<br>📨 include: \`${part#include:}\`" ;;
+                      ip4:*) result="${result}<br>🔢 IPv4: \`${part#ip4:}\`" ;;
+                      ip6:*) result="${result}<br>🔢 IPv6: \`${part#ip6:}\`" ;;
+                      a) result="${result}<br>📍 A record" ;;
+                      a:*) result="${result}<br>📍 A: \`${part#a:}\`" ;;
+                      mx) result="${result}<br>📬 MX record" ;;
+                      mx:*) result="${result}<br>📬 MX: \`${part#mx:}\`" ;;
+                      ptr) result="${result}<br>↩️ PTR" ;;
+                      ptr:*) result="${result}<br>↩️ PTR: \`${part#ptr:}\`" ;;
+                      exists:*) result="${result}<br>❓ exists: \`${part#exists:}\`" ;;
+                      redirect=*) result="${result}<br>➡️ redirect: \`${part#redirect=}\`" ;;
+                      +all) result="${result}<br>✅ **+all** (pass all)" ;;
+                      -all) result="${result}<br>❌ **-all** (fail all)" ;;
+                      ~all) result="${result}<br>⚠️ **~all** (softfail)" ;;
+                      \?all) result="${result}<br>❔ **?all** (neutral)" ;;
+                      *) [ -n "$part" ] && result="${result}<br>\`${part}\`" ;;
+                    esac
+                  done
+                  echo "$result"
                 # DKIM record: v=DKIM1; ...
                 elif echo "$clean_val" | grep -q "^v=DKIM1"; then
-                  # Truncate the p= value (public key), keep first 10 chars
-                  # Also remove any trailing semicolon after the truncated key
-                  local truncated=$(echo "$clean_val" | sed -E 's/(p=)([A-Za-z0-9+/]{10})[A-Za-z0-9+/=]*;?/\1\2.../g')
-                  # Split on "; ", join with <br>, then clean up any trailing separators
-                  echo "$truncated" | sed 's/; /<br>/g' | sed 's/<br>$//'
+                  local dkim_result="**DKIM v1**"
+                  # First pass: extract key type (default to RSA)
+                  local key_type="rsa"
+                  local public_key=""
+                  while IFS= read -r tag; do
+                    tag=$(echo "$tag" | sed 's/^ *//' | sed 's/ *$//')
+                    case "$tag" in
+                      k=*) key_type="${tag#k=}" ;;
+                      p=*) public_key="${tag#p=}" ;;
+                    esac
+                  done <<< "$(echo "$clean_val" | tr ';' '\n')"
+                  # Second pass: build result with key type shown inline with key
+                  while IFS= read -r tag; do
+                    tag=$(echo "$tag" | sed 's/^ *//' | sed 's/ *$//')
+                    case "$tag" in
+                      v=DKIM1|k=*|p=*) ;; # Handled separately
+                      t=*) dkim_result="${dkim_result}<br>🏷️ Flags: \`${tag#t=}\`" ;;
+                      s=*) dkim_result="${dkim_result}<br>📋 Service: \`${tag#s=}\`" ;;
+                      h=*) dkim_result="${dkim_result}<br>#️⃣ Hash: \`${tag#h=}\`" ;;
+                      n=*) dkim_result="${dkim_result}<br>📝 Notes: \`${tag#n=}\`" ;;
+                      *) [ -n "$tag" ] && dkim_result="${dkim_result}<br>\`${tag}\`" ;;
+                    esac
+                  done <<< "$(echo "$clean_val" | tr ';' '\n')"
+                  # Add key info at the end (key type + truncated key)
+                  local key_type_upper=$(echo "$key_type" | tr '[:lower:]' '[:upper:]')
+                  if [ -n "$public_key" ]; then
+                    if [ ${#public_key} -gt 20 ]; then
+                      dkim_result="${dkim_result}<br>🔐 ${key_type_upper} \`${public_key:0:16}...\`"
+                    else
+                      dkim_result="${dkim_result}<br>🔐 ${key_type_upper} \`${public_key}\`"
+                    fi
+                  fi
+                  echo "$dkim_result"
                 # DMARC record: v=DMARC1; ...
                 elif echo "$clean_val" | grep -q "^v=DMARC1"; then
-                  # Split on "; ", join with <br>
-                  echo "$clean_val" | sed 's/; /<br>/g'
+                  local dmarc_result="**DMARC v1**"
+                  # Parse DMARC tags (semicolon separated)
+                  while IFS= read -r tag; do
+                    tag=$(echo "$tag" | sed 's/^ *//' | sed 's/ *$//')
+                    case "$tag" in
+                      v=DMARC1) ;; # Already handled
+                      p=none) dmarc_result="${dmarc_result}<br>📋 Policy: **none** (monitor)" ;;
+                      p=quarantine) dmarc_result="${dmarc_result}<br>📋 Policy: **quarantine**" ;;
+                      p=reject) dmarc_result="${dmarc_result}<br>📋 Policy: **reject**" ;;
+                      p=*) dmarc_result="${dmarc_result}<br>📋 Policy: \`${tag#p=}\`" ;;
+                      sp=*) dmarc_result="${dmarc_result}<br>📋 Subdomain: \`${tag#sp=}\`" ;;
+                      rua=*) dmarc_result="${dmarc_result}<br>📊 Aggregate reports: \`${tag#rua=}\`" ;;
+                      ruf=*) dmarc_result="${dmarc_result}<br>🔍 Forensic reports: \`${tag#ruf=}\`" ;;
+                      pct=*) dmarc_result="${dmarc_result}<br>📈 Percentage: \`${tag#pct=}%\`" ;;
+                      adkim=*) dmarc_result="${dmarc_result}<br>🔑 DKIM alignment: \`${tag#adkim=}\`" ;;
+                      aspf=*) dmarc_result="${dmarc_result}<br>📨 SPF alignment: \`${tag#aspf=}\`" ;;
+                      fo=*) dmarc_result="${dmarc_result}<br>📝 Failure options: \`${tag#fo=}\`" ;;
+                      rf=*) dmarc_result="${dmarc_result}<br>📄 Report format: \`${tag#rf=}\`" ;;
+                      ri=*) dmarc_result="${dmarc_result}<br>⏱️ Report interval: \`${tag#ri=}s\`" ;;
+                      *) [ -n "$tag" ] && dmarc_result="${dmarc_result}<br>\`${tag}\`" ;;
+                    esac
+                  done <<< "$(echo "$clean_val" | tr ';' '\n')"
+                  echo "$dmarc_result"
                 else
                   # Other TXT records: show as-is
                   echo "$clean_val"
@@ -206,7 +335,7 @@ jobs:
               RAW_TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
               RAW_VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
               TYPE=$(simplify_type "$RAW_TYPE")
-              VALUE=$(clean_value "$RAW_TYPE" "$RAW_VALUE")
+              VALUE=$(clean_value "$RAW_TYPE" "$RAW_VALUE" "$DOMAIN")
               TABLE="${TABLE}| ➕ | ${DOMAIN} | ${TYPE} | - | ${VALUE} |"$'\n'
             # Parse MODIFY lines: "#1: ± MODIFY domain.com TYPE (old) -> (new)"
             elif echo "$line" | grep -qE "^#[0-9]+: ± MODIFY"; then
@@ -216,8 +345,8 @@ jobs:
               NEW=$(echo "$line" | sed -E 's/.*->[[:space:]]*\(([^)]+)\).*/\1/' | tr -d '"')
               TYPE=$(simplify_type "$RAW_TYPE")
               # Clean values based on type
-              OLD=$(clean_value "$RAW_TYPE" "$OLD")
-              NEW=$(clean_value "$RAW_TYPE" "$NEW")
+              OLD=$(clean_value "$RAW_TYPE" "$OLD" "$DOMAIN")
+              NEW=$(clean_value "$RAW_TYPE" "$NEW" "$DOMAIN")
               TABLE="${TABLE}| ✏️ | ${DOMAIN} | ${TYPE} | ${OLD} | ${NEW} |"$'\n'
             # Parse DELETE lines: "#1: - DELETE domain.com TYPE value"
             elif echo "$line" | grep -qE "^#[0-9]+: - DELETE"; then
@@ -225,7 +354,7 @@ jobs:
               RAW_TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
               RAW_VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
               TYPE=$(simplify_type "$RAW_TYPE")
-              VALUE=$(clean_value "$RAW_TYPE" "$RAW_VALUE")
+              VALUE=$(clean_value "$RAW_TYPE" "$RAW_VALUE" "$DOMAIN")
               TABLE="${TABLE}| 🗑️ | ${DOMAIN} | ${TYPE} | ${VALUE} | - |"$'\n'
             fi
           done <<< "$CLEAN_OUTPUT"
@@ -377,19 +506,59 @@ jobs:
             echo ""
             echo "### 🔨 Build"
             echo ""
-            echo "| Package | Status |"
-            echo "|---------|--------|"
+            echo "| Package | Build | Typecheck | Lint | Format |"
+            echo "|---------|-------|-----------|------|--------|"
 
-            # Parse build packages JSON and generate rows
+            # Combine build and validation packages into one table
+            # First, collect all package names from both sources
+            ALL_PACKAGES=""
             if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
-              echo "$BUILD_PACKAGES" | jq -r 'to_entries | .[] | "\(.key)|\(.value)"' | while IFS='|' read -r pkg status; do
+              BUILD_PKGS=$(echo "$BUILD_PACKAGES" | jq -r 'keys[]')
+              ALL_PACKAGES="$BUILD_PKGS"
+            fi
+            if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
+              VALIDATE_PKGS=$(echo "$VALIDATE_PACKAGES" | jq -r '.[].name')
+              if [ -n "$ALL_PACKAGES" ]; then
+                ALL_PACKAGES=$(printf '%s\n%s' "$ALL_PACKAGES" "$VALIDATE_PKGS" | sort -u)
+              else
+                ALL_PACKAGES="$VALIDATE_PKGS"
+              fi
+            fi
+
+            # Generate rows for each package
+            if [ -n "$ALL_PACKAGES" ]; then
+              echo "$ALL_PACKAGES" | while IFS= read -r pkg; do
+                [ -z "$pkg" ] && continue
                 # Get short package name (remove @vladzaharia/ prefix)
                 SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
-                PKG_ICON=$(if [ "$status" == "success" ]; then echo "✅"; else echo "❌"; fi)
-                echo "| $SHORT_PKG | $PKG_ICON |"
+
+                # Get build status
+                BUILD_STATUS=""
+                if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
+                  BUILD_STATUS=$(echo "$BUILD_PACKAGES" | jq -r --arg p "$pkg" '.[$p] // empty')
+                fi
+                BUILD_ICON=$(if [ "$BUILD_STATUS" == "success" ]; then echo "✅"; elif [ -n "$BUILD_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get validation statuses
+                TYPECHECK_STATUS=""
+                LINT_STATUS=""
+                FORMAT_STATUS=""
+                if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
+                  VALIDATE_DATA=$(echo "$VALIDATE_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p)')
+                  if [ -n "$VALIDATE_DATA" ]; then
+                    TYPECHECK_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.typecheck // empty')
+                    LINT_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.lint // empty')
+                    FORMAT_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.format // empty')
+                  fi
+                fi
+                TYPECHECK_ICON=$(if [ "$TYPECHECK_STATUS" == "success" ]; then echo "✅"; elif [ -n "$TYPECHECK_STATUS" ]; then echo "❌"; else echo "-"; fi)
+                LINT_ICON=$(if [ "$LINT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$LINT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+                FORMAT_ICON=$(if [ "$FORMAT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$FORMAT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                echo "| $SHORT_PKG | $BUILD_ICON | $TYPECHECK_ICON | $LINT_ICON | $FORMAT_ICON |"
               done
             else
-              echo "| No packages | - |"
+              echo "| No packages | - | - | - | - |"
             fi
             echo ""
             echo "### 🧪 Tests"
@@ -407,26 +576,6 @@ jobs:
               done
             else
               echo "| No tests | 0 | 0 | 0 | 0 | - |"
-            fi
-
-            echo ""
-            echo "### ✅ Validation"
-            echo ""
-            echo "| Package | Typecheck | Lint | Format |"
-            echo "|---------|-----------|------|--------|"
-
-            # Parse validate packages JSON and generate rows
-            if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
-              echo "$VALIDATE_PACKAGES" | jq -r '.[] | "\(.name)|\(.typecheck)|\(.lint)|\(.format)"' | while IFS='|' read -r pkg typecheck lint format; do
-                # Get short package name (remove @vladzaharia/ prefix)
-                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
-                TYPECHECK_ICON=$(if [ "$typecheck" == "success" ]; then echo "✅"; else echo "❌"; fi)
-                LINT_ICON=$(if [ "$lint" == "success" ]; then echo "✅"; else echo "❌"; fi)
-                FORMAT_ICON=$(if [ "$format" == "success" ]; then echo "✅"; else echo "❌"; fi)
-                echo "| $SHORT_PKG | $TYPECHECK_ICON | $LINT_ICON | $FORMAT_ICON |"
-              done
-            else
-              echo "| No packages | - | - | - |"
             fi
 
             echo ""
