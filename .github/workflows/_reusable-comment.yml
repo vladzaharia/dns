@@ -332,7 +332,7 @@ jobs:
                     echo "| $action | $subdomain | $rectype | $old | $new |"
                   done
                 else
-                  echo "<h3><strong>$domain</h3> (no changes)</summary>"
+                  echo "<h3>$domain</h3> (no changes)</summary>"
                   echo ""
                   echo "_No changes to this domain._"
                 fi
