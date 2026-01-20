@@ -54,8 +54,9 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          mkdir -p test-results
-          echo "0" > test-results/failure-count.txt
+          RESULTS_DIR="${GITHUB_WORKSPACE}/test-results"
+          mkdir -p "$RESULTS_DIR"
+          echo "0" > "$RESULTS_DIR/failure-count.txt"
 
           # Get all workspace packages (exclude node_modules)
           PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo" and (.path | contains("node_modules") | not)) | .name')
@@ -73,24 +74,42 @@ jobs:
             echo "::group::Testing $PKG_NAME"
 
             if [ -f "$PKG_PATH/package.json" ] && jq -e '.scripts.test' "$PKG_PATH/package.json" > /dev/null 2>&1; then
+              # Define output file paths (absolute paths so vitest writes to correct location)
+              JUNIT_FILE="${RESULTS_DIR}/${PKG_DIR}-junit.xml"
+              OUTPUT_FILE="${RESULTS_DIR}/${PKG_DIR}-output.txt"
+
               set +e
-              # Use default reporter (not verbose) to get coverage text output
-              pnpm --filter "$PKG_NAME" run test -- \
+              # Run vitest directly (not through npm script) to ensure CLI args take precedence
+              # This ensures coverage text output is generated for parsing
+              cd "$PKG_PATH"
+              pnpm exec vitest run \
                 --reporter=default \
                 --reporter=junit \
-                --outputFile.junit="test-results.xml" \
-                --coverage 2>&1 | tee "test-results/${PKG_DIR}-output.txt"
+                --outputFile.junit="$JUNIT_FILE" \
+                --coverage \
+                --coverage.reporter=text \
+                --coverage.reporter=json \
+                --coverage.reporter=lcov 2>&1 | tee "$OUTPUT_FILE"
               PKG_EXIT=$?
+              cd "$GITHUB_WORKSPACE"
               set -e
-              
-              if [ -f "$PKG_PATH/test-results.xml" ]; then
-                cp "$PKG_PATH/test-results.xml" "test-results/${PKG_DIR}-junit.xml"
+
+              # Debug: Check if JUnit file was created
+              if [ -f "$JUNIT_FILE" ]; then
+                echo "✓ JUnit report created: $JUNIT_FILE"
+              else
+                echo "⚠️ JUnit report not found at: $JUNIT_FILE"
+                # Try to find it in the package directory as fallback
+                if [ -f "$PKG_PATH/test-results.xml" ]; then
+                  cp "$PKG_PATH/test-results.xml" "$JUNIT_FILE"
+                  echo "✓ Copied JUnit from package directory"
+                fi
               fi
-              
+
               # Check for actual test failures (not coverage threshold)
-              if grep -qE "^[[:space:]]*(FAIL|×)" "test-results/${PKG_DIR}-output.txt" 2>/dev/null; then
-                CURR=$(cat test-results/failure-count.txt)
-                echo "$((CURR + 1))" > test-results/failure-count.txt
+              if grep -qE "^[[:space:]]*(FAIL|×)" "$OUTPUT_FILE" 2>/dev/null; then
+                CURR=$(cat "$RESULTS_DIR/failure-count.txt")
+                echo "$((CURR + 1))" > "$RESULTS_DIR/failure-count.txt"
                 echo "❌ $PKG_NAME has test failures"
               elif [ $PKG_EXIT -ne 0 ]; then
                 echo "⚠️ $PKG_NAME passed tests but has coverage threshold issues"
@@ -102,6 +121,11 @@ jobs:
             fi
             echo "::endgroup::"
           done
+
+          # Debug: List test-results directory
+          echo "::group::Test Results Directory"
+          ls -la "$RESULTS_DIR" || echo "Directory not found"
+          echo "::endgroup::"
 
       - name: Aggregate test and coverage results
         id: aggregate
@@ -136,29 +160,31 @@ jobs:
             OUTPUT_FILE="test-results/${PKG_DIR}-output.txt"
             if [ -f "$OUTPUT_FILE" ]; then
               HAS_TESTS=true
-              # Parse vitest output for test counts
-              while IFS= read -r line; do
-                if [[ "$line" =~ ([0-9]+)\ passed ]]; then
-                  PASSED=${BASH_REMATCH[1]}
-                fi
-                if [[ "$line" =~ ([0-9]+)\ failed ]]; then
-                  FAILED=${BASH_REMATCH[1]}
-                fi
-                if [[ "$line" =~ ([0-9]+)\ skipped ]]; then
-                  SKIPPED=${BASH_REMATCH[1]}
-                fi
-              done < "$OUTPUT_FILE"
+              # Strip ANSI codes for reliable parsing
+              CLEAN_OUTPUT=$(sed 's/\x1b\[[0-9;]*m//g' "$OUTPUT_FILE")
+
+              # Get the "Tests" summary line specifically (not "Test Files")
+              # Format: "      Tests  478 passed | 3 skipped (481)"
+              TESTS_LINE=$(echo "$CLEAN_OUTPUT" | grep -E "^[[:space:]]*Tests[[:space:]]" | head -1)
+
+              # Parse test counts from the Tests line
+              PASSED=$(echo "$TESTS_LINE" | grep -oE '[0-9]+ passed' | grep -oE '[0-9]+' || echo "0")
+              FAILED=$(echo "$TESTS_LINE" | grep -oE '[0-9]+ failed' | grep -oE '[0-9]+' || echo "0")
+              SKIPPED=$(echo "$TESTS_LINE" | grep -oE '[0-9]+ skipped' | grep -oE '[0-9]+' || echo "0")
+
+              # Ensure we have numbers (default to 0 if empty)
+              PASSED=${PASSED:-0}
+              FAILED=${FAILED:-0}
+              SKIPPED=${SKIPPED:-0}
 
               # Parse coverage from "All files" line in output
               # Format: All files          |   50.81 |    39.77 |   52.57 |    50.7 |
               # Columns: Statements | Branches | Functions | Lines
-              ALL_FILES_LINE=$(grep "All files" "$OUTPUT_FILE" 2>/dev/null || echo "")
+              ALL_FILES_LINE=$(echo "$CLEAN_OUTPUT" | grep "All files" 2>/dev/null || echo "")
               if [ -n "$ALL_FILES_LINE" ]; then
-                # Extract the Lines column (4th number after "All files")
+                # Extract the Lines column (5th field, which is the 4th number after "All files")
                 COV_PCT=$(echo "$ALL_FILES_LINE" | awk -F'|' '{gsub(/[[:space:]]/, "", $5); print $5}')
                 if [ -n "$COV_PCT" ] && [ "$COV_PCT" != "" ]; then
-                  # Add to weighted total (use statements as proxy for lines count)
-                  STMTS_PCT=$(echo "$ALL_FILES_LINE" | awk -F'|' '{gsub(/[[:space:]]/, "", $2); print $2}')
                   # Track total coverage weighted by a nominal 100 lines per package
                   TOTAL_LINES=$((TOTAL_LINES + 100))
                   COV_PCT_INT=$(echo "$COV_PCT" | cut -d. -f1)

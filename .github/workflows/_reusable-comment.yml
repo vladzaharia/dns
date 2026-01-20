@@ -401,14 +401,6 @@ jobs:
             echo ""
             echo "# 🌐 DNS Changes"
             echo ""
-            if [ "$PREVIEW_RESULT" != "success" ]; then
-              echo "**Summary:** ❌ Preview completed with errors"
-              echo ""
-              echo "> [!WARNING]"
-              echo "> The DNS preview step failed. Check the output below for details."
-            else
-              echo "**Summary:** ${CHANGES_SUMMARY:-No changes}"
-              echo ""
 
               # Domain Summary Table
               if [ -n "$DOMAIN_SUMMARY" ] && [ "$DOMAIN_SUMMARY" != "" ]; then

@@ -125,8 +125,8 @@ jobs:
           if [ "$TOTAL_COUNT" -gt 0 ]; then
             PARTS=""
             [ "$CREATE_COUNT" -gt 0 ] && PARTS="➕ $CREATE_COUNT"
-            [ "$MODIFY_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS / }✏️ $MODIFY_COUNT"
-            [ "$DELETE_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS / }🗑️ $DELETE_COUNT"
+            [ "$MODIFY_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS / } ✏️ $MODIFY_COUNT"
+            [ "$DELETE_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS / } 🗑️ $DELETE_COUNT"
             SUMMARY="$PARTS"
           else
             SUMMARY="No changes"
