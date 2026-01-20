@@ -347,7 +347,8 @@ jobs:
             echo "|--------|-------|------|----------|---------|---------|"
             # Output existing rows first (oldest), then new row (newest) - chronological order
             if [ -n "$EXISTING_ROWS" ]; then
-              echo "$EXISTING_ROWS"
+              # Strip trailing newlines/whitespace to avoid blank lines in table
+              printf '%s\n' "$(echo "$EXISTING_ROWS" | sed -e 's/[[:space:]]*$//')"
             fi
             echo "$NEW_ROW"
             echo ""
