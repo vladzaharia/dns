@@ -342,6 +342,8 @@ jobs:
               done
             fi
             echo ""
+            echo "---"
+            echo ""
             echo "<details>"
             echo "<summary>📋 Full DNSControl Output</summary>"
             echo ""
