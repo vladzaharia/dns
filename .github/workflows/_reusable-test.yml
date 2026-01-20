@@ -1,0 +1,303 @@
+name: Test
+
+on:
+  workflow_call:
+    outputs:
+      result:
+        description: "Test result (success/failure)"
+        value: ${{ jobs.test.outputs.result }}
+      packages:
+        description: "Per-package test results JSON"
+        value: ${{ jobs.test.outputs.packages }}
+      coverage-total:
+        description: "Total coverage percentage"
+        value: ${{ jobs.test.outputs.coverage-total }}
+      coverage-json:
+        description: "Per-package coverage JSON"
+        value: ${{ jobs.test.outputs.coverage-json }}
+
+jobs:
+  test:
+    name: Vitest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    outputs:
+      result: ${{ steps.determine-result.outputs.result }}
+      packages: ${{ steps.aggregate.outputs.packages }}
+      coverage-total: ${{ steps.aggregate.outputs.coverage-total }}
+      coverage-json: ${{ steps.aggregate.outputs.coverage-json }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.2.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.2.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm run build
+
+      - name: Run tests per package with JUnit output
+        id: test
+        shell: bash
+        continue-on-error: true
+        run: |
+          RESULTS_DIR="${GITHUB_WORKSPACE}/test-results"
+          mkdir -p "$RESULTS_DIR"
+          echo "0" > "$RESULTS_DIR/failure-count.txt"
+
+          # Get all workspace packages (exclude node_modules)
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo" and (.path | contains("node_modules") | not)) | .name')
+
+          for PKG_NAME in $PACKAGES; do
+            PKG_PATH=$(pnpm ls -r --json 2>/dev/null | jq -r --arg n "$PKG_NAME" '.[] | select(.name == $n) | .path')
+            PKG_DIR=$(basename "$PKG_PATH")
+
+            # Skip if path contains node_modules
+            if [[ "$PKG_PATH" == *"node_modules"* ]]; then
+              echo "⏭️ Skipping $PKG_NAME (node_modules)"
+              continue
+            fi
+
+            echo "::group::Testing $PKG_NAME"
+
+            if [ -f "$PKG_PATH/package.json" ] && jq -e '.scripts.test' "$PKG_PATH/package.json" > /dev/null 2>&1; then
+              # Define output file paths (absolute paths so vitest writes to correct location)
+              JUNIT_FILE="${RESULTS_DIR}/${PKG_DIR}-junit.xml"
+              OUTPUT_FILE="${RESULTS_DIR}/${PKG_DIR}-output.txt"
+
+              set +e
+              # Run vitest directly (not through npm script) to ensure CLI args take precedence
+              # This ensures coverage text output is generated for parsing
+              cd "$PKG_PATH"
+              pnpm exec vitest run \
+                --reporter=default \
+                --reporter=junit \
+                --outputFile.junit="$JUNIT_FILE" \
+                --coverage \
+                --coverage.reporter=text \
+                --coverage.reporter=json \
+                --coverage.reporter=lcov 2>&1 | tee "$OUTPUT_FILE"
+              PKG_EXIT=$?
+              cd "$GITHUB_WORKSPACE"
+              set -e
+
+              # Debug: Check if JUnit file was created
+              if [ -f "$JUNIT_FILE" ]; then
+                echo "✓ JUnit report created: $JUNIT_FILE"
+              else
+                echo "⚠️ JUnit report not found at: $JUNIT_FILE"
+                # Try to find it in the package directory as fallback
+                if [ -f "$PKG_PATH/test-results.xml" ]; then
+                  cp "$PKG_PATH/test-results.xml" "$JUNIT_FILE"
+                  echo "✓ Copied JUnit from package directory"
+                fi
+              fi
+
+              # Check for actual test failures (not coverage threshold)
+              if grep -qE "^[[:space:]]*(FAIL|×)" "$OUTPUT_FILE" 2>/dev/null; then
+                CURR=$(cat "$RESULTS_DIR/failure-count.txt")
+                echo "$((CURR + 1))" > "$RESULTS_DIR/failure-count.txt"
+                echo "❌ $PKG_NAME has test failures"
+              elif [ $PKG_EXIT -ne 0 ]; then
+                echo "⚠️ $PKG_NAME passed tests but has coverage threshold issues"
+              else
+                echo "✅ $PKG_NAME passed"
+              fi
+            else
+              echo "⏭️ $PKG_NAME has no test script"
+            fi
+            echo "::endgroup::"
+          done
+
+          # Debug: List test-results directory
+          echo "::group::Test Results Directory"
+          ls -la "$RESULTS_DIR" || echo "Directory not found"
+          echo "::endgroup::"
+
+      - name: Aggregate test and coverage results
+        id: aggregate
+        if: always()
+        shell: bash
+        run: |
+          PACKAGES_JSON="["
+          COVERAGE_JSON="["
+          FIRST=true
+          TOTAL_PASSED=0
+          TOTAL_FAILED=0
+          TOTAL_SKIPPED=0
+          TOTAL_LINES=0
+          TOTAL_COVERED=0
+
+          # Get all workspace packages (exclude node_modules)
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo" and (.path | contains("node_modules") | not)) | .name')
+
+          for PKG_NAME in $PACKAGES; do
+            PKG_PATH=$(pnpm ls -r --json 2>/dev/null | jq -r --arg n "$PKG_NAME" '.[] | select(.name == $n) | .path')
+            PKG_DIR=$(basename "$PKG_PATH")
+
+            # Skip if path contains node_modules
+            [[ "$PKG_PATH" == *"node_modules"* ]] && continue
+
+            PASSED=0
+            FAILED=0
+            SKIPPED=0
+            COV_PCT="N/A"
+            HAS_TESTS=false
+
+            OUTPUT_FILE="test-results/${PKG_DIR}-output.txt"
+            if [ -f "$OUTPUT_FILE" ]; then
+              HAS_TESTS=true
+              # Strip ANSI codes for reliable parsing
+              CLEAN_OUTPUT=$(sed 's/\x1b\[[0-9;]*m//g' "$OUTPUT_FILE")
+
+              # Get the "Tests" summary line specifically (not "Test Files")
+              # Format: "      Tests  478 passed | 3 skipped (481)"
+              TESTS_LINE=$(echo "$CLEAN_OUTPUT" | grep -E "^[[:space:]]*Tests[[:space:]]" | head -1 || echo "")
+
+              # Parse test counts from the Tests line
+              PASSED=$(echo "$TESTS_LINE" | grep -oE '[0-9]+ passed' | grep -oE '[0-9]+' || echo "0")
+              FAILED=$(echo "$TESTS_LINE" | grep -oE '[0-9]+ failed' | grep -oE '[0-9]+' || echo "0")
+              SKIPPED=$(echo "$TESTS_LINE" | grep -oE '[0-9]+ skipped' | grep -oE '[0-9]+' || echo "0")
+
+              # Ensure we have numbers (default to 0 if empty)
+              PASSED=${PASSED:-0}
+              FAILED=${FAILED:-0}
+              SKIPPED=${SKIPPED:-0}
+
+              # Parse coverage from "All files" line in output
+              # Format: All files          |   50.81 |    39.77 |   52.57 |    50.7 |
+              # Columns: Statements | Branches | Functions | Lines
+              ALL_FILES_LINE=$(echo "$CLEAN_OUTPUT" | grep "All files" 2>/dev/null || echo "")
+              if [ -n "$ALL_FILES_LINE" ]; then
+                # Extract the Lines column (5th field, which is the 4th number after "All files")
+                COV_PCT=$(echo "$ALL_FILES_LINE" | awk -F'|' '{gsub(/[[:space:]]/, "", $5); print $5}')
+                if [ -n "$COV_PCT" ] && [ "$COV_PCT" != "" ]; then
+                  # Track total coverage weighted by a nominal 100 lines per package
+                  TOTAL_LINES=$((TOTAL_LINES + 100))
+                  COV_PCT_INT=$(echo "$COV_PCT" | cut -d. -f1)
+                  TOTAL_COVERED=$((TOTAL_COVERED + COV_PCT_INT))
+                fi
+              fi
+            fi
+
+            TOTAL_PASSED=$((TOTAL_PASSED + PASSED))
+            TOTAL_FAILED=$((TOTAL_FAILED + FAILED))
+            TOTAL_SKIPPED=$((TOTAL_SKIPPED + SKIPPED))
+
+            if [ "$FAILED" -gt 0 ]; then
+              STATUS="failure"
+            elif [ "$HAS_TESTS" = true ]; then
+              STATUS="success"
+            else
+              STATUS="skipped"
+            fi
+
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              PACKAGES_JSON+=","
+              COVERAGE_JSON+=","
+            fi
+
+            PACKAGES_JSON+="{\"name\":\"$PKG_NAME\",\"passed\":$PASSED,\"failed\":$FAILED,\"skipped\":$SKIPPED,\"status\":\"$STATUS\",\"coverage\":\"$COV_PCT\"}"
+            COVERAGE_JSON+="{\"name\":\"$PKG_NAME\",\"pct\":\"$COV_PCT\"}"
+          done
+
+          PACKAGES_JSON+="]"
+          COVERAGE_JSON+="]"
+
+          # TOTAL_COVERED is sum of coverage percentages, TOTAL_LINES is count * 100
+          # So average coverage = TOTAL_COVERED / (TOTAL_LINES / 100) = TOTAL_COVERED * 100 / TOTAL_LINES
+          if [ "$TOTAL_LINES" -gt 0 ]; then
+            # Use awk for floating-point arithmetic (bc may not be installed)
+            TOTAL_COV_PCT=$(awk "BEGIN {printf \"%.1f\", $TOTAL_COVERED * 100 / $TOTAL_LINES}")
+          else
+            TOTAL_COV_PCT="0"
+          fi
+
+          echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
+          echo "coverage-json=$COVERAGE_JSON" >> $GITHUB_OUTPUT
+          echo "coverage-total=$TOTAL_COV_PCT" >> $GITHUB_OUTPUT
+          echo "failed-count=$TOTAL_FAILED" >> $GITHUB_OUTPUT
+          echo "passed-count=$TOTAL_PASSED" >> $GITHUB_OUTPUT
+
+      - name: Determine actual test result
+        id: determine-result
+        if: always()
+        shell: bash
+        run: |
+          FAILED_COUNT="${{ steps.aggregate.outputs.failed-count }}"
+          PASSED_COUNT="${{ steps.aggregate.outputs.passed-count }}"
+
+          # Default to 0 if empty to avoid comparison errors
+          FAILED_COUNT=${FAILED_COUNT:-0}
+          PASSED_COUNT=${PASSED_COUNT:-0}
+
+          if [ "$FAILED_COUNT" -gt 0 ]; then
+            echo "result=failure" >> $GITHUB_OUTPUT
+            echo "❌ $FAILED_COUNT tests failed!"
+          elif [ "$PASSED_COUNT" -gt 0 ]; then
+            echo "result=success" >> $GITHUB_OUTPUT
+            echo "✅ All $PASSED_COUNT tests passed!"
+          else
+            echo "result=success" >> $GITHUB_OUTPUT
+            echo "⚠️ No tests were detected"
+          fi
+
+      - name: Upload test results
+        if: always()
+        # Pinned to v4 - v6 has crypto issues with act local runner
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Upload coverage reports
+        if: always()
+        # Pinned to v4 - v6 has crypto issues with act local runner
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: "**/coverage/"
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Test Report
+        if: always() && github.event_name == 'pull_request'
+        uses: dorny/test-reporter@v2.5.0
+        continue-on-error: true
+        with:
+          name: Test Results
+          path: "test-results/*-junit.xml"
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5.5.2
+        continue-on-error: true
+        with:
+          files: "**/coverage/lcov.info"
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: Check for failures
+        if: steps.determine-result.outputs.result == 'failure'
+        run: |
+          echo "::error::Tests failed - ${{ steps.aggregate.outputs.failed-count }} test(s) failed"
+          exit 1

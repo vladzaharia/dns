@@ -1,0 +1,102 @@
+name: Build
+
+on:
+  workflow_call:
+    outputs:
+      result:
+        description: "Build result (success/failure)"
+        value: ${{ jobs.build.outputs.result }}
+      packages:
+        description: "Per-package build results JSON"
+        value: ${{ jobs.build.outputs.packages }}
+
+jobs:
+  build:
+    name: Build TypeScript
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.build.outcome }}
+      packages: ${{ steps.build.outputs.packages }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.2.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.2.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        id: build
+        shell: bash
+        continue-on-error: true
+        run: |
+          declare -A RESULTS
+          OVERALL_EXIT=0
+
+          # Get list of packages
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo") | .name')
+
+          for pkg in $PACKAGES; do
+            echo "::group::Building $pkg"
+            set +e
+            pnpm --filter "$pkg" run build 2>&1
+            PKG_EXIT=$?
+            set -e
+
+            if [ $PKG_EXIT -eq 0 ]; then
+              RESULTS["$pkg"]="success"
+              echo "✅ $pkg build succeeded"
+            else
+              RESULTS["$pkg"]="failure"
+              OVERALL_EXIT=1
+              echo "❌ $pkg build failed"
+            fi
+            echo "::endgroup::"
+          done
+
+          # Create JSON output
+          PACKAGES_JSON="{"
+          FIRST=true
+          for pkg in "${!RESULTS[@]}"; do
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              PACKAGES_JSON+=","
+            fi
+            PACKAGES_JSON+="\"$pkg\":\"${RESULTS[$pkg]}\""
+          done
+          PACKAGES_JSON+="}"
+
+          echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
+          exit $OVERALL_EXIT
+
+      - name: Upload compiled JS
+        # Pinned to v4 - v6 has crypto issues with act local runner
+        uses: actions/upload-artifact@v4
+        with:
+          name: out
+          path: packages/polaris-dns/out/*
+          retention-days: 1
+
+      - name: Upload DNSControl binaries
+        # Pinned to v4 - v6 has crypto issues with act local runner
+        uses: actions/upload-artifact@v4
+        with:
+          name: bin
+          path: packages/dnscontrol-download/bin/dnscontrol-*
+          retention-days: 1
+
+      - name: Check for failures
+        if: steps.build.outcome == 'failure'
+        run: |
+          echo "::error::Build failed"
+          exit 1
+

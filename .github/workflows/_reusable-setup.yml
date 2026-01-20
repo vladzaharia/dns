@@ -1,0 +1,37 @@
+name: Setup Environment
+
+on:
+  workflow_call:
+    outputs:
+      pnpm-store-path:
+        description: "Path to pnpm store"
+        value: ${{ jobs.setup.outputs.pnpm-store-path }}
+
+jobs:
+  setup:
+    name: Setup Node.js and pnpm
+    runs-on: ubuntu-latest
+    outputs:
+      pnpm-store-path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.2.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.2.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+

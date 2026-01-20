@@ -1,0 +1,7 @@
+# VitePress build outputs
+.vitepress/cache/
+.vitepress/dist/
+
+# TypeDoc generated API docs
+api/generated/
+

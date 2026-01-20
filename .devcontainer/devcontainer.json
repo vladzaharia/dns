@@ -1,12 +1,16 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+  "name": "DNS Infrastructure-as-Code",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers-contrib/features/prettier:1": {},
+    "ghcr.io/devcontainers-contrib/features/pnpm:2": {
+      "version": "latest"
+    },
     "ghcr.io/wxw-matt/devcontainer-features/apt:0": {
       "packages": "sudo"
     },
@@ -19,16 +23,15 @@
   },
 
   "containerEnv": {
-    "CLOUDFLARE_API_TOKEN": "${localEnv:CLOUDFLARE_API_TOKEN}",
-    "FONTAWESOME_API_TOKEN": "${localEnv:FONTAWESOME_API_TOKEN}"
+    "CLOUDFLARE_API_TOKEN": "${localEnv:CLOUDFLARE_API_TOKEN}"
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [4200, 8787],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "sudo chown -R vlad node_modules && npm install",
-  "postStartCommand": "npm run build",
+  "postCreateCommand": "pnpm install && pnpm exec lefthook install",
+  "postStartCommand": "pnpm run build",
 
   // Configure tool-specific properties.
   "customizations": {
@@ -39,7 +42,9 @@
         "BeardedBear.beardedtheme",
         "eamodio.gitlens",
         "GitHub.vscode-pull-request-github",
-        "stkb.rewrap"
+        "stkb.rewrap",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
       ],
       "settings": {
         "editor.tabSize": 2,
@@ -53,11 +58,14 @@
         "git.enableSmartCommit": true,
         "git.autofetch": true,
         "git.confirmSync": false,
-        "workbench.activityBar.location": "top"
+        "workbench.activityBar.location": "top",
+
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
       }
     }
   },
 
-  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  "remoteUser": "vlad"
+  // Use 'node' user (default for devcontainers)
+  "remoteUser": "node"
 }

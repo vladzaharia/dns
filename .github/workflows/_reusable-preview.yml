@@ -1,0 +1,484 @@
+name: DNS Preview
+
+on:
+  workflow_call:
+    secrets:
+      CF_API:
+        description: "Cloudflare API token"
+        required: true
+    outputs:
+      preview-report:
+        description: "JSON report from DNSControl preview"
+        value: ${{ jobs.preview.outputs.preview-report }}
+      has-changes:
+        description: "Whether there are DNS changes"
+        value: ${{ jobs.preview.outputs.has-changes }}
+      changes-summary:
+        description: "Summary of changes (e.g., ➕ 5 / ✏️ 3 / 🗑️ 2)"
+        value: ${{ jobs.preview.outputs.changes-summary }}
+      domain-summary:
+        description: "Per-domain change counts"
+        value: ${{ jobs.preview.outputs.domain-summary }}
+      changes-data:
+        description: "Structured changes data (pipe-separated)"
+        value: ${{ jobs.preview.outputs.changes-data }}
+      base-domains:
+        description: "List of base domains with changes"
+        value: ${{ jobs.preview.outputs.base-domains }}
+
+jobs:
+  preview:
+    name: Preview DNS Changes
+    runs-on: ubuntu-latest
+    outputs:
+      preview-report: ${{ steps.preview.outputs.preview-report }}
+      has-changes: ${{ steps.preview.outputs.has-changes }}
+      changes-summary: ${{ steps.parse-changes.outputs.summary }}
+      domain-summary: ${{ steps.parse-changes.outputs.domain-summary }}
+      changes-data: ${{ steps.parse-changes.outputs.changes-data }}
+      base-domains: ${{ steps.parse-changes.outputs.base-domains }}
+    steps:
+      - name: Download DNSControl binaries
+        uses: actions/download-artifact@v7.0.0
+        with:
+          name: bin
+          path: bin
+
+      - name: Download compiled JS
+        uses: actions/download-artifact@v7.0.0
+        with:
+          name: out
+          path: out
+
+      - name: Make binaries executable
+        run: chmod +x dnscontrol-*
+        working-directory: bin
+        shell: bash
+
+      - name: Preview DNS changes
+        id: preview
+        working-directory: out
+        shell: bash
+        env:
+          CF_API: ${{ secrets.CF_API }}
+        run: |
+          set +e
+          OUTPUT=$(../bin/dnscontrol-Linux --diff2 preview --report ../report.json 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          # Save output to file for artifact upload (avoids "Argument list too long" error)
+          echo "$OUTPUT" > ../preview-output.txt
+
+          # Save JSON report if it exists
+          if [ -f "../report.json" ]; then
+            REPORT=$(cat ../report.json)
+            echo "preview-report<<EOF" >> $GITHUB_OUTPUT
+            echo "$REPORT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "preview-report=[]" >> $GITHUB_OUTPUT
+          fi
+
+          # Check if there are changes
+          if echo "$OUTPUT" | grep -qE "CREATING|MODIFY|DELETE|\+ CREATE|\- DELETE|± MODIFY"; then
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+          fi
+
+          # Print output to logs
+          echo "$OUTPUT"
+
+          # Exit with original code
+          exit $EXIT_CODE
+
+      - name: Parse DNS changes
+        id: parse-changes
+        if: always()
+        shell: bash
+        run: |
+          # Parse the preview output to create a structured changes table
+          # Read from file to avoid "Argument list too long" error with large outputs
+
+          # Strip ANSI color codes from output for parsing
+          # DNSControl outputs colored text which breaks grep patterns
+          if [ -f "preview-output.txt" ]; then
+            CLEAN_OUTPUT=$(cat preview-output.txt | sed 's/\x1b\[[0-9;]*m//g')
+          else
+            CLEAN_OUTPUT=""
+          fi
+
+          # Count changes by type (handle empty/missing output)
+          if [ -z "$CLEAN_OUTPUT" ]; then
+            CREATE_COUNT=0
+            MODIFY_COUNT=0
+            DELETE_COUNT=0
+          else
+            CREATE_COUNT=$(echo "$CLEAN_OUTPUT" | grep -cE "^#[0-9]+: \+ CREATE" || echo 0)
+            MODIFY_COUNT=$(echo "$CLEAN_OUTPUT" | grep -cE "^#[0-9]+: ± MODIFY" || echo 0)
+            DELETE_COUNT=$(echo "$CLEAN_OUTPUT" | grep -cE "^#[0-9]+: - DELETE" || echo 0)
+          fi
+          TOTAL_COUNT=$((CREATE_COUNT + MODIFY_COUNT + DELETE_COUNT))
+
+          # Create summary (compact format: ➕ 53 / ✏️ 78 / 🗑️ 47)
+          if [ "$TOTAL_COUNT" -gt 0 ]; then
+            PARTS=""
+            [ "$CREATE_COUNT" -gt 0 ] && PARTS="➕ $CREATE_COUNT"
+            [ "$MODIFY_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS / } ✏️ $MODIFY_COUNT"
+            [ "$DELETE_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS / } 🗑️ $DELETE_COUNT"
+            SUMMARY="$PARTS"
+          else
+            SUMMARY="No changes"
+          fi
+          echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
+
+          # Function to simplify long record type names for display
+          simplify_type() {
+            local type="$1"
+            case "$type" in
+              CLOUDFLAREAPI_SINGLE_REDIRECT) echo "REDIRECT" ;;
+              CLOUDFLAREAPI_*) echo "${type#CLOUDFLAREAPI_}" ;;
+              *) echo "$type" ;;
+            esac
+          }
+
+          # Function to clean value based on record type and domain
+          clean_value() {
+            local type="$1"
+            local value="$2"
+            local domain="$3"
+
+            # Strip trailing ttl= and id= metadata
+            local clean_val=$(echo "$value" | sed -E 's/[[:space:]]+(ttl|id)=[^[:space:]]*//g' | sed 's/[[:space:]]*$//')
+
+            # Check for challenge/verification records (hide sensitive tokens)
+            # 1. Check domain-based patterns
+            if echo "$domain" | grep -qiE "^_acme-challenge|^_dmarc-challenge|^_amazonses|^_google-site-verification|^_github-challenge|^_github-pages|^_atproto|^_dnslink|^_cf-custom-hostname"; then
+              echo "\`<Challenge/Verification>\`"
+              return
+            fi
+            # 2. Check value-based patterns (verification tokens in TXT records)
+            if [ "$type" = "TXT" ]; then
+              # Known verification prefixes
+              if echo "$clean_val" | grep -qiE "^(google-site-verification|facebook-domain-verification|apple-domain-verification|adobe-idp-site-verification|atlassian-domain-verification|stripe-verification|webflow-site-verification|keybase-site-verification|brave-ledger-verification|notion-domain-verification|have-i-been-pwned-verification|docusign|msvalidate\.01|ZOOM_verify_|postmark-verification|brevo-code:|sendinblue-code:|bluesky-verification|cisco-ci-domain-verification|onetrust-domain-verification|miro-verification|hubspot-developer-verification|smartsheet-site-verification|pinterest-site-verification|yandex-verification|_globalsign-domain-verification|globalsign-domain-verification|logmein-verification-code|status-page-domain-verification|slack-domain-verification|workplace-domain-verification|canva-site-verification|ahrefs-site-verification|mongodb-site-verification)="; then
+                echo "\`<Verification Token>\`"
+                return
+              fi
+              # Detect random-looking tokens (base64/hex strings without known prefixes)
+              # Skip if it looks like SPF, DKIM, or DMARC
+              if ! echo "$clean_val" | grep -qE "^v=(spf1|DKIM1|DMARC1)"; then
+                # Check for pure base64-like or hex-like strings (32+ chars, alphanumeric only)
+                if echo "$clean_val" | grep -qE "^[A-Za-z0-9+/=_-]{32,}$"; then
+                  echo "\`<Verification Token>\`"
+                  return
+                fi
+              fi
+            fi
+
+            case "$type" in
+              # For A, AAAA, CNAME: strip everything after first space (removes proxy=, ttl=, etc.)
+              A|AAAA|CNAME)
+                echo "$value" | awk '{print $1}'
+                ;;
+              # For MX records: parse priority and target
+              MX)
+                # MX format is typically: priority target (e.g., "10 mail.example.com.")
+                local priority=$(echo "$clean_val" | awk '{print $1}')
+                local target=$(echo "$clean_val" | awk '{print $2}')
+                if [ -n "$priority" ] && [ -n "$target" ]; then
+                  echo "**${priority}** → ${target}"
+                else
+                  echo "$clean_val"
+                fi
+                ;;
+              # For redirects: parse name=(code,source,target) format
+              CLOUDFLAREAPI_SINGLE_REDIRECT)
+                if echo "$value" | grep -q "name=("; then
+                  local code=$(echo "$value" | sed -E 's/.*name=\(([0-9]+),.*/\1/')
+                  local source=$(echo "$value" | sed -E 's/.*name=\([0-9]+,([^,]+),.*/\1/')
+                  local target=$(echo "$value" | sed -E 's/.*name=\([0-9]+,[^,]+,([^)]+)\).*/\1/')
+                  echo "**${code}**: ${source} → ${target}"
+                else
+                  echo "$clean_val"
+                fi
+                ;;
+              # For SRV records: parse priority weight port target
+              SRV)
+                local priority=$(echo "$clean_val" | awk '{print $1}')
+                local weight=$(echo "$clean_val" | awk '{print $2}')
+                local port=$(echo "$clean_val" | awk '{print $3}')
+                local target=$(echo "$clean_val" | awk '{print $4}')
+                if [ -n "$priority" ] && [ -n "$port" ] && [ -n "$target" ]; then
+                  echo "**${priority}/${weight}** :${port} → ${target}"
+                else
+                  echo "$clean_val"
+                fi
+                ;;
+              # For CAA records: parse flags tag value
+              CAA)
+                local flags=$(echo "$clean_val" | awk '{print $1}')
+                local tag=$(echo "$clean_val" | awk '{print $2}')
+                local caa_value=$(echo "$clean_val" | awk '{$1=$2=""; print $0}' | sed 's/^ *//')
+                if [ -n "$tag" ]; then
+                  echo "**${tag}**: ${caa_value}"
+                else
+                  echo "$clean_val"
+                fi
+                ;;
+              # For TXT records: format based on content type (SPF, DKIM, DMARC)
+              TXT)
+                # SPF record: v=spf1 ...
+                if echo "$clean_val" | grep -q "^v=spf1"; then
+                  local spf_flags=""      # a, mx, ptr (simple flags)
+                  local spf_sources=""    # includes, ips, a:, mx:, exists:, redirect
+                  local spf_all=""        # the all qualifier
+                  for part in $clean_val; do
+                    case "$part" in
+                      v=spf1) ;;
+                      a) spf_flags="${spf_flags:+$spf_flags / }A" ;;
+                      mx) spf_flags="${spf_flags:+$spf_flags / }MX" ;;
+                      ptr) spf_flags="${spf_flags:+$spf_flags / }PTR" ;;
+                      a:*) spf_sources="${spf_sources:+$spf_sources / }A:\`${part#a:}\`" ;;
+                      mx:*) spf_sources="${spf_sources:+$spf_sources / }MX:\`${part#mx:}\`" ;;
+                      ptr:*) spf_sources="${spf_sources:+$spf_sources / }PTR:\`${part#ptr:}\`" ;;
+                      include:*) spf_sources="${spf_sources:+$spf_sources / }\`${part#include:}\`" ;;
+                      ip4:*) spf_sources="${spf_sources:+$spf_sources / }\`${part#ip4:}\`" ;;
+                      ip6:*) spf_sources="${spf_sources:+$spf_sources / }\`${part#ip6:}\`" ;;
+                      exists:*) spf_sources="${spf_sources:+$spf_sources / }exists:\`${part#exists:}\`" ;;
+                      redirect=*) spf_sources="${spf_sources:+$spf_sources / }redirect:\`${part#redirect=}\`" ;;
+                      +all) spf_all="\`+all\`" ;;
+                      -all) spf_all="\`-all\`" ;;
+                      ~all) spf_all="\`~all\`" ;;
+                      \?all) spf_all="\`?all\`" ;;
+                      *) [ -n "$part" ] && spf_sources="${spf_sources:+$spf_sources / }\`${part}\`" ;;
+                    esac
+                  done
+                  # Build compact output
+                  local spf_result="**SPF**"
+                  # Combine flags and sources on one line
+                  local spf_line=""
+                  [ -n "$spf_flags" ] && spf_line="$spf_flags"
+                  [ -n "$spf_sources" ] && spf_line="${spf_line:+$spf_line / }$spf_sources"
+                  [ -n "$spf_line" ] && spf_result="${spf_result}<br>${spf_line}"
+                  [ -n "$spf_all" ] && spf_result="${spf_result}<br>${spf_all}"
+                  echo "$spf_result"
+                # DKIM record: v=DKIM1; ...
+                elif echo "$clean_val" | grep -q "^v=DKIM1"; then
+                  # Extract all DKIM components
+                  local dkim_k="" dkim_p="" dkim_t="" dkim_s="" dkim_h="" dkim_n=""
+                  while IFS= read -r tag; do
+                    tag=$(echo "$tag" | sed 's/^ *//' | sed 's/ *$//')
+                    case "$tag" in
+                      k=*) dkim_k="${tag#k=}" ;;
+                      p=*) dkim_p="${tag#p=}" ;;
+                      t=*) dkim_t="${tag#t=}" ;;
+                      s=*) dkim_s="${tag#s=}" ;;
+                      h=*) dkim_h="${tag#h=}" ;;
+                      n=*) dkim_n="${tag#n=}" ;;
+                    esac
+                  done <<< "$(echo "$clean_val" | tr ';' '\n')"
+                  # Build compact output
+                  local dkim_result="**DKIM**"
+                  # Flags line (t= and s= if present)
+                  local dkim_flags=""
+                  [ -n "$dkim_t" ] && dkim_flags="Flags:\`${dkim_t}\`"
+                  [ -n "$dkim_s" ] && dkim_flags="${dkim_flags:+$dkim_flags / }Service:\`${dkim_s}\`"
+                  [ -n "$dkim_flags" ] && dkim_result="${dkim_result}<br>${dkim_flags}"
+                  # Key line: hash / key type / key (consolidated)
+                  local dkim_key_line=""
+                  [ -n "$dkim_h" ] && dkim_key_line=$(echo "$dkim_h" | tr '[:lower:]' '[:upper:]')
+                  local key_type_upper=$(echo "${dkim_k:-rsa}" | tr '[:lower:]' '[:upper:]')
+                  dkim_key_line="${dkim_key_line:+$dkim_key_line / }${key_type_upper}"
+                  if [ -n "$dkim_p" ]; then
+                    if [ ${#dkim_p} -gt 20 ]; then
+                      dkim_key_line="${dkim_key_line} \`${dkim_p:0:16}...\`"
+                    else
+                      dkim_key_line="${dkim_key_line} \`${dkim_p}\`"
+                    fi
+                  fi
+                  [ -n "$dkim_key_line" ] && dkim_result="${dkim_result}<br>${dkim_key_line}"
+                  [ -n "$dkim_n" ] && dkim_result="${dkim_result}<br>Notes: ${dkim_n}"
+                  echo "$dkim_result"
+                # DMARC record: v=DMARC1; ...
+                elif echo "$clean_val" | grep -q "^v=DMARC1"; then
+                  # Extract all DMARC components
+                  local dmarc_p="" dmarc_sp="" dmarc_adkim="" dmarc_aspf=""
+                  local dmarc_pct="" dmarc_rua="" dmarc_ruf="" dmarc_fo="" dmarc_rf="" dmarc_ri=""
+                  while IFS= read -r tag; do
+                    tag=$(echo "$tag" | sed 's/^ *//' | sed 's/ *$//')
+                    case "$tag" in
+                      p=*) dmarc_p="${tag#p=}" ;;
+                      sp=*) dmarc_sp="${tag#sp=}" ;;
+                      adkim=*) dmarc_adkim="${tag#adkim=}" ;;
+                      aspf=*) dmarc_aspf="${tag#aspf=}" ;;
+                      pct=*) dmarc_pct="${tag#pct=}" ;;
+                      rua=*) dmarc_rua="${tag#rua=}" ;;
+                      ruf=*) dmarc_ruf="${tag#ruf=}" ;;
+                      fo=*) dmarc_fo="${tag#fo=}" ;;
+                      rf=*) dmarc_rf="${tag#rf=}" ;;
+                      ri=*) dmarc_ri="${tag#ri=}" ;;
+                    esac
+                  done <<< "$(echo "$clean_val" | tr ';' '\n')"
+                  # Build compact output
+                  local dmarc_result="**DMARC**"
+                  # Policy line: p / sp / pct
+                  local dmarc_policy=""
+                  [ -n "$dmarc_p" ] && dmarc_policy="Policy:\`${dmarc_p}\`"
+                  [ -n "$dmarc_sp" ] && dmarc_policy="${dmarc_policy:+$dmarc_policy / }Subdomain:\`${dmarc_sp}\`"
+                  [ -n "$dmarc_pct" ] && dmarc_policy="${dmarc_policy:+$dmarc_policy / }${dmarc_pct}%"
+                  [ -n "$dmarc_policy" ] && dmarc_result="${dmarc_result}<br>${dmarc_policy}"
+                  # Alignment line: adkim / aspf
+                  local dmarc_align=""
+                  [ -n "$dmarc_adkim" ] && dmarc_align="DKIM:\`${dmarc_adkim}\`"
+                  [ -n "$dmarc_aspf" ] && dmarc_align="${dmarc_align:+$dmarc_align / }SPF:\`${dmarc_aspf}\`"
+                  [ -n "$dmarc_align" ] && dmarc_result="${dmarc_result}<br>${dmarc_align}"
+                  # Reports line: rua / ruf
+                  local dmarc_reports=""
+                  [ -n "$dmarc_rua" ] && dmarc_reports="rua:\`${dmarc_rua}\`"
+                  [ -n "$dmarc_ruf" ] && dmarc_reports="${dmarc_reports:+$dmarc_reports / }ruf:\`${dmarc_ruf}\`"
+                  [ -n "$dmarc_reports" ] && dmarc_result="${dmarc_result}<br>${dmarc_reports}"
+                  # Options line: fo / rf / ri
+                  local dmarc_opts=""
+                  [ -n "$dmarc_fo" ] && dmarc_opts="fo:\`${dmarc_fo}\`"
+                  [ -n "$dmarc_rf" ] && dmarc_opts="${dmarc_opts:+$dmarc_opts / }rf:\`${dmarc_rf}\`"
+                  [ -n "$dmarc_ri" ] && dmarc_opts="${dmarc_opts:+$dmarc_opts / }ri:\`${dmarc_ri}s\`"
+                  [ -n "$dmarc_opts" ] && dmarc_result="${dmarc_result}<br>${dmarc_opts}"
+                  echo "$dmarc_result"
+                else
+                  # Other TXT records: show as-is
+                  echo "$clean_val"
+                fi
+                ;;
+              # For other types: apply reasonable truncation
+              *)
+                if [ ${#clean_val} -gt 100 ]; then
+                  echo "${clean_val:0:97}..."
+                else
+                  echo "$clean_val"
+                fi
+                ;;
+            esac
+          }
+
+          # Function to extract base domain (last two parts of FQDN)
+          get_base_domain() {
+            local domain="$1"
+            local n
+            n=$(echo "$domain" | tr '.' '\n' | wc -l)
+            if [ "$n" -ge 2 ]; then
+              echo "$domain" | awk -F'.' '{print $(NF-1)"."$NF}'
+            else
+              echo "$domain"
+            fi
+          }
+
+          # Function to extract subdomain from full domain
+          get_subdomain() {
+            local full_domain="$1"
+            local base_domain="$2"
+            # Remove the base domain suffix to get subdomain
+            local subdomain="${full_domain%.$base_domain}"
+            if [ "$subdomain" = "$base_domain" ] || [ "$subdomain" = "$full_domain" ]; then
+              # It's the apex record
+              echo "**@** (apex)"
+            elif [ "$subdomain" = "*" ]; then
+              # It's a wildcard record
+              echo "**\\*** (wildcard)"
+            else
+              echo "$subdomain"
+            fi
+          }
+
+          # Create changes data with base domain info (pipe-separated: base|subdomain|type|action|old|new)
+          CHANGES_DATA=""
+          while IFS= read -r line; do
+            # Parse CREATE lines: "#1: + CREATE domain.com TYPE value ttl=xxx"
+            if echo "$line" | grep -qE "^#[0-9]+: \+ CREATE"; then
+              DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
+              RAW_TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              RAW_VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
+              TYPE=$(simplify_type "$RAW_TYPE")
+              VALUE=$(clean_value "$RAW_TYPE" "$RAW_VALUE" "$DOMAIN")
+              BASE=$(get_base_domain "$DOMAIN")
+              SUBDOMAIN=$(get_subdomain "$DOMAIN" "$BASE")
+              CHANGES_DATA="${CHANGES_DATA}${BASE}|${SUBDOMAIN}|${TYPE}|➕|-|${VALUE}"$'\n'
+            # Parse MODIFY lines: "#1: ± MODIFY domain.com TYPE (old) -> (new)"
+            elif echo "$line" | grep -qE "^#[0-9]+: ± MODIFY"; then
+              DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: ± MODIFY[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
+              RAW_TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: ± MODIFY[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              OLD=$(echo "$line" | sed -E 's/.*\(([^)]+)\)[[:space:]]*->.*/\1/' | tr -d '"')
+              NEW=$(echo "$line" | sed -E 's/.*->[[:space:]]*\(([^)]+)\).*/\1/' | tr -d '"')
+              TYPE=$(simplify_type "$RAW_TYPE")
+              OLD=$(clean_value "$RAW_TYPE" "$OLD" "$DOMAIN")
+              NEW=$(clean_value "$RAW_TYPE" "$NEW" "$DOMAIN")
+              BASE=$(get_base_domain "$DOMAIN")
+              SUBDOMAIN=$(get_subdomain "$DOMAIN" "$BASE")
+              CHANGES_DATA="${CHANGES_DATA}${BASE}|${SUBDOMAIN}|${TYPE}|✏️|${OLD}|${NEW}"$'\n'
+            # Parse DELETE lines: "#1: - DELETE domain.com TYPE value"
+            elif echo "$line" | grep -qE "^#[0-9]+: - DELETE"; then
+              DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
+              RAW_TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              RAW_VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
+              TYPE=$(simplify_type "$RAW_TYPE")
+              VALUE=$(clean_value "$RAW_TYPE" "$RAW_VALUE" "$DOMAIN")
+              BASE=$(get_base_domain "$DOMAIN")
+              SUBDOMAIN=$(get_subdomain "$DOMAIN" "$BASE")
+              CHANGES_DATA="${CHANGES_DATA}${BASE}|${SUBDOMAIN}|${TYPE}|🗑️|${VALUE}|-"$'\n'
+            fi
+          done <<< "$CLEAN_OUTPUT"
+
+          # Sort by: 1) base domain, 2) record type, 3) subdomain
+          if [ -n "$CHANGES_DATA" ]; then
+            SORTED_DATA=$(echo "$CHANGES_DATA" | sort -t'|' -k1,1 -k3,3 -k2,2)
+          else
+            SORTED_DATA=""
+          fi
+
+          # Get unique base domains (sorted)
+          BASE_DOMAINS=$(echo "$SORTED_DATA" | cut -d'|' -f1 | sort -u | grep -v '^$')
+
+          # Build domain summary (base domain -> add/modify/delete counts)
+          DOMAIN_SUMMARY=""
+          for base in $BASE_DOMAINS; do
+            DOMAIN_ROWS=$(echo "$SORTED_DATA" | grep "^${base}|" || true)
+            if [ -n "$DOMAIN_ROWS" ]; then
+              ADD_COUNT=$(echo "$DOMAIN_ROWS" | grep -c '|➕|' || true)
+              MOD_COUNT=$(echo "$DOMAIN_ROWS" | grep -c '|✏️|' || true)
+              DEL_COUNT=$(echo "$DOMAIN_ROWS" | grep -c '|🗑️|' || true)
+            else
+              ADD_COUNT=0
+              MOD_COUNT=0
+              DEL_COUNT=0
+            fi
+            # Ensure counts are valid numbers (strip any whitespace/newlines)
+            ADD_COUNT=${ADD_COUNT:-0}
+            MOD_COUNT=${MOD_COUNT:-0}
+            DEL_COUNT=${DEL_COUNT:-0}
+            DOMAIN_SUMMARY="${DOMAIN_SUMMARY}${base}|${ADD_COUNT}|${MOD_COUNT}|${DEL_COUNT}"$'\n'
+          done
+
+          # Output domain summary for comment generation
+          echo "domain-summary<<EOF" >> $GITHUB_OUTPUT
+          echo "$DOMAIN_SUMMARY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Output sorted changes data for comment generation
+          echo "changes-data<<EOF" >> $GITHUB_OUTPUT
+          echo "$SORTED_DATA" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Output base domains list for iteration
+          echo "base-domains<<EOF" >> $GITHUB_OUTPUT
+          echo "$BASE_DOMAINS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Upload preview output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-output
+          path: preview-output.txt
+          retention-days: 1
+          if-no-files-found: ignore
+

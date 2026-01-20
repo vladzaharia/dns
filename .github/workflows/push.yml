@@ -4,43 +4,46 @@ on:
   push:
     branches: [main]
 
+# Cancel in-progress runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+  checks: write
+
 jobs:
-  prepare:
-    uses: ./.github/workflows/prepare.yml
-  push:
-    name: Push DNS changes
-    needs: prepare
-    runs-on: ubuntu-latest
+  # Parallel validation jobs
+  build:
+    name: Build
+    uses: ./.github/workflows/_reusable-build.yml
+
+  lint:
+    name: Lint
+    uses: ./.github/workflows/_reusable-lint.yml
+
+  format:
+    name: Format
+    uses: ./.github/workflows/_reusable-format.yml
+
+  typecheck:
+    name: Typecheck
+    uses: ./.github/workflows/_reusable-typecheck.yml
+
+  test:
+    name: Test
+    uses: ./.github/workflows/_reusable-test.yml
     permissions:
       contents: read
-      id-token: write
-    steps:
-      - name: Download DNSControl binaries
-        uses: actions/download-artifact@v4
-        with:
-          name: lib
-          path: lib
-      - name: Download compiled JS
-        uses: actions/download-artifact@v4
-        with:
-          name: out
-          path: out
-      - name: Make binaries executable
-        run: chmod +x dnscontrol*
-        working-directory: lib
-        shell: bash
-      # - name: Pull CF secrets from Vault
-      #   uses: hashicorp/vault-action@v2
-      #   with:
-      #     url: https://vault.zhr.one
-      #     role: dns
-      #     path: github
-      #     method: jwt
-      #     secrets: |
-      #       /ci-cd/dns/cloudflare/push CF_API
-      - name: Generate and push records
-        run: ../lib/dnscontrol-Linux --diff2 push
-        working-directory: out
-        shell: bash
-        env:
-          CF_API: ${{ secrets.CF_API }}
+      checks: write
+      pull-requests: write
+
+  # Push runs after all validation jobs pass
+  push:
+    name: Push
+    needs: [build, lint, format, typecheck, test]
+    uses: ./.github/workflows/_reusable-push.yml
+    secrets:
+      CF_API: ${{ secrets.CF_API }}

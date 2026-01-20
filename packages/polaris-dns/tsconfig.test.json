@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "types": ["@vladzaharia/dnscontrol-types", "vitest/globals", "node"],
+    "paths": {
+      "@lib/*": ["./src/lib/*"],
+      "@services/*": ["./src/services/*"],
+      "@mail/*": ["./src/mail/*"],
+      "@zones/*": ["./src/zones/*"],
+      "@tests/*": ["./tests/*"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "dist", "out"]
+}
+

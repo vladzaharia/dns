@@ -1,0 +1,87 @@
+# Dependabot configuration for DNS Infrastructure-as-Code repository
+# Replaces Renovate for dependency management with auto-merge capabilities
+
+version: 2
+updates:
+  # npm ecosystem for all packages
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    # Group related dependencies together
+    groups:
+      # TypeScript ecosystem
+      typescript-ecosystem:
+        patterns:
+          - "typescript"
+          - "@types/*"
+          - "typescript-eslint"
+          - "ts-loader"
+          - "tsup"
+          - "tsx"
+      # ESLint ecosystem
+      eslint-ecosystem:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "globals"
+      # Vitest ecosystem
+      vitest-ecosystem:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+      # Documentation tooling
+      documentation-tooling:
+        patterns:
+          - "vitepress"
+          - "typedoc"
+          - "typedoc-*"
+      # Build tooling
+      build-tooling:
+        patterns:
+          - "webpack"
+          - "webpack-*"
+          - "copy-webpack-plugin"
+      # Prettier
+      prettier:
+        patterns:
+          - "prettier"
+          - "prettier-*"
+    # Ignore patterns for packages that need special handling
+    ignore:
+      # Major versions require manual review
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Los_Angeles"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    ignore:
+      # Pinned to v4 - v6 has crypto issues with act local runner
+      - dependency-name: "actions/upload-artifact"
+        versions: [">=5"]
+

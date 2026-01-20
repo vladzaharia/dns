@@ -1,0 +1,27 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Polaris DNS API Reference",
+  "entryPoints": [
+    "../../packages/polaris-dns/src/lib/domain.ts",
+    "../../packages/polaris-dns/src/lib/record.ts",
+    "../../packages/polaris-dns/src/lib/server.ts",
+    "../../packages/polaris-dns/src/lib/types.ts",
+    "../../packages/polaris-dns/src/services/types.ts",
+    "../../packages/polaris-dns/src/mail/fastmail.ts",
+    "../../packages/polaris-dns/src/mail/cloudflare.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "./api/generated",
+  "plugin": ["typedoc-plugin-markdown"],
+  "tsconfig": "../../packages/polaris-dns/tsconfig.json",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "categoryOrder": ["Domain", "Records", "Servers", "Services", "Mail", "Types", "*"],
+  "sort": ["alphabetical", "source-order"],
+  "kindSortOrder": ["Function", "Variable", "TypeAlias", "Interface", "Class", "Enum"],
+  "groupOrder": ["Functions", "Variables", "Type Aliases", "Interfaces", "Classes", "Enums"]
+}

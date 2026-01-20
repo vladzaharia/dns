@@ -1,0 +1,22 @@
+{
+  "ref": "refs/heads/main",
+  "before": "abc123def456",
+  "after": "def456abc789",
+  "repository": {
+    "name": "dns",
+    "full_name": "vladzaharia/dns",
+    "owner": {
+      "login": "vladzaharia"
+    }
+  },
+  "pusher": {
+    "name": "local-tester",
+    "email": "local@test.com"
+  },
+  "head_commit": {
+    "id": "def456abc789",
+    "message": "Test push for local act testing",
+    "timestamp": "2026-01-18T12:00:00Z"
+  }
+}
+

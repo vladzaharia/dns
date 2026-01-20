@@ -1,0 +1,38 @@
+# nektos/act configuration
+# https://github.com/nektos/act
+#
+# Usage:
+#   pnpm run act:preview     - Test PR/preview workflow
+#   pnpm run act:push        - Test push workflow
+#   pnpm run act:validate    - Test validation only
+#   pnpm run act:dry         - Dry run (list jobs)
+#
+# Direct act commands:
+#   act pull_request -e .github/act/pull_request.json
+#   act push -e .github/act/push.json
+#   act -j validate          - Test specific job
+#   act -n                   - Dry run (no execution)
+#   act -l                   - List available workflows
+#
+# Job skipping:
+#   The event JSON files include "act": true which allows workflows to skip
+#   jobs that don't work locally (e.g., PR comments) using:
+#   if: ${{ !github.event.act }}
+
+# Use medium-sized Ubuntu images (good balance of size and compatibility)
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+-P ubuntu-22.04=catthehacker/ubuntu:act-22.04
+-P ubuntu-24.04=catthehacker/ubuntu:act-24.04
+
+# Load secrets from .secrets file (copy from .secrets.example)
+--secret-file .secrets
+
+# Use local artifacts directory
+--artifact-server-path /tmp/act-artifacts
+
+# Reuse containers for faster subsequent runs
+--reuse
+
+# Container architecture for Apple Silicon (M-series chips)
+--container-architecture linux/amd64
+

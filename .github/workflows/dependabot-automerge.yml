@@ -1,0 +1,120 @@
+name: Dependabot Auto-merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot-automerge:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2.5.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for DNS file changes
+        id: dns-changes
+        run: |
+          # Get the list of changed files in this PR
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Check if any DNS-affecting files are changed
+          DNS_PATTERNS=(
+            "packages/polaris-dns/src/zones/"
+            "packages/polaris-dns/src/definitions/"
+            "packages/polaris-dns/src/providers/"
+            "packages/polaris-dns/src/registrars/"
+            "packages/polaris-dns/dnsconfig.js"
+          )
+
+          HAS_DNS_CHANGES="false"
+          for pattern in "${DNS_PATTERNS[@]}"; do
+            if echo "$CHANGED_FILES" | grep -q "^$pattern"; then
+              echo "Found DNS-affecting change matching pattern: $pattern"
+              HAS_DNS_CHANGES="true"
+              break
+            fi
+          done
+
+          echo "has-dns-changes=$HAS_DNS_CHANGES" >> $GITHUB_OUTPUT
+
+          if [ "$HAS_DNS_CHANGES" == "true" ]; then
+            echo "::warning::This PR contains DNS-affecting changes and will NOT be auto-merged."
+          else
+            echo "No DNS-affecting changes detected."
+          fi
+
+      - name: Check if auto-merge eligible
+        id: eligible
+        run: |
+          # Determine if this PR is eligible for auto-merge
+          # Conditions:
+          # 1. Must be a Dependabot PR (already checked in job condition)
+          # 2. Must NOT have DNS file changes
+          # 3. Must be a minor or patch update (not major)
+
+          UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
+          HAS_DNS_CHANGES="${{ steps.dns-changes.outputs.has-dns-changes }}"
+
+          echo "Update type: $UPDATE_TYPE"
+          echo "Has DNS changes: $HAS_DNS_CHANGES"
+
+          ELIGIBLE="false"
+          REASON=""
+
+          if [ "$HAS_DNS_CHANGES" == "true" ]; then
+            REASON="PR contains DNS-affecting file changes"
+          elif [ "$UPDATE_TYPE" == "version-update:semver-major" ]; then
+            REASON="Major version update requires manual review"
+          else
+            ELIGIBLE="true"
+            REASON="Eligible for auto-merge"
+          fi
+
+          echo "eligible=$ELIGIBLE" >> $GITHUB_OUTPUT
+          echo "reason=$REASON" >> $GITHUB_OUTPUT
+          echo "Eligibility: $ELIGIBLE - $REASON"
+
+      - name: Wait for CI checks
+        if: steps.eligible.outputs.eligible == 'true'
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
+          running-workflow-name: "Auto-merge Dependabot PRs"
+          allowed-conclusions: success
+
+      - name: Enable auto-merge
+        if: steps.eligible.outputs.eligible == 'true'
+        run: |
+          gh pr merge --auto --squash "${{ github.event.pull_request.number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add label for manual review
+        if: steps.eligible.outputs.eligible == 'false'
+        run: |
+          gh pr edit "${{ github.event.pull_request.number }}" --add-label "manual-review-required"
+          gh pr comment "${{ github.event.pull_request.number }}" --body "⚠️ **Auto-merge disabled**: ${{ steps.eligible.outputs.reason }}
+
+          This PR requires manual review before merging."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

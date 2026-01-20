@@ -1,0 +1,478 @@
+name: PR Comment
+
+on:
+  workflow_call:
+    inputs:
+      # Build job results
+      build-result:
+        description: "Build result (success/failure)"
+        type: string
+        required: true
+      build-packages:
+        description: "Per-package build results JSON"
+        type: string
+        required: false
+        default: "{}"
+      # Lint job results
+      lint-result:
+        description: "Lint result (success/failure)"
+        type: string
+        required: true
+      lint-packages:
+        description: "Per-package lint results JSON"
+        type: string
+        required: false
+        default: "[]"
+      # Format job results
+      format-result:
+        description: "Format result (success/failure)"
+        type: string
+        required: true
+      format-packages:
+        description: "Per-package format results JSON"
+        type: string
+        required: false
+        default: "[]"
+      # Typecheck job results
+      typecheck-result:
+        description: "Typecheck result (success/failure)"
+        type: string
+        required: true
+      typecheck-packages:
+        description: "Per-package typecheck results JSON"
+        type: string
+        required: false
+        default: "[]"
+      # Test job results
+      test-result:
+        description: "Test result (success/failure)"
+        type: string
+        required: true
+      test-packages:
+        description: "Per-package test results JSON"
+        type: string
+        required: false
+        default: "[]"
+      # Coverage metrics
+      coverage-total:
+        description: "Total coverage percentage"
+        type: string
+        required: false
+        default: "0"
+      coverage-json:
+        description: "Coverage summary JSON"
+        type: string
+        required: false
+        default: "{}"
+      # Preview job results
+      preview-result:
+        description: "Preview result"
+        type: string
+        required: true
+      has-changes:
+        description: "Whether there are DNS changes"
+        type: string
+        required: false
+        default: "false"
+      changes-summary:
+        description: "Summary of changes"
+        type: string
+        required: false
+        default: ""
+      domain-summary:
+        description: "Per-domain change counts"
+        type: string
+        required: false
+        default: ""
+      changes-data:
+        description: "Structured changes data"
+        type: string
+        required: false
+        default: ""
+      base-domains:
+        description: "List of base domains with changes"
+        type: string
+        required: false
+        default: ""
+
+jobs:
+  comment:
+    name: Update PR Comment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6.0.1
+        with:
+          sparse-checkout: packages/polaris-dns/src/zones
+
+      - name: Extract known domains
+        id: domains
+        run: |
+          # Extract domain names from zone file names (excluding index.ts)
+          # File pattern: domain-name.ts -> domain.name
+          DOMAINS=$(find packages/polaris-dns/src/zones -name "*.ts" ! -name "index.ts" -type f \
+            | xargs -n1 basename \
+            | sed 's/\.ts$//' \
+            | sed 's/-\([^-]*\)$/.\1/' \
+            | sort)
+          echo "list<<EOF" >> $GITHUB_OUTPUT
+          echo "$DOMAINS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Download preview output
+        uses: actions/download-artifact@v7.0.0
+        with:
+          name: preview-output
+          path: .
+        continue-on-error: true
+
+      - name: Find existing PR comment
+        id: find-comment
+        uses: peter-evans/find-comment@v4.0.0
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "<!-- dns-preview-comment -->"
+
+      - name: Extract existing status rows
+        id: existing-rows
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMENT_ID: ${{ steps.find-comment.outputs.comment-id }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Fetch comment body via GitHub API to avoid "Argument list too long" error
+          # The comment body can be very large with many commits tracked
+          if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "" ]; then
+            gh api "/repos/${REPO}/issues/comments/${COMMENT_ID}" --jq '.body' > existing-comment.txt 2>/dev/null || echo "" > existing-comment.txt
+          else
+            echo "" > existing-comment.txt
+          fi
+
+          # Extract existing status table rows (excluding header)
+          # Expected format: | Commit | Build | Lint | Format | Typecheck | Test | Preview | (7 columns = 8 pipes)
+          if [ -s "existing-comment.txt" ]; then
+            # Extract rows between the table header separator and the next section
+            RAW_ROWS=$(cat existing-comment.txt | sed -n '/^|--------|/,/^$/p' | grep "^| \[" || echo "")
+
+            # Filter to only include rows with the correct number of columns (8 pipes for 7 columns)
+            VALID_ROWS=""
+            while IFS= read -r row; do
+              if [ -n "$row" ]; then
+                PIPE_COUNT=$(echo "$row" | tr -cd '|' | wc -c)
+                if [ "$PIPE_COUNT" -eq 8 ]; then
+                  VALID_ROWS="${VALID_ROWS}${row}"$'\n'
+                fi
+              fi
+            done <<< "$RAW_ROWS"
+
+            echo "rows<<EOF" >> $GITHUB_OUTPUT
+            echo "$VALID_ROWS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "rows=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate comment content
+        id: comment
+        shell: bash
+        env:
+          BUILD_RESULT: ${{ inputs.build-result }}
+          BUILD_PACKAGES: ${{ inputs.build-packages }}
+          LINT_RESULT: ${{ inputs.lint-result }}
+          LINT_PACKAGES: ${{ inputs.lint-packages }}
+          FORMAT_RESULT: ${{ inputs.format-result }}
+          FORMAT_PACKAGES: ${{ inputs.format-packages }}
+          TYPECHECK_RESULT: ${{ inputs.typecheck-result }}
+          TYPECHECK_PACKAGES: ${{ inputs.typecheck-packages }}
+          TEST_RESULT: ${{ inputs.test-result }}
+          TEST_PACKAGES: ${{ inputs.test-packages }}
+          COVERAGE_TOTAL: ${{ inputs.coverage-total }}
+          COVERAGE_JSON: ${{ inputs.coverage-json }}
+          PREVIEW_RESULT: ${{ inputs.preview-result }}
+          HAS_CHANGES: ${{ inputs.has-changes }}
+          CHANGES_SUMMARY: ${{ inputs.changes-summary }}
+          DOMAIN_SUMMARY: ${{ inputs.domain-summary }}
+          CHANGES_DATA: ${{ inputs.changes-data }}
+          BASE_DOMAINS: ${{ inputs.base-domains }}
+          ALL_KNOWN_DOMAINS: ${{ steps.domains.outputs.list }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          EXISTING_ROWS: ${{ steps.existing-rows.outputs.rows }}
+        run: |
+          # Read preview output from artifact file (avoids "Argument list too long" error)
+          if [ -f "preview-output.txt" ]; then
+            PREVIEW_OUTPUT=$(cat preview-output.txt)
+          else
+            PREVIEW_OUTPUT=""
+          fi
+
+          # Generate status icons
+          get_icon() {
+            if [ "$1" == "success" ]; then echo "✅"; else echo "❌"; fi
+          }
+
+          BUILD_ICON=$(get_icon "$BUILD_RESULT")
+          LINT_ICON=$(get_icon "$LINT_RESULT")
+          FORMAT_ICON=$(get_icon "$FORMAT_RESULT")
+          TYPECHECK_ICON=$(get_icon "$TYPECHECK_RESULT")
+          TEST_ICON=$(get_icon "$TEST_RESULT")
+          PREVIEW_ICON=$(get_icon "$PREVIEW_RESULT")
+
+          # Preview column with changes info combined
+          if [ "$PREVIEW_RESULT" != "success" ]; then
+            PREVIEW_TEXT="❌ Failed"
+          elif [ "$HAS_CHANGES" == "true" ]; then
+            PREVIEW_TEXT="${CHANGES_SUMMARY:-Changes}"
+          else
+            PREVIEW_TEXT="✅ No changes"
+          fi
+
+          # Short commit SHA
+          SHORT_SHA="${COMMIT_SHA:0:7}"
+
+          # Create new status row (order: Build > Lint > Format > Typecheck > Test > Preview)
+          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $LINT_ICON | $FORMAT_ICON | $TYPECHECK_ICON | $TEST_ICON | $PREVIEW_TEXT |"
+
+          # Build the comment using echo statements
+          {
+            echo "<!-- dns-preview-comment -->"
+            echo "## 🕒 PR History"
+            echo ""
+            echo "| Commit | Build | Lint | Format | Typecheck | Test | Preview |"
+            echo "|--------|-------|------|--------|-----------|------|---------|"
+            # Output existing rows first (oldest), then new row (newest) - chronological order
+            if [ -n "$EXISTING_ROWS" ]; then
+              # Strip trailing newlines/whitespace to avoid blank lines in table
+              printf '%s\n' "$(echo "$EXISTING_ROWS" | sed -e 's/[[:space:]]*$//')"
+            fi
+            echo "$NEW_ROW"
+            echo ""
+            # Build URLs for linking headers to job runs
+            RUN_URL="https://github.com/$REPO/actions/runs/$RUN_ID"
+
+            echo "## 🔨 Build Results"
+            echo ""
+            echo "| Package | Build | Lint | Format | Typecheck |"
+            echo "|---------|-------|------|--------|-----------|"
+
+            # Combine all package names from build, lint, format, typecheck
+            ALL_PACKAGES=""
+            if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
+              BUILD_PKGS=$(echo "$BUILD_PACKAGES" | jq -r 'keys[]' 2>/dev/null || echo "")
+              ALL_PACKAGES="$BUILD_PKGS"
+            fi
+            for PKG_JSON_VAR in "$LINT_PACKAGES" "$FORMAT_PACKAGES" "$TYPECHECK_PACKAGES"; do
+              if [ -n "$PKG_JSON_VAR" ] && [ "$PKG_JSON_VAR" != "[]" ]; then
+                PKG_NAMES=$(echo "$PKG_JSON_VAR" | jq -r '.[].name' 2>/dev/null || echo "")
+                if [ -n "$ALL_PACKAGES" ]; then
+                  ALL_PACKAGES=$(printf '%s\n%s' "$ALL_PACKAGES" "$PKG_NAMES" | sort -u)
+                else
+                  ALL_PACKAGES="$PKG_NAMES"
+                fi
+              fi
+            done
+
+            # Generate rows for each package
+            if [ -n "$ALL_PACKAGES" ]; then
+              echo "$ALL_PACKAGES" | while IFS= read -r pkg; do
+                [ -z "$pkg" ] && continue
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+
+                # Get build status
+                PKG_BUILD_STATUS=""
+                if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
+                  PKG_BUILD_STATUS=$(echo "$BUILD_PACKAGES" | jq -r --arg p "$pkg" '.[$p] // empty' 2>/dev/null || echo "")
+                fi
+                PKG_BUILD_ICON=$(if [ "$PKG_BUILD_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_BUILD_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get lint status
+                PKG_LINT_STATUS=""
+                if [ -n "$LINT_PACKAGES" ] && [ "$LINT_PACKAGES" != "[]" ]; then
+                  PKG_LINT_STATUS=$(echo "$LINT_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
+                fi
+                PKG_LINT_ICON=$(if [ "$PKG_LINT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_LINT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get format status
+                PKG_FORMAT_STATUS=""
+                if [ -n "$FORMAT_PACKAGES" ] && [ "$FORMAT_PACKAGES" != "[]" ]; then
+                  PKG_FORMAT_STATUS=$(echo "$FORMAT_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
+                fi
+                PKG_FORMAT_ICON=$(if [ "$PKG_FORMAT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_FORMAT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get typecheck status
+                PKG_TYPECHECK_STATUS=""
+                if [ -n "$TYPECHECK_PACKAGES" ] && [ "$TYPECHECK_PACKAGES" != "[]" ]; then
+                  PKG_TYPECHECK_STATUS=$(echo "$TYPECHECK_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
+                fi
+                PKG_TYPECHECK_ICON=$(if [ "$PKG_TYPECHECK_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_TYPECHECK_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                echo "| $SHORT_PKG | $PKG_BUILD_ICON | $PKG_LINT_ICON | $PKG_FORMAT_ICON | $PKG_TYPECHECK_ICON |"
+              done
+            else
+              echo "| _No packages_ | - | - | - | - |"
+            fi
+            echo ""
+            echo "### 🧪 Test Results"
+            echo ""
+            echo "| Package | ✅ Passed | ❌ Failed | ⏭️ Skipped | 📊 Coverage |"
+            echo "|---------|-----------|-----------|------------|-------------|"
+
+            # Parse test packages JSON which now includes coverage
+            TOTAL_PASSED=0
+            TOTAL_FAILED=0
+            TOTAL_SKIPPED=0
+            if [ -n "$TEST_PACKAGES" ] && [ "$TEST_PACKAGES" != "[]" ]; then
+              echo "$TEST_PACKAGES" | jq -r '.[] | "\(.name)|\(.passed)|\(.failed)|\(.skipped)|\(.coverage // "N/A")|\(.status)"' 2>/dev/null | while IFS='|' read -r pkg passed failed skipped coverage status; do
+                [ -z "$pkg" ] && continue
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+
+                # Format coverage with badge
+                if [ "$coverage" != "N/A" ] && [ -n "$coverage" ]; then
+                  COV_NUM=$(echo "$coverage" | sed 's/[^0-9.]//g')
+                  if [ -n "$COV_NUM" ]; then
+                    COV_INT=${COV_NUM%.*}
+                    if [ "$COV_INT" -ge 80 ]; then
+                      COV_BADGE="🟢"
+                    elif [ "$COV_INT" -ge 60 ]; then
+                      COV_BADGE="🟡"
+                    else
+                      COV_BADGE="🔴"
+                    fi
+                    COV_DISPLAY="$COV_BADGE ${coverage}%"
+                  else
+                    COV_DISPLAY="$coverage"
+                  fi
+                else
+                  COV_DISPLAY="-"
+                fi
+
+                # Add status icon to package name
+                if [ "$status" == "success" ]; then
+                  PKG_DISPLAY="✅ $SHORT_PKG"
+                elif [ "$status" == "failure" ]; then
+                  PKG_DISPLAY="❌ $SHORT_PKG"
+                elif [ "$status" == "skipped" ]; then
+                  PKG_DISPLAY="⏭️ $SHORT_PKG"
+                else
+                  PKG_DISPLAY="$SHORT_PKG"
+                fi
+
+                echo "| $PKG_DISPLAY | $passed | $failed | $skipped | $COV_DISPLAY |"
+              done
+            else
+              echo "| _No test results_ | - | - | - | - |"
+            fi
+
+            # Add totals row
+            if [ -n "$TEST_PACKAGES" ] && [ "$TEST_PACKAGES" != "[]" ]; then
+              TOTAL_PASSED=$(echo "$TEST_PACKAGES" | jq '[.[].passed] | add // 0' 2>/dev/null || echo 0)
+              TOTAL_FAILED=$(echo "$TEST_PACKAGES" | jq '[.[].failed] | add // 0' 2>/dev/null || echo 0)
+              TOTAL_SKIPPED=$(echo "$TEST_PACKAGES" | jq '[.[].skipped] | add // 0' 2>/dev/null || echo 0)
+
+              # Overall coverage badge
+              if [ -n "$COVERAGE_TOTAL" ] && [ "$COVERAGE_TOTAL" != "0" ]; then
+                COV_NUM=$(echo "$COVERAGE_TOTAL" | sed 's/[^0-9.]//g')
+                if [ -n "$COV_NUM" ]; then
+                  COV_INT=${COV_NUM%.*}
+                  if [ "$COV_INT" -ge 80 ]; then
+                    TOTAL_COV_BADGE="🟢"
+                  elif [ "$COV_INT" -ge 60 ]; then
+                    TOTAL_COV_BADGE="🟡"
+                  else
+                    TOTAL_COV_BADGE="🔴"
+                  fi
+                  TOTAL_COV_DISPLAY="$TOTAL_COV_BADGE **${COVERAGE_TOTAL}%**"
+                else
+                  TOTAL_COV_DISPLAY="-"
+                fi
+              else
+                TOTAL_COV_DISPLAY="-"
+              fi
+
+              echo "| **Total** | **$TOTAL_PASSED** | **$TOTAL_FAILED** | **$TOTAL_SKIPPED** | $TOTAL_COV_DISPLAY |"
+            fi
+
+            echo ""
+            echo "## 🌐 DNS Changes"
+            echo ""
+
+            # Check if preview failed
+            if [ "$PREVIEW_RESULT" != "success" ]; then
+              echo "> ❌ **DNS Preview Failed**"
+              echo ">"
+              echo "> The DNS preview step failed. Check the [Workflow Logs]($RUN_URL) for details."
+              echo ""
+              if [ -n "$PREVIEW_OUTPUT" ]; then
+                echo "<details>"
+                echo "<summary>Error Output</summary>"
+                echo ""
+                echo "\`\`\`"
+                echo "$PREVIEW_OUTPUT" | head -n 100
+                echo "\`\`\`"
+                echo ""
+                echo "</details>"
+                echo ""
+              fi
+            else
+              # Domain Summary Table
+              if [ -n "$DOMAIN_SUMMARY" ] && [ "$DOMAIN_SUMMARY" != "" ]; then
+                echo "| Domain | ➕ Additions | ✏️ Changes | 🗑️ Deletions |"
+                echo "|--------|-------------|-----------|--------------|"
+                echo "$DOMAIN_SUMMARY" | while IFS='|' read -r domain adds mods dels; do
+                  [ -z "$domain" ] && continue
+                  echo "| \`$domain\` | $adds | $mods | $dels |"
+                done
+                echo ""
+              fi
+
+              # Per-domain detail sections (only domains with changes)
+              for domain in $BASE_DOMAINS; do
+                [ -z "$domain" ] && continue
+                DOMAIN_CHANGES=$(echo "$CHANGES_DATA" | grep "^${domain}|" || echo "")
+                [ -z "$DOMAIN_CHANGES" ] && continue
+
+                # Count changes for this domain
+                ADDS=$(echo "$DOMAIN_CHANGES" | grep -c '|➕|' || true)
+                MODS=$(echo "$DOMAIN_CHANGES" | grep -c '|✏️|' || true)
+                DELS=$(echo "$DOMAIN_CHANGES" | grep -c '|🗑️|' || true)
+                ADDS=${ADDS:-0}
+                MODS=${MODS:-0}
+                DELS=${DELS:-0}
+                TOTAL=$((ADDS + MODS + DELS))
+
+                echo "<details>"
+                echo "<summary><h3>$domain</h3> ($TOTAL change$( [ $TOTAL -ne 1 ] && echo 's'))</summary>"
+                echo ""
+                echo "| Type | Name | Record | Old Value | New Value |"
+                echo "|------|------|--------|-----------|-----------|"
+                # Output changes for this domain (already sorted by type, then name)
+                echo "$DOMAIN_CHANGES" | while IFS='|' read -r base subdomain rectype action old new; do
+                  [ -z "$base" ] && continue
+                  echo "| $action | $subdomain | $rectype | $old | $new |"
+                done
+                echo ""
+                echo "</details>"
+                echo ""
+              done
+
+              if [ "$HAS_CHANGES" != "true" ]; then
+                echo "> ✅ No DNS changes detected"
+                echo ""
+              fi
+            fi
+
+            echo "---"
+            echo "*Latest commit: \`$COMMIT_SHA\`* | [View Run](https://github.com/$REPO/actions/runs/$RUN_ID)"
+          } > comment.md
+
+      - name: Create or update PR comment
+        uses: marocchino/sticky-pull-request-comment@v2.9.4
+        with:
+          header: dns-preview
+          path: comment.md
+
