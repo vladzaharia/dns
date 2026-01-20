@@ -117,15 +117,15 @@ jobs:
           fi
           TOTAL_COUNT=$((CREATE_COUNT + MODIFY_COUNT + DELETE_COUNT))
 
-          # Create summary
+          # Create summary (compact format: ➕ 53 / ✏️ 78 / 🗑️ 47)
           if [ "$TOTAL_COUNT" -gt 0 ]; then
             PARTS=""
-            [ "$CREATE_COUNT" -gt 0 ] && PARTS="$CREATE_COUNT create"
-            [ "$MODIFY_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS, }$MODIFY_COUNT modify"
-            [ "$DELETE_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS, }$DELETE_COUNT delete"
-            SUMMARY="**$TOTAL_COUNT** changes ($PARTS)"
+            [ "$CREATE_COUNT" -gt 0 ] && PARTS="➕ $CREATE_COUNT"
+            [ "$MODIFY_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS / }✏️ $MODIFY_COUNT"
+            [ "$DELETE_COUNT" -gt 0 ] && PARTS="${PARTS:+$PARTS / }🗑️ $DELETE_COUNT"
+            SUMMARY="$PARTS"
           else
-            SUMMARY="**0** changes"
+            SUMMARY="No changes"
           fi
           echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
 
@@ -509,7 +509,7 @@ jobs:
             CHANGES_ICON="🔄"
             CHANGES_TEXT="${CHANGES_SUMMARY:-Changes detected}"
           else
-            CHANGES_ICON="✨"
+            CHANGES_ICON="✅"
             CHANGES_TEXT="0 changes"
           fi
 
@@ -522,7 +522,7 @@ jobs:
           # Build the comment using echo statements
           {
             echo "<!-- dns-preview-comment -->"
-            echo "## 🕒 Run History"
+            echo "## 🕒 PR History"
             echo ""
             echo "| Commit | Build | Test | Validate | Preview | Changes |"
             echo "|--------|-------|------|----------|---------|---------|"
@@ -533,9 +533,7 @@ jobs:
             fi
             echo "$NEW_ROW"
             echo ""
-            echo "## 🌐 Run Results"
-            echo ""
-            echo "### 🔨 Build"
+            echo "# 🌐 Run Results"
             echo ""
             echo "| Package | Build | Typecheck | Lint | Format |"
             echo "|---------|-------|-----------|------|--------|"
@@ -592,7 +590,7 @@ jobs:
               echo "| No packages | - | - | - | - |"
             fi
             echo ""
-            echo "### 🧪 Tests"
+            echo "## 🧪 Tests"
             echo ""
             echo "| Package | Total | Passed | Failed | Skipped | Status |"
             echo "|---------|-------|--------|--------|---------|--------|"
@@ -610,7 +608,7 @@ jobs:
             fi
 
             echo ""
-            echo "### 🔄 DNS Changes"
+            echo "# 🔄 DNS Changes"
             echo ""
             if [ "$PREVIEW_RESULT" != "success" ]; then
               echo "**Summary:** ❌ Preview completed with errors"
