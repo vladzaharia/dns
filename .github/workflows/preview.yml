@@ -390,6 +390,28 @@ jobs:
             fi
           done <<< "$CLEAN_OUTPUT"
 
+          # Sort table by: 1) base domain, 2) record type, 3) record name
+          # e.g., "sub.polaris.express" -> base: "polaris.express"
+          if [ -n "$TABLE" ]; then
+            SORTED_TABLE=$(echo "$TABLE" | awk -F'|' '{
+              # Column 3 = domain/record name, Column 4 = record type
+              domain = $3
+              rectype = $4
+              gsub(/^[[:space:]]+|[[:space:]]+$/, "", domain)
+              gsub(/^[[:space:]]+|[[:space:]]+$/, "", rectype)
+              # Extract base domain (last two parts)
+              n = split(domain, parts, ".")
+              if (n >= 2) {
+                base = parts[n-1] "." parts[n]
+              } else {
+                base = domain
+              }
+              # Print sort keys: base domain, record type, full domain, then the line
+              print base "\t" rectype "\t" domain "\t" $0
+            }' | sort -t$'\t' -k1,1 -k2,2 -k3,3 | cut -f4-)
+            TABLE="$SORTED_TABLE"
+          fi
+
           # Output table (escape for GitHub Actions)
           echo "table<<EOF" >> $GITHUB_OUTPUT
           echo "$TABLE" >> $GITHUB_OUTPUT
@@ -506,7 +528,7 @@ jobs:
             CHANGES_ICON="❌"
             CHANGES_TEXT="Preview failed"
           elif [ "$HAS_CHANGES" == "true" ]; then
-            CHANGES_ICON="🔄"
+            CHANGES_ICON=""
             CHANGES_TEXT="${CHANGES_SUMMARY:-Changes detected}"
           else
             CHANGES_ICON="✅"
