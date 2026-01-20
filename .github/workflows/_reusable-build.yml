@@ -79,14 +79,16 @@ jobs:
           exit $OVERALL_EXIT
 
       - name: Upload compiled JS
-        uses: actions/upload-artifact@v6.0.0
+        # Pinned to v4 - v6 has crypto issues with act local runner
+        uses: actions/upload-artifact@v4
         with:
           name: out
           path: packages/polaris-dns/out/*
           retention-days: 1
 
       - name: Upload DNSControl binaries
-        uses: actions/upload-artifact@v6.0.0
+        # Pinned to v4 - v6 has crypto issues with act local runner
+        uses: actions/upload-artifact@v4
         with:
           name: bin
           path: packages/dnscontrol-download/bin/dnscontrol-*

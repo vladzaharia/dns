@@ -80,4 +80,8 @@ updates:
       github-actions:
         patterns:
           - "*"
+    ignore:
+      # Pinned to v4 - v6 has crypto issues with act local runner
+      - dependency-name: "actions/upload-artifact"
+        versions: [">=5"]
 
