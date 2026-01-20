@@ -16,7 +16,7 @@ import { createARecord } from "../../lib/record.js";
 // =============================================================================
 
 // GL.iNet travel router default gateway (mirrors danger.direct)
-const ROUTER_IP = "192.168.8.1";
+const SERVER_IP = "192.168.105.3";
 
 // =============================================================================
 // Zone Definition
@@ -36,17 +36,17 @@ export function registerDangerDiy(): void {
     },
 
     // Router admin interface
-    createARecord("@", ROUTER_IP, { proxy: "off" }),
-    createARecord("router", ROUTER_IP, { proxy: "off" }),
-    createARecord("admin", ROUTER_IP, { proxy: "off" }),
+    createARecord("@", SERVER_IP, { proxy: "off" }),
+    createARecord("router", SERVER_IP, { proxy: "off" }),
+    createARecord("admin", SERVER_IP, { proxy: "off" }),
 
     // DNS service (if running local DNS)
-    createARecord("dns", ROUTER_IP, { proxy: "off" }),
+    createARecord("dns", SERVER_IP, { proxy: "off" }),
 
     // VPN endpoint (if running local VPN)
-    createARecord("vpn", ROUTER_IP, { proxy: "off" }),
+    createARecord("vpn", SERVER_IP, { proxy: "off" }),
 
     // Wildcard for any local services
-    createARecord("*", ROUTER_IP, { proxy: "off" })
+    createARecord("*", SERVER_IP, { proxy: "off" })
   );
 }
