@@ -241,6 +241,10 @@ jobs:
           FAILED_COUNT="${{ steps.aggregate.outputs.failed-count }}"
           PASSED_COUNT="${{ steps.aggregate.outputs.passed-count }}"
 
+          # Default to 0 if empty to avoid comparison errors
+          FAILED_COUNT=${FAILED_COUNT:-0}
+          PASSED_COUNT=${PASSED_COUNT:-0}
+
           if [ "$FAILED_COUNT" -gt 0 ]; then
             echo "result=failure" >> $GITHUB_OUTPUT
             echo "❌ $FAILED_COUNT tests failed!"

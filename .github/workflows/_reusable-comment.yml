@@ -250,7 +250,7 @@ jobs:
             fi
             echo "$NEW_ROW"
             echo ""
-            echo "# 🔨 Build Results"
+            echo "## 🔨 Build Results"
             echo ""
             echo "| Package | Build | Lint | Format | Typecheck |"
             echo "|---------|-------|------|--------|-----------|"
@@ -313,7 +313,7 @@ jobs:
               echo "| _No packages_ | - | - | - | - |"
             fi
             echo ""
-            echo "## 🧪 Test Results"
+            echo "### 🧪 Test Results"
             echo ""
             echo "| Package | ✅ Passed | ❌ Failed | ⏭️ Skipped | 📊 Coverage |"
             echo "|---------|-----------|-----------|------------|-------------|"
@@ -399,54 +399,49 @@ jobs:
             echo ""
             
             echo ""
-            echo "# 🌐 DNS Changes"
+            echo "## 🌐 DNS Changes"
             echo ""
 
-              # Domain Summary Table
-              if [ -n "$DOMAIN_SUMMARY" ] && [ "$DOMAIN_SUMMARY" != "" ]; then
-                echo "| Domain | ➕ Additions | ✏️ Changes | 🗑️ Deletions |"
-                echo "|--------|-------------|-----------|--------------|"
-                echo "$DOMAIN_SUMMARY" | while IFS='|' read -r domain adds mods dels; do
-                  [ -z "$domain" ] && continue
-                  echo "| \`$domain\` | $adds | $mods | $dels |"
-                done
-                echo ""
-              fi
-
-              # Per-domain detail sections (uses ALL_KNOWN_DOMAINS from env, extracted from zone files)
-              for domain in $ALL_KNOWN_DOMAINS; do
-                # Check if this domain has any changes
-                DOMAIN_CHANGES=$(echo "$CHANGES_DATA" | grep "^${domain}|" || echo "")
-
-                echo "<details>"
-                if [ -n "$DOMAIN_CHANGES" ]; then
-                  # Count changes for this domain
-                  ADDS=$(echo "$DOMAIN_CHANGES" | grep -c '|➕|' || true)
-                  MODS=$(echo "$DOMAIN_CHANGES" | grep -c '|✏️|' || true)
-                  DELS=$(echo "$DOMAIN_CHANGES" | grep -c '|🗑️|' || true)
-                  ADDS=${ADDS:-0}
-                  MODS=${MODS:-0}
-                  DELS=${DELS:-0}
-                  TOTAL=$((ADDS + MODS + DELS))
-                  echo "<summary><h3>$domain</h3> ($TOTAL change$( [ $TOTAL -ne 1 ] && echo 's'))</summary>"
-                  echo ""
-                  echo "| Type | Name | Record | Old Value | New Value |"
-                  echo "|------|------|--------|-----------|-----------|"
-                  # Output changes for this domain (already sorted by type, then name)
-                  echo "$DOMAIN_CHANGES" | while IFS='|' read -r base subdomain rectype action old new; do
-                    [ -z "$base" ] && continue
-                    echo "| $action | $subdomain | $rectype | $old | $new |"
-                  done
-                else
-                  echo "<summary><h3>$domain</h3> (no changes)</summary>"
-                  echo ""
-                  echo "_No changes to this domain._"
-                fi
-                echo ""
-                echo "</details>"
-                echo ""
+            # Domain Summary Table
+            if [ -n "$DOMAIN_SUMMARY" ] && [ "$DOMAIN_SUMMARY" != "" ]; then
+              echo "| Domain | ➕ Additions | ✏️ Changes | 🗑️ Deletions |"
+              echo "|--------|-------------|-----------|--------------|"
+              echo "$DOMAIN_SUMMARY" | while IFS='|' read -r domain adds mods dels; do
+                [ -z "$domain" ] && continue
+                echo "| \`$domain\` | $adds | $mods | $dels |"
               done
+              echo ""
             fi
+
+            # Per-domain detail sections (only domains with changes)
+            for domain in $BASE_DOMAINS; do
+              [ -z "$domain" ] && continue
+              DOMAIN_CHANGES=$(echo "$CHANGES_DATA" | grep "^${domain}|" || echo "")
+              [ -z "$DOMAIN_CHANGES" ] && continue
+
+              # Count changes for this domain
+              ADDS=$(echo "$DOMAIN_CHANGES" | grep -c '|➕|' || true)
+              MODS=$(echo "$DOMAIN_CHANGES" | grep -c '|✏️|' || true)
+              DELS=$(echo "$DOMAIN_CHANGES" | grep -c '|🗑️|' || true)
+              ADDS=${ADDS:-0}
+              MODS=${MODS:-0}
+              DELS=${DELS:-0}
+              TOTAL=$((ADDS + MODS + DELS))
+
+              echo "<details>"
+              echo "<summary><h3>$domain</h3> ($TOTAL change$( [ $TOTAL -ne 1 ] && echo 's'))</summary>"
+              echo ""
+              echo "| Type | Name | Record | Old Value | New Value |"
+              echo "|------|------|--------|-----------|-----------|"
+              # Output changes for this domain (already sorted by type, then name)
+              echo "$DOMAIN_CHANGES" | while IFS='|' read -r base subdomain rectype action old new; do
+                [ -z "$base" ] && continue
+                echo "| $action | $subdomain | $rectype | $old | $new |"
+              done
+              echo ""
+              echo "</details>"
+              echo ""
+            done
             echo ""
             echo "---"
             echo ""
