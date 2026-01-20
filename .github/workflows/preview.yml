@@ -129,60 +129,85 @@ jobs:
           fi
           echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
 
-          # Create changes table from output (limit to first 50 for PR comment size)
-          TABLE=""
-          CHANGE_COUNT=0
-          MAX_CHANGES=50
-          while IFS= read -r line; do
-            # Skip if we've hit the limit
-            if [ "$CHANGE_COUNT" -ge "$MAX_CHANGES" ]; then
-              continue
-            fi
+          # Function to simplify long record type names for display
+          simplify_type() {
+            local type="$1"
+            case "$type" in
+              CLOUDFLAREAPI_SINGLE_REDIRECT) echo "REDIRECT" ;;
+              CLOUDFLAREAPI_*) echo "${type#CLOUDFLAREAPI_}" ;;
+              *) echo "$type" ;;
+            esac
+          }
 
+          # Function to clean value based on record type
+          clean_value() {
+            local type="$1"
+            local value="$2"
+
+            case "$type" in
+              # For A, AAAA, CNAME: strip everything after first space (removes proxy=, ttl=, etc.)
+              A|AAAA|CNAME)
+                echo "$value" | awk '{print $1}'
+                ;;
+              # For redirects: parse name=(code,source,target) format
+              CLOUDFLAREAPI_SINGLE_REDIRECT)
+                # Extract from name=(code,source,target) format
+                if echo "$value" | grep -q "name=("; then
+                  local code=$(echo "$value" | sed -E 's/.*name=\(([0-9]+),.*/\1/')
+                  local source=$(echo "$value" | sed -E 's/.*name=\([0-9]+,([^,]+),.*/\1/')
+                  local target=$(echo "$value" | sed -E 's/.*name=\([0-9]+,[^,]+,([^)]+)\).*/\1/')
+                  echo "${code}: ${source} → ${target}"
+                else
+                  echo "$value"
+                fi
+                ;;
+              # For TXT records: don't truncate, show full value
+              TXT|SPF)
+                echo "$value"
+                ;;
+              # For other types: apply reasonable truncation
+              *)
+                if [ ${#value} -gt 100 ]; then
+                  echo "${value:0:97}..."
+                else
+                  echo "$value"
+                fi
+                ;;
+            esac
+          }
+
+          # Create changes table from output (no limit - show ALL changes)
+          TABLE=""
+          while IFS= read -r line; do
             # Parse CREATE lines: "#1: + CREATE domain.com TYPE value ttl=xxx"
             if echo "$line" | grep -qE "^#[0-9]+: \+ CREATE"; then
               DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
-              TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
-              VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
-              # Truncate value if too long
-              if [ ${#VALUE} -gt 60 ]; then
-                VALUE="${VALUE:0:57}..."
-              fi
+              RAW_TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              RAW_VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: \+ CREATE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
+              TYPE=$(simplify_type "$RAW_TYPE")
+              VALUE=$(clean_value "$RAW_TYPE" "$RAW_VALUE")
               TABLE="${TABLE}| ➕ | ${DOMAIN} | ${TYPE} | - | ${VALUE} |"$'\n'
-              CHANGE_COUNT=$((CHANGE_COUNT + 1))
             # Parse MODIFY lines: "#1: ± MODIFY domain.com TYPE (old) -> (new)"
             elif echo "$line" | grep -qE "^#[0-9]+: ± MODIFY"; then
               DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: ± MODIFY[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
-              TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: ± MODIFY[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              RAW_TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: ± MODIFY[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
               OLD=$(echo "$line" | sed -E 's/.*\(([^)]+)\)[[:space:]]*->.*/\1/' | tr -d '"')
               NEW=$(echo "$line" | sed -E 's/.*->[[:space:]]*\(([^)]+)\).*/\1/' | tr -d '"')
-              # Truncate values if too long
-              if [ ${#OLD} -gt 30 ]; then
-                OLD="${OLD:0:27}..."
-              fi
-              if [ ${#NEW} -gt 30 ]; then
-                NEW="${NEW:0:27}..."
-              fi
+              TYPE=$(simplify_type "$RAW_TYPE")
+              # Clean values based on type
+              OLD=$(clean_value "$RAW_TYPE" "$OLD")
+              NEW=$(clean_value "$RAW_TYPE" "$NEW")
               TABLE="${TABLE}| ✏️ | ${DOMAIN} | ${TYPE} | ${OLD} | ${NEW} |"$'\n'
-              CHANGE_COUNT=$((CHANGE_COUNT + 1))
             # Parse DELETE lines: "#1: - DELETE domain.com TYPE value"
             elif echo "$line" | grep -qE "^#[0-9]+: - DELETE"; then
               DOMAIN=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+([^[:space:]]+)[[:space:]]+.*/\1/')
-              TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
-              VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
-              # Truncate value if too long
-              if [ ${#VALUE} -gt 60 ]; then
-                VALUE="${VALUE:0:57}..."
-              fi
+              RAW_TYPE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+([A-Z_]+)[[:space:]].*/\1/')
+              RAW_VALUE=$(echo "$line" | sed -E 's/^#[0-9]+: - DELETE[[:space:]]+[^[:space:]]+[[:space:]]+[A-Z_]+[[:space:]]+(.*)/\1/' | sed 's/ttl=[0-9]*//' | tr -d '"')
+              TYPE=$(simplify_type "$RAW_TYPE")
+              VALUE=$(clean_value "$RAW_TYPE" "$RAW_VALUE")
               TABLE="${TABLE}| 🗑️ | ${DOMAIN} | ${TYPE} | ${VALUE} | - |"$'\n'
-              CHANGE_COUNT=$((CHANGE_COUNT + 1))
             fi
           done <<< "$CLEAN_OUTPUT"
-
-          # Add truncation notice if needed
-          if [ "$TOTAL_COUNT" -gt "$MAX_CHANGES" ]; then
-            TABLE="${TABLE}| ... | *${TOTAL_COUNT} total changes* | - | - | *See full output below* |"$'\n'
-          fi
 
           # Output table (escape for GitHub Actions)
           echo "table<<EOF" >> $GITHUB_OUTPUT
@@ -285,11 +310,6 @@ jobs:
             PREVIEW_OUTPUT=""
           fi
 
-          # These outputs can be large - set defaults and note they're shown in workflow logs
-          BUILD_OUTPUT="See workflow logs for full output"
-          TEST_OUTPUT="See workflow logs for full output"
-          VALIDATE_OUTPUT="See workflow logs for full output"
-
           # Generate status icons
           get_icon() {
             if [ "$1" == "success" ]; then echo "✅"; else echo "❌"; fi
@@ -325,11 +345,11 @@ jobs:
             echo ""
             echo "| Commit | Build | Test | Validate | Preview | Changes |"
             echo "|--------|-------|------|----------|---------|---------|"
-            echo "$NEW_ROW"
-            # Append existing rows (history)
+            # Output existing rows first (oldest), then new row (newest) - chronological order
             if [ -n "$EXISTING_ROWS" ]; then
               echo "$EXISTING_ROWS"
             fi
+            echo "$NEW_ROW"
             echo ""
             echo "## 🌐 Run Results"
             echo ""
@@ -349,16 +369,6 @@ jobs:
             else
               echo "| No packages | - |"
             fi
-
-            echo ""
-            echo "<details>"
-            echo "<summary>📋 Build Output</summary>"
-            echo ""
-            echo "\`\`\`"
-            echo "${BUILD_OUTPUT:-No output}"
-            echo "\`\`\`"
-            echo ""
-            echo "</details>"
             echo ""
             echo "### 🧪 Tests"
             echo ""
@@ -377,15 +387,6 @@ jobs:
               echo "| No tests | 0 | 0 | 0 | 0 | - |"
             fi
 
-            echo ""
-            echo "<details>"
-            echo "<summary>📋 Test Output</summary>"
-            echo ""
-            echo "\`\`\`"
-            echo "${TEST_OUTPUT:-No output}"
-            echo "\`\`\`"
-            echo ""
-            echo "</details>"
             echo ""
             echo "### ✅ Validation"
             echo ""
@@ -406,15 +407,6 @@ jobs:
               echo "| No packages | - | - | - |"
             fi
 
-            echo ""
-            echo "<details>"
-            echo "<summary>📋 Validation Output</summary>"
-            echo ""
-            echo "\`\`\`"
-            echo "${VALIDATE_OUTPUT:-No output}"
-            echo "\`\`\`"
-            echo ""
-            echo "</details>"
             echo ""
             echo "### 🔄 DNS Changes"
             echo ""

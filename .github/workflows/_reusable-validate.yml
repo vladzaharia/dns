@@ -141,7 +141,8 @@ jobs:
             set +e
             # Run test with JSON output
             # Use --outputFile.json for Vitest 4+ dot notation to correctly output JSON file
-            PKG_OUTPUT=$(pnpm --filter "$pkg" run test -- --reporter=verbose --reporter=json --outputFile.json=test-results.json 2>&1)
+            # Note: Do NOT use -- separator as it prevents pnpm from passing args correctly to vitest
+            PKG_OUTPUT=$(pnpm --filter "$pkg" run test --reporter=verbose --reporter=json --outputFile.json=test-results.json 2>&1)
             PKG_EXIT=$?
             if [ $PKG_EXIT -ne 0 ]; then
               OVERALL_EXIT=1
