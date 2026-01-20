@@ -1,4 +1,5 @@
 {
+  "act": true,
   "action": "opened",
   "number": 1,
   "pull_request": {

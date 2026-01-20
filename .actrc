@@ -14,8 +14,10 @@
 #   act -n                   - Dry run (no execution)
 #   act -l                   - List available workflows
 #
-# Note: Some GitHub Actions features may not work perfectly in act
-# Reusable workflows have limited support - test individual jobs instead
+# Job skipping:
+#   The event JSON files include "act": true which allows workflows to skip
+#   jobs that don't work locally (e.g., PR comments) using:
+#   if: ${{ !github.event.act }}
 
 # Use medium-sized Ubuntu images (good balance of size and compatibility)
 -P ubuntu-latest=catthehacker/ubuntu:act-latest

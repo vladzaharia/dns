@@ -1,0 +1,373 @@
+name: PR Comment
+
+on:
+  workflow_call:
+    inputs:
+      validate-result:
+        description: "Overall validation result"
+        type: string
+        required: true
+      validate-packages:
+        description: "Per-package validation results JSON"
+        type: string
+        required: false
+        default: "[]"
+      test-result:
+        description: "Test result"
+        type: string
+        required: true
+      test-packages:
+        description: "Per-package test results JSON"
+        type: string
+        required: false
+        default: "[]"
+      prepare-result:
+        description: "Build/prepare result"
+        type: string
+        required: true
+      build-packages:
+        description: "Per-package build results JSON"
+        type: string
+        required: false
+        default: "{}"
+      preview-result:
+        description: "Preview result"
+        type: string
+        required: true
+      has-changes:
+        description: "Whether there are DNS changes"
+        type: string
+        required: false
+        default: "false"
+      changes-summary:
+        description: "Summary of changes"
+        type: string
+        required: false
+        default: ""
+      domain-summary:
+        description: "Per-domain change counts"
+        type: string
+        required: false
+        default: ""
+      changes-data:
+        description: "Structured changes data"
+        type: string
+        required: false
+        default: ""
+      base-domains:
+        description: "List of base domains with changes"
+        type: string
+        required: false
+        default: ""
+
+jobs:
+  comment:
+    name: Update PR Comment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: packages/polaris-dns/src/zones
+
+      - name: Extract known domains
+        id: domains
+        run: |
+          # Extract domain names from zone file names (excluding index.ts)
+          # File pattern: domain-name.ts -> domain.name
+          DOMAINS=$(find packages/polaris-dns/src/zones -name "*.ts" ! -name "index.ts" -type f \
+            | xargs -n1 basename \
+            | sed 's/\.ts$//' \
+            | sed 's/-\([^-]*\)$/.\1/' \
+            | sort)
+          echo "list<<EOF" >> $GITHUB_OUTPUT
+          echo "$DOMAINS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Download preview output
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-output
+          path: .
+        continue-on-error: true
+
+      - name: Find existing PR comment
+        id: find-comment
+        uses: peter-evans/find-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "<!-- dns-preview-comment -->"
+
+      - name: Extract existing status rows
+        id: existing-rows
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMENT_ID: ${{ steps.find-comment.outputs.comment-id }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Fetch comment body via GitHub API to avoid "Argument list too long" error
+          # The comment body can be very large with many commits tracked
+          if [ -n "$COMMENT_ID" ] && [ "$COMMENT_ID" != "" ]; then
+            gh api "/repos/${REPO}/issues/comments/${COMMENT_ID}" --jq '.body' > existing-comment.txt 2>/dev/null || echo "" > existing-comment.txt
+          else
+            echo "" > existing-comment.txt
+          fi
+
+          # Extract existing status table rows (excluding header)
+          # Expected format: | Commit | Build | Test | Validate | Preview | Changes | (6 columns = 7 pipes)
+          if [ -s "existing-comment.txt" ]; then
+            # Extract rows between the table header separator and the next section
+            RAW_ROWS=$(cat existing-comment.txt | sed -n '/^|--------|/,/^$/p' | grep "^| \[" || echo "")
+
+            # Filter to only include rows with the correct number of columns (7 pipes for 6 columns)
+            VALID_ROWS=""
+            while IFS= read -r row; do
+              if [ -n "$row" ]; then
+                PIPE_COUNT=$(echo "$row" | tr -cd '|' | wc -c)
+                if [ "$PIPE_COUNT" -eq 7 ]; then
+                  VALID_ROWS="${VALID_ROWS}${row}"$'\n'
+                fi
+              fi
+            done <<< "$RAW_ROWS"
+
+            echo "rows<<EOF" >> $GITHUB_OUTPUT
+            echo "$VALID_ROWS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "rows=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate comment content
+        id: comment
+        shell: bash
+        env:
+          VALIDATE_RESULT: ${{ inputs.validate-result }}
+          VALIDATE_PACKAGES: ${{ inputs.validate-packages }}
+          PREPARE_RESULT: ${{ inputs.prepare-result }}
+          PREVIEW_RESULT: ${{ inputs.preview-result }}
+          HAS_CHANGES: ${{ inputs.has-changes }}
+          CHANGES_SUMMARY: ${{ inputs.changes-summary }}
+          DOMAIN_SUMMARY: ${{ inputs.domain-summary }}
+          CHANGES_DATA: ${{ inputs.changes-data }}
+          BASE_DOMAINS: ${{ inputs.base-domains }}
+          ALL_KNOWN_DOMAINS: ${{ steps.domains.outputs.list }}
+          BUILD_PACKAGES: ${{ inputs.build-packages }}
+          TEST_RESULT: ${{ inputs.test-result }}
+          TEST_PACKAGES: ${{ inputs.test-packages }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          EXISTING_ROWS: ${{ steps.existing-rows.outputs.rows }}
+        run: |
+          # Read preview output from artifact file (avoids "Argument list too long" error)
+          if [ -f "preview-output.txt" ]; then
+            PREVIEW_OUTPUT=$(cat preview-output.txt)
+          else
+            PREVIEW_OUTPUT=""
+          fi
+
+          # Generate status icons
+          get_icon() {
+            if [ "$1" == "success" ]; then echo "✅"; else echo "❌"; fi
+          }
+
+          BUILD_ICON=$(get_icon "$PREPARE_RESULT")
+          TEST_ICON=$(get_icon "$TEST_RESULT")
+          VALIDATE_ICON=$(get_icon "$VALIDATE_RESULT")
+          PREVIEW_ICON=$(get_icon "$PREVIEW_RESULT")
+
+          # Changes icon and text
+          if [ "$PREVIEW_RESULT" != "success" ]; then
+            CHANGES_ICON="❌"
+            CHANGES_TEXT="Preview failed"
+          elif [ "$HAS_CHANGES" == "true" ]; then
+            CHANGES_ICON=""
+            CHANGES_TEXT="${CHANGES_SUMMARY:-Changes detected}"
+          else
+            CHANGES_ICON="✅"
+            CHANGES_TEXT="no changes"
+          fi
+
+          # Short commit SHA
+          SHORT_SHA="${COMMIT_SHA:0:7}"
+
+          # Create new status row (order: Build > Test > Validation > Preview)
+          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $TEST_ICON | $VALIDATE_ICON | $PREVIEW_ICON | $CHANGES_ICON $CHANGES_TEXT |"
+
+          # Build the comment using echo statements
+          {
+            echo "<!-- dns-preview-comment -->"
+            echo ""
+            echo "## 🕒 PR History"
+            echo ""
+            echo "| Commit | Build | Test | Validate | Preview | Changes |"
+            echo "|--------|-------|------|----------|---------|---------|"
+            # Output existing rows first (oldest), then new row (newest) - chronological order
+            if [ -n "$EXISTING_ROWS" ]; then
+              # Strip trailing newlines/whitespace to avoid blank lines in table
+              printf '%s\n' "$(echo "$EXISTING_ROWS" | sed -e 's/[[:space:]]*$//')"
+            fi
+            echo "$NEW_ROW"
+            echo ""
+            echo "## 🔨 Run Results"
+            echo ""
+            echo "| Package | Build | Typecheck | Lint | Format |"
+            echo "|---------|-------|-----------|------|--------|"
+
+            # Combine build and validation packages into one table
+            # First, collect all package names from both sources
+            ALL_PACKAGES=""
+            if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
+              BUILD_PKGS=$(echo "$BUILD_PACKAGES" | jq -r 'keys[]')
+              ALL_PACKAGES="$BUILD_PKGS"
+            fi
+            if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
+              VALIDATE_PKGS=$(echo "$VALIDATE_PACKAGES" | jq -r '.[].name')
+              if [ -n "$ALL_PACKAGES" ]; then
+                ALL_PACKAGES=$(printf '%s\n%s' "$ALL_PACKAGES" "$VALIDATE_PKGS" | sort -u)
+              else
+                ALL_PACKAGES="$VALIDATE_PKGS"
+              fi
+            fi
+
+            # Generate rows for each package
+            if [ -n "$ALL_PACKAGES" ]; then
+              echo "$ALL_PACKAGES" | while IFS= read -r pkg; do
+                [ -z "$pkg" ] && continue
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+
+                # Get build status
+                BUILD_STATUS=""
+                if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
+                  BUILD_STATUS=$(echo "$BUILD_PACKAGES" | jq -r --arg p "$pkg" '.[$p] // empty')
+                fi
+                BUILD_ICON=$(if [ "$BUILD_STATUS" == "success" ]; then echo "✅"; elif [ -n "$BUILD_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get validation statuses
+                TYPECHECK_STATUS=""
+                LINT_STATUS=""
+                FORMAT_STATUS=""
+                if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
+                  VALIDATE_DATA=$(echo "$VALIDATE_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p)')
+                  if [ -n "$VALIDATE_DATA" ]; then
+                    TYPECHECK_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.typecheck // empty')
+                    LINT_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.lint // empty')
+                    FORMAT_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.format // empty')
+                  fi
+                fi
+                TYPECHECK_ICON=$(if [ "$TYPECHECK_STATUS" == "success" ]; then echo "✅"; elif [ -n "$TYPECHECK_STATUS" ]; then echo "❌"; else echo "-"; fi)
+                LINT_ICON=$(if [ "$LINT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$LINT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+                FORMAT_ICON=$(if [ "$FORMAT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$FORMAT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                echo "| $SHORT_PKG | $BUILD_ICON | $TYPECHECK_ICON | $LINT_ICON | $FORMAT_ICON |"
+              done
+            else
+              echo "| No packages | - | - | - | - |"
+            fi
+            echo ""
+            echo "### 🧪 Tests"
+            echo ""
+            echo "| Package | Total | Passed | Failed | Skipped | Status |"
+            echo "|---------|-------|--------|--------|---------|--------|"
+
+            # Parse test packages JSON and generate rows
+            if [ -n "$TEST_PACKAGES" ] && [ "$TEST_PACKAGES" != "[]" ]; then
+              echo "$TEST_PACKAGES" | jq -r '.[] | "\(.name)|\(.total)|\(.passed)|\(.failed)|\(.skipped)|\(.status)"' | while IFS='|' read -r pkg total passed failed skipped status; do
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+                PKG_ICON=$(if [ "$status" == "success" ]; then echo "✅"; else echo "❌"; fi)
+                echo "| $SHORT_PKG | $total | $passed | $failed | $skipped | $PKG_ICON |"
+              done
+            else
+              echo "| No tests | 0 | 0 | 0 | 0 | - |"
+            fi
+
+            echo ""
+            echo "# 🌐 DNS Changes"
+            echo ""
+            if [ "$PREVIEW_RESULT" != "success" ]; then
+              echo "**Summary:** ❌ Preview completed with errors"
+              echo ""
+              echo "> [!WARNING]"
+              echo "> The DNS preview step failed. Check the output below for details."
+            else
+              echo "**Summary:** ${CHANGES_SUMMARY:-No changes}"
+              echo ""
+
+              # Domain Summary Table
+              if [ -n "$DOMAIN_SUMMARY" ] && [ "$DOMAIN_SUMMARY" != "" ]; then
+                echo "| Domain | ➕ Additions | ✏️ Changes | 🗑️ Deletions |"
+                echo "|--------|-------------|-----------|--------------|"
+                echo "$DOMAIN_SUMMARY" | while IFS='|' read -r domain adds mods dels; do
+                  [ -z "$domain" ] && continue
+                  echo "| \`$domain\` | $adds | $mods | $dels |"
+                done
+                echo ""
+              fi
+
+              # Per-domain detail sections (uses ALL_KNOWN_DOMAINS from env, extracted from zone files)
+              for domain in $ALL_KNOWN_DOMAINS; do
+                # Check if this domain has any changes
+                DOMAIN_CHANGES=$(echo "$CHANGES_DATA" | grep "^${domain}|" || echo "")
+
+                echo "<details>"
+                if [ -n "$DOMAIN_CHANGES" ]; then
+                  # Count changes for this domain
+                  ADDS=$(echo "$DOMAIN_CHANGES" | grep -c '|➕|' || true)
+                  MODS=$(echo "$DOMAIN_CHANGES" | grep -c '|✏️|' || true)
+                  DELS=$(echo "$DOMAIN_CHANGES" | grep -c '|🗑️|' || true)
+                  ADDS=${ADDS:-0}
+                  MODS=${MODS:-0}
+                  DELS=${DELS:-0}
+                  TOTAL=$((ADDS + MODS + DELS))
+                  echo "<summary>### $domain ($TOTAL change$( [ $TOTAL -ne 1 ] && echo 's'))</summary>"
+                  echo ""
+                  echo "| Type | Name | Record | Old Value | New Value |"
+                  echo "|------|------|--------|-----------|-----------|"
+                  # Output changes for this domain (already sorted by type, then name)
+                  echo "$DOMAIN_CHANGES" | while IFS='|' read -r base subdomain rectype action old new; do
+                    [ -z "$base" ] && continue
+                    echo "| $action | $subdomain | $rectype | $old | $new |"
+                  done
+                else
+                  echo "<summary>### $domain (no changes)</summary>"
+                  echo ""
+                  echo "_No changes to this domain._"
+                fi
+                echo ""
+                echo "</details>"
+                echo ""
+              done
+            fi
+            echo ""
+            echo "<details>"
+            echo "<summary>📋 Full DNSControl Output</summary>"
+            echo ""
+            echo "\`\`\`"
+            # Truncate output to prevent excessively large comments (max ~50KB)
+            MAX_OUTPUT_LINES=500
+            OUTPUT_LINES=$(echo "${PREVIEW_OUTPUT:-No output available}" | wc -l)
+            if [ "$OUTPUT_LINES" -gt "$MAX_OUTPUT_LINES" ]; then
+              echo "${PREVIEW_OUTPUT}" | head -n "$MAX_OUTPUT_LINES"
+              echo ""
+              echo "... (truncated, $OUTPUT_LINES total lines - see workflow logs for full output)"
+            else
+              echo "${PREVIEW_OUTPUT:-No output available}"
+            fi
+            echo "\`\`\`"
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "---"
+            echo "*Latest commit: \`$COMMIT_SHA\`* | [View Run](https://github.com/$REPO/actions/runs/$RUN_ID)"
+          } > comment.md
+
+      - name: Create or update PR comment
+        uses: marocchino/sticky-pull-request-comment@v2.9.4
+        with:
+          header: dns-preview
+          path: comment.md
+
