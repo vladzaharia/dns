@@ -39,13 +39,13 @@ jobs:
       base-domains: ${{ steps.parse-changes.outputs.base-domains }}
     steps:
       - name: Download DNSControl binaries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7.0.0
         with:
           name: bin
           path: bin
 
       - name: Download compiled JS
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7.0.0
         with:
           name: out
           path: out

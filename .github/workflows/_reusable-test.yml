@@ -1,0 +1,191 @@
+name: Test
+
+on:
+  workflow_call:
+    outputs:
+      result:
+        description: "Test result (success/failure)"
+        value: ${{ jobs.test.outputs.result }}
+      packages:
+        description: "Per-package test results JSON"
+        value: ${{ jobs.test.outputs.packages }}
+      coverage-total:
+        description: "Total coverage percentage"
+        value: ${{ jobs.test.outputs.coverage-total }}
+      coverage-json:
+        description: "Coverage summary JSON"
+        value: ${{ jobs.test.outputs.coverage-json }}
+
+jobs:
+  test:
+    name: Vitest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    outputs:
+      result: ${{ steps.test.outcome }}
+      packages: ${{ steps.test-summary.outputs.packages }}
+      coverage-total: ${{ steps.coverage.outputs.total }}
+      coverage-json: ${{ steps.coverage.outputs.json }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.2.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.2.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm run build
+
+      - name: Run tests with coverage
+        id: test
+        shell: bash
+        continue-on-error: true
+        run: |
+          OVERALL_EXIT=0
+
+          # Get packages
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo") | .name')
+
+          for pkg in $PACKAGES; do
+            echo "::group::Testing $pkg"
+            set +e
+            # Run tests with JSON, JUnit, and coverage reporters
+            pnpm --filter "$pkg" run test \
+              --reporter=verbose \
+              --reporter=json \
+              --reporter=junit \
+              --outputFile.json=test-results.json \
+              --outputFile.junit=test-results.xml \
+              --coverage 2>&1
+            PKG_EXIT=$?
+            if [ $PKG_EXIT -ne 0 ]; then
+              OVERALL_EXIT=1
+            fi
+            set -e
+            echo "::endgroup::"
+          done
+
+          exit $OVERALL_EXIT
+
+      - name: Parse test results
+        id: test-summary
+        if: always()
+        shell: bash
+        run: |
+          PACKAGES_JSON="["
+          FIRST_PKG=true
+
+          for file in $(find ./packages ./docs -name "test-results.json" -type f 2>/dev/null); do
+            if [ -f "$file" ] && jq -e . "$file" > /dev/null 2>&1; then
+              PKG_PATH=$(dirname "$file")
+              PKG_NAME=$(jq -r '.name // "unknown"' "$PKG_PATH/package.json" 2>/dev/null || basename "$PKG_PATH")
+
+              FILE_TOTAL=$(jq '[.testResults[].assertionResults | length] | add // 0' "$file" 2>/dev/null || echo 0)
+              FILE_PASSED=$(jq '[.testResults[].assertionResults[] | select(.status == "passed")] | length // 0' "$file" 2>/dev/null || echo 0)
+              FILE_FAILED=$(jq '[.testResults[].assertionResults[] | select(.status == "failed")] | length // 0' "$file" 2>/dev/null || echo 0)
+              FILE_SKIPPED=$(jq '[.testResults[].assertionResults[] | select(.status == "skipped" or .status == "pending" or .status == "todo")] | length // 0' "$file" 2>/dev/null || echo 0)
+
+              if [ "$FILE_FAILED" -gt 0 ]; then
+                STATUS="failure"
+              else
+                STATUS="success"
+              fi
+
+              if [ "$FIRST_PKG" = true ]; then
+                FIRST_PKG=false
+              else
+                PACKAGES_JSON+=","
+              fi
+              PACKAGES_JSON+="{\"name\":\"$PKG_NAME\",\"total\":$FILE_TOTAL,\"passed\":$FILE_PASSED,\"failed\":$FILE_FAILED,\"skipped\":$FILE_SKIPPED,\"status\":\"$STATUS\"}"
+            fi
+          done
+
+          PACKAGES_JSON+="]"
+          echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
+
+      - name: Parse coverage
+        id: coverage
+        if: always()
+        shell: bash
+        run: |
+          # Find and aggregate coverage from all packages
+          TOTAL_LINES=0
+          COVERED_LINES=0
+
+          for file in $(find ./packages -name "coverage-summary.json" -type f 2>/dev/null); do
+            if [ -f "$file" ] && jq -e . "$file" > /dev/null 2>&1; then
+              PKG_LINES=$(jq '.total.lines.total // 0' "$file" 2>/dev/null || echo 0)
+              PKG_COVERED=$(jq '.total.lines.covered // 0' "$file" 2>/dev/null || echo 0)
+              TOTAL_LINES=$((TOTAL_LINES + PKG_LINES))
+              COVERED_LINES=$((COVERED_LINES + PKG_COVERED))
+            fi
+          done
+
+          if [ "$TOTAL_LINES" -gt 0 ]; then
+            COVERAGE_PCT=$(echo "scale=2; $COVERED_LINES * 100 / $TOTAL_LINES" | bc)
+          else
+            COVERAGE_PCT="0"
+          fi
+
+          echo "total=$COVERAGE_PCT" >> $GITHUB_OUTPUT
+
+          # Create coverage summary JSON
+          COVERAGE_JSON="{\"lines\":{\"total\":$TOTAL_LINES,\"covered\":$COVERED_LINES,\"pct\":$COVERAGE_PCT}}"
+          echo "json=$COVERAGE_JSON" >> $GITHUB_OUTPUT
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v6.0.0
+        with:
+          name: test-results
+          path: |
+            **/test-results.json
+            **/test-results.xml
+          retention-days: 7
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v6.0.0
+        with:
+          name: coverage-reports
+          path: |
+            **/coverage/
+          retention-days: 7
+
+      - name: Test Report
+        if: always() && github.event_name == 'pull_request'
+        uses: dorny/test-reporter@v2.5.0
+        continue-on-error: true
+        with:
+          name: Test Results
+          path: "**/test-results.xml"
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5.5.2
+        continue-on-error: true
+        with:
+          files: "**/coverage/lcov.info"
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: Check for failures
+        if: steps.test.outcome == 'failure'
+        run: |
+          echo "::error::Tests failed"
+          exit 1
+

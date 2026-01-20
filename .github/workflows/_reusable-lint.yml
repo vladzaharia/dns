@@ -1,0 +1,103 @@
+name: Lint
+
+on:
+  workflow_call:
+    outputs:
+      result:
+        description: "Lint result (success/failure)"
+        value: ${{ jobs.lint.outputs.result }}
+      packages:
+        description: "Per-package lint results JSON"
+        value: ${{ jobs.lint.outputs.packages }}
+
+jobs:
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    outputs:
+      result: ${{ steps.lint.outcome }}
+      packages: ${{ steps.lint.outputs.packages }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4.2.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.2.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages
+        run: pnpm run build
+
+      - name: Run ESLint
+        id: lint
+        shell: bash
+        continue-on-error: true
+        run: |
+          PACKAGES_JSON="["
+          FIRST_PKG=true
+          OVERALL_EXIT=0
+
+          # Get all packages
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo") | .name')
+
+          for pkg in $PACKAGES; do
+            echo "::group::Linting $pkg"
+            set +e
+            pnpm --filter "$pkg" run lint 2>&1
+            PKG_EXIT=$?
+            set -e
+
+            if [ $PKG_EXIT -eq 0 ]; then
+              STATUS="success"
+              echo "✅ $pkg lint passed"
+            else
+              STATUS="failure"
+              OVERALL_EXIT=1
+              echo "❌ $pkg lint failed"
+            fi
+
+            if [ "$FIRST_PKG" = true ]; then
+              FIRST_PKG=false
+            else
+              PACKAGES_JSON+=","
+            fi
+            PACKAGES_JSON+="{\"name\":\"$pkg\",\"status\":\"$STATUS\"}"
+            echo "::endgroup::"
+          done
+
+          PACKAGES_JSON+="]"
+          echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
+          exit $OVERALL_EXIT
+
+      - name: Run ESLint with SARIF output
+        if: always()
+        continue-on-error: true
+        run: |
+          # Run ESLint with SARIF formatter for code scanning
+          pnpm -r --parallel exec eslint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif || true
+
+      - name: Upload SARIF results
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4.31.10
+        continue-on-error: true
+        with:
+          sarif_file: eslint-results.sarif
+          wait-for-processing: false
+
+      - name: Check for failures
+        if: steps.lint.outcome == 'failure'
+        run: |
+          echo "::error::Lint check failed"
+          exit 1
+

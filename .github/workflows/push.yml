@@ -12,20 +12,42 @@ concurrency:
 permissions:
   contents: read
   id-token: write
+  checks: write
+  security-events: write
 
 jobs:
-  validate:
-    name: Validate
-    uses: ./.github/workflows/_reusable-validate.yml
-
-  prepare:
+  # Parallel validation jobs
+  build:
     name: Build
-    needs: validate
-    uses: ./.github/workflows/_reusable-prepare.yml
+    uses: ./.github/workflows/_reusable-build.yml
 
+  lint:
+    name: Lint
+    uses: ./.github/workflows/_reusable-lint.yml
+    permissions:
+      contents: read
+      security-events: write
+
+  format:
+    name: Format
+    uses: ./.github/workflows/_reusable-format.yml
+
+  typecheck:
+    name: Typecheck
+    uses: ./.github/workflows/_reusable-typecheck.yml
+
+  test:
+    name: Test
+    uses: ./.github/workflows/_reusable-test.yml
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
+  # Push runs after all validation jobs pass
   push:
     name: Push
-    needs: [validate, prepare]
+    needs: [build, lint, format, typecheck, test]
     uses: ./.github/workflows/_reusable-push.yml
     secrets:
       CF_API: ${{ secrets.CF_API }}

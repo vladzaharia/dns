@@ -3,26 +3,9 @@ name: PR Comment
 on:
   workflow_call:
     inputs:
-      validate-result:
-        description: "Overall validation result"
-        type: string
-        required: true
-      validate-packages:
-        description: "Per-package validation results JSON"
-        type: string
-        required: false
-        default: "[]"
-      test-result:
-        description: "Test result"
-        type: string
-        required: true
-      test-packages:
-        description: "Per-package test results JSON"
-        type: string
-        required: false
-        default: "[]"
-      prepare-result:
-        description: "Build/prepare result"
+      # Build job results
+      build-result:
+        description: "Build result (success/failure)"
         type: string
         required: true
       build-packages:
@@ -30,6 +13,58 @@ on:
         type: string
         required: false
         default: "{}"
+      # Lint job results
+      lint-result:
+        description: "Lint result (success/failure)"
+        type: string
+        required: true
+      lint-packages:
+        description: "Per-package lint results JSON"
+        type: string
+        required: false
+        default: "[]"
+      # Format job results
+      format-result:
+        description: "Format result (success/failure)"
+        type: string
+        required: true
+      format-packages:
+        description: "Per-package format results JSON"
+        type: string
+        required: false
+        default: "[]"
+      # Typecheck job results
+      typecheck-result:
+        description: "Typecheck result (success/failure)"
+        type: string
+        required: true
+      typecheck-packages:
+        description: "Per-package typecheck results JSON"
+        type: string
+        required: false
+        default: "[]"
+      # Test job results
+      test-result:
+        description: "Test result (success/failure)"
+        type: string
+        required: true
+      test-packages:
+        description: "Per-package test results JSON"
+        type: string
+        required: false
+        default: "[]"
+      # Coverage metrics
+      coverage-total:
+        description: "Total coverage percentage"
+        type: string
+        required: false
+        default: "0"
+      coverage-json:
+        description: "Coverage summary JSON"
+        type: string
+        required: false
+        default: "{}"
+      # Preview job results
       preview-result:
         description: "Preview result"
         type: string
@@ -66,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.1
         with:
           sparse-checkout: packages/polaris-dns/src/zones
 
@@ -85,7 +120,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Download preview output
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7.0.0
         with:
           name: preview-output
           path: .
@@ -93,7 +128,7 @@ jobs:
 
       - name: Find existing PR comment
         id: find-comment
-        uses: peter-evans/find-comment@v4
+        uses: peter-evans/find-comment@v4.0.0
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
@@ -143,9 +178,18 @@ jobs:
         id: comment
         shell: bash
         env:
-          VALIDATE_RESULT: ${{ inputs.validate-result }}
-          VALIDATE_PACKAGES: ${{ inputs.validate-packages }}
-          PREPARE_RESULT: ${{ inputs.prepare-result }}
+          BUILD_RESULT: ${{ inputs.build-result }}
+          BUILD_PACKAGES: ${{ inputs.build-packages }}
+          LINT_RESULT: ${{ inputs.lint-result }}
+          LINT_PACKAGES: ${{ inputs.lint-packages }}
+          FORMAT_RESULT: ${{ inputs.format-result }}
+          FORMAT_PACKAGES: ${{ inputs.format-packages }}
+          TYPECHECK_RESULT: ${{ inputs.typecheck-result }}
+          TYPECHECK_PACKAGES: ${{ inputs.typecheck-packages }}
+          TEST_RESULT: ${{ inputs.test-result }}
+          TEST_PACKAGES: ${{ inputs.test-packages }}
+          COVERAGE_TOTAL: ${{ inputs.coverage-total }}
+          COVERAGE_JSON: ${{ inputs.coverage-json }}
           PREVIEW_RESULT: ${{ inputs.preview-result }}
           HAS_CHANGES: ${{ inputs.has-changes }}
           CHANGES_SUMMARY: ${{ inputs.changes-summary }}
@@ -153,9 +197,6 @@ jobs:
           CHANGES_DATA: ${{ inputs.changes-data }}
           BASE_DOMAINS: ${{ inputs.base-domains }}
           ALL_KNOWN_DOMAINS: ${{ steps.domains.outputs.list }}
-          BUILD_PACKAGES: ${{ inputs.build-packages }}
-          TEST_RESULT: ${{ inputs.test-result }}
-          TEST_PACKAGES: ${{ inputs.test-packages }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
@@ -173,9 +214,11 @@ jobs:
             if [ "$1" == "success" ]; then echo "✅"; else echo "❌"; fi
           }
 
-          BUILD_ICON=$(get_icon "$PREPARE_RESULT")
+          BUILD_ICON=$(get_icon "$BUILD_RESULT")
+          LINT_ICON=$(get_icon "$LINT_RESULT")
+          FORMAT_ICON=$(get_icon "$FORMAT_RESULT")
+          TYPECHECK_ICON=$(get_icon "$TYPECHECK_RESULT")
           TEST_ICON=$(get_icon "$TEST_RESULT")
-          VALIDATE_ICON=$(get_icon "$VALIDATE_RESULT")
           PREVIEW_ICON=$(get_icon "$PREVIEW_RESULT")
 
           # Changes icon and text
@@ -193,16 +236,16 @@ jobs:
           # Short commit SHA
           SHORT_SHA="${COMMIT_SHA:0:7}"
 
-          # Create new status row (order: Build > Test > Validation > Preview)
-          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $TEST_ICON | $VALIDATE_ICON | $PREVIEW_ICON | $CHANGES_ICON $CHANGES_TEXT |"
+          # Create new status row (order: Build > Lint > Format > Typecheck > Test > Preview)
+          NEW_ROW="| [\`$SHORT_SHA\`](https://github.com/$REPO/actions/runs/$RUN_ID) | $BUILD_ICON | $LINT_ICON | $FORMAT_ICON | $TYPECHECK_ICON | $TEST_ICON | $PREVIEW_ICON | $CHANGES_ICON $CHANGES_TEXT |"
 
           # Build the comment using echo statements
           {
             echo "<!-- dns-preview-comment -->"
             echo "## 🕒 PR History"
             echo ""
-            echo "| Commit | Build | Test | Validate | Preview | Changes |"
-            echo "|--------|-------|------|----------|---------|---------|"
+            echo "| Commit | Build | Lint | Format | Typecheck | Test | Preview | Changes |"
+            echo "|--------|-------|------|--------|-----------|------|---------|---------|"
             # Output existing rows first (oldest), then new row (newest) - chronological order
             if [ -n "$EXISTING_ROWS" ]; then
               # Strip trailing newlines/whitespace to avoid blank lines in table
@@ -212,24 +255,25 @@ jobs:
             echo ""
             echo "# 🔨 Run Results"
             echo ""
-            echo "| Package | Build | Typecheck | Lint | Format |"
-            echo "|---------|-------|-----------|------|--------|"
+            echo "| Package | Build | Lint | Format | Typecheck |"
+            echo "|---------|-------|------|--------|-----------|"
 
-            # Combine build and validation packages into one table
-            # First, collect all package names from both sources
+            # Combine all package names from build, lint, format, typecheck
             ALL_PACKAGES=""
             if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
-              BUILD_PKGS=$(echo "$BUILD_PACKAGES" | jq -r 'keys[]')
+              BUILD_PKGS=$(echo "$BUILD_PACKAGES" | jq -r 'keys[]' 2>/dev/null || echo "")
               ALL_PACKAGES="$BUILD_PKGS"
             fi
-            if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
-              VALIDATE_PKGS=$(echo "$VALIDATE_PACKAGES" | jq -r '.[].name')
-              if [ -n "$ALL_PACKAGES" ]; then
-                ALL_PACKAGES=$(printf '%s\n%s' "$ALL_PACKAGES" "$VALIDATE_PKGS" | sort -u)
-              else
-                ALL_PACKAGES="$VALIDATE_PKGS"
+            for PKG_JSON_VAR in "$LINT_PACKAGES" "$FORMAT_PACKAGES" "$TYPECHECK_PACKAGES"; do
+              if [ -n "$PKG_JSON_VAR" ] && [ "$PKG_JSON_VAR" != "[]" ]; then
+                PKG_NAMES=$(echo "$PKG_JSON_VAR" | jq -r '.[].name' 2>/dev/null || echo "")
+                if [ -n "$ALL_PACKAGES" ]; then
+                  ALL_PACKAGES=$(printf '%s\n%s' "$ALL_PACKAGES" "$PKG_NAMES" | sort -u)
+                else
+                  ALL_PACKAGES="$PKG_NAMES"
+                fi
               fi
-            fi
+            done
 
             # Generate rows for each package
             if [ -n "$ALL_PACKAGES" ]; then
@@ -239,29 +283,34 @@ jobs:
                 SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
 
                 # Get build status
-                BUILD_STATUS=""
+                PKG_BUILD_STATUS=""
                 if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
-                  BUILD_STATUS=$(echo "$BUILD_PACKAGES" | jq -r --arg p "$pkg" '.[$p] // empty')
+                  PKG_BUILD_STATUS=$(echo "$BUILD_PACKAGES" | jq -r --arg p "$pkg" '.[$p] // empty' 2>/dev/null || echo "")
                 fi
-                BUILD_ICON=$(if [ "$BUILD_STATUS" == "success" ]; then echo "✅"; elif [ -n "$BUILD_STATUS" ]; then echo "❌"; else echo "-"; fi)
+                PKG_BUILD_ICON=$(if [ "$PKG_BUILD_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_BUILD_STATUS" ]; then echo "❌"; else echo "-"; fi)
 
-                # Get validation statuses
-                TYPECHECK_STATUS=""
-                LINT_STATUS=""
-                FORMAT_STATUS=""
-                if [ -n "$VALIDATE_PACKAGES" ] && [ "$VALIDATE_PACKAGES" != "[]" ]; then
-                  VALIDATE_DATA=$(echo "$VALIDATE_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p)')
-                  if [ -n "$VALIDATE_DATA" ]; then
-                    TYPECHECK_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.typecheck // empty')
-                    LINT_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.lint // empty')
-                    FORMAT_STATUS=$(echo "$VALIDATE_DATA" | jq -r '.format // empty')
-                  fi
+                # Get lint status
+                PKG_LINT_STATUS=""
+                if [ -n "$LINT_PACKAGES" ] && [ "$LINT_PACKAGES" != "[]" ]; then
+                  PKG_LINT_STATUS=$(echo "$LINT_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
                 fi
-                TYPECHECK_ICON=$(if [ "$TYPECHECK_STATUS" == "success" ]; then echo "✅"; elif [ -n "$TYPECHECK_STATUS" ]; then echo "❌"; else echo "-"; fi)
-                LINT_ICON=$(if [ "$LINT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$LINT_STATUS" ]; then echo "❌"; else echo "-"; fi)
-                FORMAT_ICON=$(if [ "$FORMAT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$FORMAT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+                PKG_LINT_ICON=$(if [ "$PKG_LINT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_LINT_STATUS" ]; then echo "❌"; else echo "-"; fi)
 
-                echo "| $SHORT_PKG | $BUILD_ICON | $TYPECHECK_ICON | $LINT_ICON | $FORMAT_ICON |"
+                # Get format status
+                PKG_FORMAT_STATUS=""
+                if [ -n "$FORMAT_PACKAGES" ] && [ "$FORMAT_PACKAGES" != "[]" ]; then
+                  PKG_FORMAT_STATUS=$(echo "$FORMAT_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
+                fi
+                PKG_FORMAT_ICON=$(if [ "$PKG_FORMAT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_FORMAT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get typecheck status
+                PKG_TYPECHECK_STATUS=""
+                if [ -n "$TYPECHECK_PACKAGES" ] && [ "$TYPECHECK_PACKAGES" != "[]" ]; then
+                  PKG_TYPECHECK_STATUS=$(echo "$TYPECHECK_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
+                fi
+                PKG_TYPECHECK_ICON=$(if [ "$PKG_TYPECHECK_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_TYPECHECK_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                echo "| $SHORT_PKG | $PKG_BUILD_ICON | $PKG_LINT_ICON | $PKG_FORMAT_ICON | $PKG_TYPECHECK_ICON |"
               done
             else
               echo "| No packages | - | - | - | - |"
@@ -274,7 +323,7 @@ jobs:
 
             # Parse test packages JSON and generate rows
             if [ -n "$TEST_PACKAGES" ] && [ "$TEST_PACKAGES" != "[]" ]; then
-              echo "$TEST_PACKAGES" | jq -r '.[] | "\(.name)|\(.total)|\(.passed)|\(.failed)|\(.skipped)|\(.status)"' | while IFS='|' read -r pkg total passed failed skipped status; do
+              echo "$TEST_PACKAGES" | jq -r '.[] | "\(.name)|\(.total)|\(.passed)|\(.failed)|\(.skipped)|\(.status)"' 2>/dev/null | while IFS='|' read -r pkg total passed failed skipped status; do
                 # Get short package name (remove @vladzaharia/ prefix)
                 SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
                 PKG_ICON=$(if [ "$status" == "success" ]; then echo "✅"; else echo "❌"; fi)
@@ -282,6 +331,34 @@ jobs:
               done
             else
               echo "| No tests | 0 | 0 | 0 | 0 | - |"
+            fi
+
+            echo ""
+            echo "## 📊 Code Coverage"
+            echo ""
+            # Display coverage metrics
+            if [ -n "$COVERAGE_TOTAL" ] && [ "$COVERAGE_TOTAL" != "0" ]; then
+              # Determine coverage badge color
+              COVERAGE_NUM=$(echo "$COVERAGE_TOTAL" | sed 's/[^0-9.]//g')
+              if [ -n "$COVERAGE_NUM" ]; then
+                COVERAGE_INT=${COVERAGE_NUM%.*}
+                if [ "$COVERAGE_INT" -ge 80 ]; then
+                  COVERAGE_BADGE="🟢"
+                elif [ "$COVERAGE_INT" -ge 60 ]; then
+                  COVERAGE_BADGE="🟡"
+                else
+                  COVERAGE_BADGE="🔴"
+                fi
+              else
+                COVERAGE_BADGE="⚪"
+              fi
+              echo "| Metric | Value |"
+              echo "|--------|-------|"
+              echo "| Overall Coverage | $COVERAGE_BADGE **${COVERAGE_TOTAL}%** |"
+              echo ""
+              echo "> 📈 For detailed coverage reports and delta analysis, see the [Codecov Report](https://codecov.io/gh/$REPO/pull/${{ github.event.pull_request.number }})"
+            else
+              echo "_No coverage data available._"
             fi
 
             echo ""
