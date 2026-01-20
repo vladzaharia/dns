@@ -13,7 +13,7 @@ on:
         description: "Total coverage percentage"
         value: ${{ jobs.test.outputs.coverage-total }}
       coverage-json:
-        description: "Coverage summary JSON"
+        description: "Per-package coverage JSON"
         value: ${{ jobs.test.outputs.coverage-json }}
 
 jobs:
@@ -23,15 +23,16 @@ jobs:
     permissions:
       contents: read
       checks: write
-      pull-requests: write
     outputs:
       result: ${{ steps.determine-result.outputs.result }}
-      packages: ${{ steps.test-summary.outputs.packages }}
-      coverage-total: ${{ steps.coverage.outputs.total }}
-      coverage-json: ${{ steps.coverage.outputs.json }}
+      packages: ${{ steps.aggregate.outputs.packages }}
+      coverage-total: ${{ steps.aggregate.outputs.coverage-total }}
+      coverage-json: ${{ steps.aggregate.outputs.coverage-json }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 0
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4.2.0
@@ -48,127 +49,173 @@ jobs:
       - name: Build workspace packages
         run: pnpm run build
 
-      - name: Run tests with coverage
+      - name: Run tests per package with JUnit output
         id: test
         shell: bash
         continue-on-error: true
         run: |
-          # Run tests using root-level command
-          # Use --passWithNoTests to not fail on packages without tests
-          # Coverage thresholds may cause non-zero exit even with passing tests
-          pnpm run test -- --coverage --passWithNoTests 2>&1 | tee test-output.txt
-          TEST_EXIT=${PIPESTATUS[0]}
-          echo "exit-code=$TEST_EXIT" >> $GITHUB_OUTPUT
+          mkdir -p test-results
+          echo "0" > test-results/failure-count.txt
 
-      - name: Parse test output for actual failures
-        id: test-summary
+          # Get all packages
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo") | .name')
+
+          for PKG_NAME in $PACKAGES; do
+            PKG_PATH=$(pnpm ls -r --json 2>/dev/null | jq -r --arg n "$PKG_NAME" '.[] | select(.name == $n) | .path')
+            PKG_DIR=$(basename "$PKG_PATH")
+            
+            echo "::group::Testing $PKG_NAME"
+            
+            if [ -f "$PKG_PATH/package.json" ] && jq -e '.scripts.test' "$PKG_PATH/package.json" > /dev/null 2>&1; then
+              set +e
+              pnpm --filter "$PKG_NAME" run test -- \
+                --reporter=verbose \
+                --reporter=junit \
+                --outputFile.junit="test-results.xml" \
+                --coverage 2>&1 | tee "test-results/${PKG_DIR}-output.txt"
+              PKG_EXIT=$?
+              set -e
+              
+              if [ -f "$PKG_PATH/test-results.xml" ]; then
+                cp "$PKG_PATH/test-results.xml" "test-results/${PKG_DIR}-junit.xml"
+              fi
+              
+              # Check for actual test failures (not coverage threshold)
+              if grep -qE "^[[:space:]]*(FAIL|×)" "test-results/${PKG_DIR}-output.txt" 2>/dev/null; then
+                CURR=$(cat test-results/failure-count.txt)
+                echo "$((CURR + 1))" > test-results/failure-count.txt
+                echo "❌ $PKG_NAME has test failures"
+              elif [ $PKG_EXIT -ne 0 ]; then
+                echo "⚠️ $PKG_NAME passed tests but has coverage threshold issues"
+              else
+                echo "✅ $PKG_NAME passed"
+              fi
+            else
+              echo "⏭️ $PKG_NAME has no test script"
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Aggregate test and coverage results
+        id: aggregate
         if: always()
         shell: bash
         run: |
           PACKAGES_JSON="["
-          FIRST_PKG=true
-          TOTAL_TESTS=0
-          PASSED_TESTS=0
-          FAILED_TESTS=0
-          SKIPPED_TESTS=0
+          COVERAGE_JSON="["
+          FIRST=true
+          TOTAL_PASSED=0
+          TOTAL_FAILED=0
+          TOTAL_SKIPPED=0
+          TOTAL_LINES=0
+          TOTAL_COVERED=0
 
-          # Parse test output for summary line
-          # Format: "X passed, Y failed and Z skipped" or similar
-          if [ -f "test-output.txt" ]; then
-            # Look for test summary lines
-            while IFS= read -r line; do
-              # Match patterns like "1156 passed" or "6 skipped"
-              if [[ "$line" =~ ([0-9]+)\ passed ]]; then
-                PASSED_TESTS=$((PASSED_TESTS + ${BASH_REMATCH[1]}))
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo") | .name')
+
+          for PKG_NAME in $PACKAGES; do
+            PKG_PATH=$(pnpm ls -r --json 2>/dev/null | jq -r --arg n "$PKG_NAME" '.[] | select(.name == $n) | .path')
+            PKG_DIR=$(basename "$PKG_PATH")
+            
+            PASSED=0
+            FAILED=0
+            SKIPPED=0
+            COV_PCT="N/A"
+            COV_LINES=0
+            COV_COVERED=0
+            HAS_TESTS=false
+
+            OUTPUT_FILE="test-results/${PKG_DIR}-output.txt"
+            if [ -f "$OUTPUT_FILE" ]; then
+              HAS_TESTS=true
+              # Parse vitest output
+              while IFS= read -r line; do
+                if [[ "$line" =~ ([0-9]+)\ passed ]]; then
+                  PASSED=${BASH_REMATCH[1]}
+                fi
+                if [[ "$line" =~ ([0-9]+)\ failed ]]; then
+                  FAILED=${BASH_REMATCH[1]}
+                fi
+                if [[ "$line" =~ ([0-9]+)\ skipped ]]; then
+                  SKIPPED=${BASH_REMATCH[1]}
+                fi
+              done < "$OUTPUT_FILE"
+            fi
+
+            # Parse coverage
+            COV_FILE="$PKG_PATH/coverage/coverage-summary.json"
+            if [ -f "$COV_FILE" ] && jq -e . "$COV_FILE" > /dev/null 2>&1; then
+              COV_LINES=$(jq '.total.lines.total // 0' "$COV_FILE")
+              COV_COVERED=$(jq '.total.lines.covered // 0' "$COV_FILE")
+              if [ "$COV_LINES" -gt 0 ]; then
+                COV_PCT=$(echo "scale=1; $COV_COVERED * 100 / $COV_LINES" | bc)
               fi
-              if [[ "$line" =~ ([0-9]+)\ failed ]]; then
-                FAILED_TESTS=$((FAILED_TESTS + ${BASH_REMATCH[1]}))
-              fi
-              if [[ "$line" =~ ([0-9]+)\ skipped ]]; then
-                SKIPPED_TESTS=$((SKIPPED_TESTS + ${BASH_REMATCH[1]}))
-              fi
-            done < test-output.txt
-          fi
+              TOTAL_LINES=$((TOTAL_LINES + COV_LINES))
+              TOTAL_COVERED=$((TOTAL_COVERED + COV_COVERED))
+            fi
 
-          TOTAL_TESTS=$((PASSED_TESTS + FAILED_TESTS + SKIPPED_TESTS))
+            TOTAL_PASSED=$((TOTAL_PASSED + PASSED))
+            TOTAL_FAILED=$((TOTAL_FAILED + FAILED))
+            TOTAL_SKIPPED=$((TOTAL_SKIPPED + SKIPPED))
 
-          # Determine status based on actual test failures, not exit code
-          if [ "$FAILED_TESTS" -gt 0 ]; then
-            STATUS="failure"
-          else
-            STATUS="success"
-          fi
+            if [ "$FAILED" -gt 0 ]; then
+              STATUS="failure"
+            elif [ "$HAS_TESTS" = true ]; then
+              STATUS="success"
+            else
+              STATUS="skipped"
+            fi
 
-          # Create a single summary entry
-          PACKAGES_JSON+="{\"name\":\"all-packages\",\"total\":$TOTAL_TESTS,\"passed\":$PASSED_TESTS,\"failed\":$FAILED_TESTS,\"skipped\":$SKIPPED_TESTS,\"status\":\"$STATUS\"}"
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              PACKAGES_JSON+=","
+              COVERAGE_JSON+=","
+            fi
+
+            PACKAGES_JSON+="{\"name\":\"$PKG_NAME\",\"passed\":$PASSED,\"failed\":$FAILED,\"skipped\":$SKIPPED,\"status\":\"$STATUS\",\"coverage\":\"$COV_PCT\"}"
+            COVERAGE_JSON+="{\"name\":\"$PKG_NAME\",\"lines\":$COV_LINES,\"covered\":$COV_COVERED,\"pct\":\"$COV_PCT\"}"
+          done
+
           PACKAGES_JSON+="]"
+          COVERAGE_JSON+="]"
+
+          if [ "$TOTAL_LINES" -gt 0 ]; then
+            TOTAL_COV_PCT=$(echo "scale=1; $TOTAL_COVERED * 100 / $TOTAL_LINES" | bc)
+          else
+            TOTAL_COV_PCT="0"
+          fi
 
           echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
-          echo "failed-count=$FAILED_TESTS" >> $GITHUB_OUTPUT
-          echo "passed-count=$PASSED_TESTS" >> $GITHUB_OUTPUT
+          echo "coverage-json=$COVERAGE_JSON" >> $GITHUB_OUTPUT
+          echo "coverage-total=$TOTAL_COV_PCT" >> $GITHUB_OUTPUT
+          echo "failed-count=$TOTAL_FAILED" >> $GITHUB_OUTPUT
+          echo "passed-count=$TOTAL_PASSED" >> $GITHUB_OUTPUT
 
       - name: Determine actual test result
         id: determine-result
         if: always()
         shell: bash
         run: |
-          FAILED_COUNT="${{ steps.test-summary.outputs.failed-count }}"
-          PASSED_COUNT="${{ steps.test-summary.outputs.passed-count }}"
+          FAILED_COUNT="${{ steps.aggregate.outputs.failed-count }}"
+          PASSED_COUNT="${{ steps.aggregate.outputs.passed-count }}"
 
-          # Tests pass if:
-          # 1. No actual test failures (FAILED_COUNT == 0)
-          # 2. At least some tests ran (PASSED_COUNT > 0)
-          if [ "$FAILED_COUNT" -eq 0 ] && [ "$PASSED_COUNT" -gt 0 ]; then
-            echo "result=success" >> $GITHUB_OUTPUT
-            echo "✅ All $PASSED_COUNT tests passed!"
-          elif [ "$FAILED_COUNT" -gt 0 ]; then
+          if [ "$FAILED_COUNT" -gt 0 ]; then
             echo "result=failure" >> $GITHUB_OUTPUT
             echo "❌ $FAILED_COUNT tests failed!"
+          elif [ "$PASSED_COUNT" -gt 0 ]; then
+            echo "result=success" >> $GITHUB_OUTPUT
+            echo "✅ All $PASSED_COUNT tests passed!"
           else
-            # No tests ran - this is suspicious but not necessarily a failure
             echo "result=success" >> $GITHUB_OUTPUT
             echo "⚠️ No tests were detected"
           fi
-
-      - name: Parse coverage
-        id: coverage
-        if: always()
-        shell: bash
-        run: |
-          # Find and aggregate coverage from all packages
-          TOTAL_LINES=0
-          COVERED_LINES=0
-
-          for file in $(find ./packages -name "coverage-summary.json" -type f 2>/dev/null); do
-            if [ -f "$file" ] && jq -e . "$file" > /dev/null 2>&1; then
-              PKG_LINES=$(jq '.total.lines.total // 0' "$file" 2>/dev/null || echo 0)
-              PKG_COVERED=$(jq '.total.lines.covered // 0' "$file" 2>/dev/null || echo 0)
-              TOTAL_LINES=$((TOTAL_LINES + PKG_LINES))
-              COVERED_LINES=$((COVERED_LINES + PKG_COVERED))
-            fi
-          done
-
-          if [ "$TOTAL_LINES" -gt 0 ]; then
-            COVERAGE_PCT=$(echo "scale=2; $COVERED_LINES * 100 / $TOTAL_LINES" | bc)
-          else
-            COVERAGE_PCT="0"
-          fi
-
-          echo "total=$COVERAGE_PCT" >> $GITHUB_OUTPUT
-
-          # Create coverage summary JSON
-          COVERAGE_JSON="{\"lines\":{\"total\":$TOTAL_LINES,\"covered\":$COVERED_LINES,\"pct\":$COVERAGE_PCT}}"
-          echo "json=$COVERAGE_JSON" >> $GITHUB_OUTPUT
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v6.0.0
         with:
           name: test-results
-          path: |
-            test-output.txt
-            **/test-results.json
-            **/test-results.xml
+          path: test-results/
           retention-days: 7
           if-no-files-found: ignore
 
@@ -177,8 +224,7 @@ jobs:
         uses: actions/upload-artifact@v6.0.0
         with:
           name: coverage-reports
-          path: |
-            **/coverage/
+          path: "**/coverage/"
           retention-days: 7
           if-no-files-found: ignore
 
@@ -188,7 +234,7 @@ jobs:
         continue-on-error: true
         with:
           name: Test Results
-          path: "**/test-results.xml"
+          path: "test-results/*-junit.xml"
           reporter: java-junit
           fail-on-error: false
 
@@ -204,5 +250,5 @@ jobs:
       - name: Check for failures
         if: steps.determine-result.outputs.result == 'failure'
         run: |
-          echo "::error::Tests failed - ${{ steps.test-summary.outputs.failed-count }} test(s) failed"
+          echo "::error::Tests failed - ${{ steps.aggregate.outputs.failed-count }} test(s) failed"
           exit 1

@@ -253,7 +253,91 @@ jobs:
             fi
             echo "$NEW_ROW"
             echo ""
-            echo "# 🔨 Run Results"
+            echo "# 🧪 Test & Coverage Results"
+            echo ""
+            echo "| Package | ✅ Passed | ❌ Failed | ⏭️ Skipped | 📊 Coverage |"
+            echo "|---------|-----------|-----------|------------|-------------|"
+
+            # Parse test packages JSON which now includes coverage
+            TOTAL_PASSED=0
+            TOTAL_FAILED=0
+            TOTAL_SKIPPED=0
+            if [ -n "$TEST_PACKAGES" ] && [ "$TEST_PACKAGES" != "[]" ]; then
+              echo "$TEST_PACKAGES" | jq -r '.[] | "\(.name)|\(.passed)|\(.failed)|\(.skipped)|\(.coverage // "N/A")|\(.status)"' 2>/dev/null | while IFS='|' read -r pkg passed failed skipped coverage status; do
+                [ -z "$pkg" ] && continue
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+
+                # Format coverage with badge
+                if [ "$coverage" != "N/A" ] && [ -n "$coverage" ]; then
+                  COV_NUM=$(echo "$coverage" | sed 's/[^0-9.]//g')
+                  if [ -n "$COV_NUM" ]; then
+                    COV_INT=${COV_NUM%.*}
+                    if [ "$COV_INT" -ge 80 ]; then
+                      COV_BADGE="🟢"
+                    elif [ "$COV_INT" -ge 60 ]; then
+                      COV_BADGE="🟡"
+                    else
+                      COV_BADGE="🔴"
+                    fi
+                    COV_DISPLAY="$COV_BADGE ${coverage}%"
+                  else
+                    COV_DISPLAY="$coverage"
+                  fi
+                else
+                  COV_DISPLAY="-"
+                fi
+
+                # Add status icon to package name
+                if [ "$status" == "success" ]; then
+                  PKG_DISPLAY="✅ $SHORT_PKG"
+                elif [ "$status" == "failure" ]; then
+                  PKG_DISPLAY="❌ $SHORT_PKG"
+                elif [ "$status" == "skipped" ]; then
+                  PKG_DISPLAY="⏭️ $SHORT_PKG"
+                else
+                  PKG_DISPLAY="$SHORT_PKG"
+                fi
+
+                echo "| $PKG_DISPLAY | $passed | $failed | $skipped | $COV_DISPLAY |"
+              done
+            else
+              echo "| _No test results_ | - | - | - | - |"
+            fi
+
+            # Add totals row
+            if [ -n "$TEST_PACKAGES" ] && [ "$TEST_PACKAGES" != "[]" ]; then
+              TOTAL_PASSED=$(echo "$TEST_PACKAGES" | jq '[.[].passed] | add // 0' 2>/dev/null || echo 0)
+              TOTAL_FAILED=$(echo "$TEST_PACKAGES" | jq '[.[].failed] | add // 0' 2>/dev/null || echo 0)
+              TOTAL_SKIPPED=$(echo "$TEST_PACKAGES" | jq '[.[].skipped] | add // 0' 2>/dev/null || echo 0)
+
+              # Overall coverage badge
+              if [ -n "$COVERAGE_TOTAL" ] && [ "$COVERAGE_TOTAL" != "0" ]; then
+                COV_NUM=$(echo "$COVERAGE_TOTAL" | sed 's/[^0-9.]//g')
+                if [ -n "$COV_NUM" ]; then
+                  COV_INT=${COV_NUM%.*}
+                  if [ "$COV_INT" -ge 80 ]; then
+                    TOTAL_COV_BADGE="🟢"
+                  elif [ "$COV_INT" -ge 60 ]; then
+                    TOTAL_COV_BADGE="🟡"
+                  else
+                    TOTAL_COV_BADGE="🔴"
+                  fi
+                  TOTAL_COV_DISPLAY="$TOTAL_COV_BADGE **${COVERAGE_TOTAL}%**"
+                else
+                  TOTAL_COV_DISPLAY="-"
+                fi
+              else
+                TOTAL_COV_DISPLAY="-"
+              fi
+
+              echo "| **Total** | **$TOTAL_PASSED** | **$TOTAL_FAILED** | **$TOTAL_SKIPPED** | $TOTAL_COV_DISPLAY |"
+            fi
+
+            echo ""
+            echo "> 📈 For coverage delta and new code coverage, see the [Codecov Report](https://codecov.io/gh/$REPO/pull/${{ github.event.pull_request.number }})"
+            echo ""
+            echo "# 🔨 Build Results"
             echo ""
             echo "| Package | Build | Lint | Format | Typecheck |"
             echo "|---------|-------|------|--------|-----------|"
@@ -313,52 +397,7 @@ jobs:
                 echo "| $SHORT_PKG | $PKG_BUILD_ICON | $PKG_LINT_ICON | $PKG_FORMAT_ICON | $PKG_TYPECHECK_ICON |"
               done
             else
-              echo "| No packages | - | - | - | - |"
-            fi
-            echo ""
-            echo "## 🧪 Tests"
-            echo ""
-            echo "| Package | Total | Passed | Failed | Skipped | Status |"
-            echo "|---------|-------|--------|--------|---------|--------|"
-
-            # Parse test packages JSON and generate rows
-            if [ -n "$TEST_PACKAGES" ] && [ "$TEST_PACKAGES" != "[]" ]; then
-              echo "$TEST_PACKAGES" | jq -r '.[] | "\(.name)|\(.total)|\(.passed)|\(.failed)|\(.skipped)|\(.status)"' 2>/dev/null | while IFS='|' read -r pkg total passed failed skipped status; do
-                # Get short package name (remove @vladzaharia/ prefix)
-                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
-                PKG_ICON=$(if [ "$status" == "success" ]; then echo "✅"; else echo "❌"; fi)
-                echo "| $SHORT_PKG | $total | $passed | $failed | $skipped | $PKG_ICON |"
-              done
-            else
-              echo "| No tests | 0 | 0 | 0 | 0 | - |"
-            fi
-
-            echo ""
-            echo "## 📊 Code Coverage"
-            echo ""
-            # Display coverage metrics
-            if [ -n "$COVERAGE_TOTAL" ] && [ "$COVERAGE_TOTAL" != "0" ]; then
-              # Determine coverage badge color
-              COVERAGE_NUM=$(echo "$COVERAGE_TOTAL" | sed 's/[^0-9.]//g')
-              if [ -n "$COVERAGE_NUM" ]; then
-                COVERAGE_INT=${COVERAGE_NUM%.*}
-                if [ "$COVERAGE_INT" -ge 80 ]; then
-                  COVERAGE_BADGE="🟢"
-                elif [ "$COVERAGE_INT" -ge 60 ]; then
-                  COVERAGE_BADGE="🟡"
-                else
-                  COVERAGE_BADGE="🔴"
-                fi
-              else
-                COVERAGE_BADGE="⚪"
-              fi
-              echo "| Metric | Value |"
-              echo "|--------|-------|"
-              echo "| Overall Coverage | $COVERAGE_BADGE **${COVERAGE_TOTAL}%** |"
-              echo ""
-              echo "> 📈 For detailed coverage reports and delta analysis, see the [Codecov Report](https://codecov.io/gh/$REPO/pull/${{ github.event.pull_request.number }})"
-            else
-              echo "_No coverage data available._"
+              echo "| _No packages_ | - | - | - | - |"
             fi
 
             echo ""

@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
     outputs:
       result: ${{ steps.lint.outcome }}
       packages: ${{ steps.lint.outputs.packages }}
@@ -79,21 +78,6 @@ jobs:
           PACKAGES_JSON+="]"
           echo "packages=$PACKAGES_JSON" >> $GITHUB_OUTPUT
           exit $OVERALL_EXIT
-
-      - name: Run ESLint with SARIF output
-        if: always()
-        continue-on-error: true
-        run: |
-          # Run ESLint with SARIF formatter for code scanning
-          pnpm -r --parallel exec eslint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif || true
-
-      - name: Upload SARIF results
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4.31.10
-        continue-on-error: true
-        with:
-          sarif_file: eslint-results.sarif
-          wait-for-processing: false
 
       - name: Check for failures
         if: steps.lint.outcome == 'failure'
