@@ -144,6 +144,9 @@ jobs:
             local type="$1"
             local value="$2"
 
+            # Strip trailing ttl= and id= metadata
+            local clean_val=$(echo "$value" | sed -E 's/[[:space:]]+(ttl|id)=[^[:space:]]*//g' | sed 's/[[:space:]]*$//')
+
             case "$type" in
               # For A, AAAA, CNAME: strip everything after first space (removes proxy=, ttl=, etc.)
               A|AAAA|CNAME)
@@ -161,16 +164,34 @@ jobs:
                   echo "$value"
                 fi
                 ;;
-              # For TXT records: don't truncate, show full value
-              TXT|SPF)
-                echo "$value"
+              # For TXT records: format based on content type (SPF, DKIM, DMARC)
+              TXT)
+                # SPF record: v=spf1 ...
+                if echo "$clean_val" | grep -q "^v=spf1"; then
+                  # Split on spaces, join with <br>
+                  echo "$clean_val" | sed 's/ /<br>/g'
+                # DKIM record: v=DKIM1; ...
+                elif echo "$clean_val" | grep -q "^v=DKIM1"; then
+                  # Truncate the p= value (public key), keep first 10 chars
+                  # Also remove any trailing semicolon after the truncated key
+                  local truncated=$(echo "$clean_val" | sed -E 's/(p=)([A-Za-z0-9+/]{10})[A-Za-z0-9+/=]*;?/\1\2.../g')
+                  # Split on "; ", join with <br>, then clean up any trailing separators
+                  echo "$truncated" | sed 's/; /<br>/g' | sed 's/<br>$//'
+                # DMARC record: v=DMARC1; ...
+                elif echo "$clean_val" | grep -q "^v=DMARC1"; then
+                  # Split on "; ", join with <br>
+                  echo "$clean_val" | sed 's/; /<br>/g'
+                else
+                  # Other TXT records: show as-is
+                  echo "$clean_val"
+                fi
                 ;;
               # For other types: apply reasonable truncation
               *)
-                if [ ${#value} -gt 100 ]; then
-                  echo "${value:0:97}..."
+                if [ ${#clean_val} -gt 100 ]; then
+                  echo "${clean_val:0:97}..."
                 else
-                  echo "$value"
+                  echo "$clean_val"
                 fi
                 ;;
             esac
