@@ -225,7 +225,7 @@ jobs:
           if [ "$PREVIEW_RESULT" != "success" ]; then
             PREVIEW_TEXT="❌ Failed"
           elif [ "$HAS_CHANGES" == "true" ]; then
-            PREVIEW_TEXT="⚠️ ${CHANGES_SUMMARY:-Changes}"
+            PREVIEW_TEXT="${CHANGES_SUMMARY:-Changes}"
           else
             PREVIEW_TEXT="✅ No changes"
           fi
