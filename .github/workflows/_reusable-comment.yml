@@ -255,7 +255,7 @@ jobs:
 
             echo "## 🔨 Build Results"
             echo ""
-            echo "| Package | [Build]($RUN_URL) | [Lint]($RUN_URL) | [Format]($RUN_URL) | [Typecheck]($RUN_URL) |"
+            echo "| Package | Build | Lint | Format | Typecheck |"
             echo "|---------|-------|------|--------|-----------|"
 
             # Combine all package names from build, lint, format, typecheck
@@ -398,14 +398,6 @@ jobs:
             fi
 
             echo ""
-            echo "> 📈 Coverage delta and new code coverage: [Codecov Report](https://codecov.io/gh/$REPO/pull/${{ github.event.pull_request.number }})"
-            echo ">"
-            echo "> 🔧 Full build output: [Workflow Logs]($RUN_URL)"
-            echo ">"
-            echo "> 🧪 Full test output: [Workflow Logs]($RUN_URL)"
-            echo ""
-
-            echo ""
             echo "## 🌐 DNS Changes"
             echo ""
 
@@ -474,9 +466,6 @@ jobs:
               fi
             fi
 
-            echo ""
-            echo "> 📋 Full DNSControl output: [Workflow Logs]($RUN_URL)"
-            echo ""
             echo "---"
             echo "*Latest commit: \`$COMMIT_SHA\`* | [View Run](https://github.com/$REPO/actions/runs/$RUN_ID)"
           } > comment.md
