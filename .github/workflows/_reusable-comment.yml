@@ -250,7 +250,70 @@ jobs:
             fi
             echo "$NEW_ROW"
             echo ""
-            echo "# 🧪 Test & Coverage Results"
+            echo "# 🔨 Build Results"
+            echo ""
+            echo "| Package | Build | Lint | Format | Typecheck |"
+            echo "|---------|-------|------|--------|-----------|"
+
+            # Combine all package names from build, lint, format, typecheck
+            ALL_PACKAGES=""
+            if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
+              BUILD_PKGS=$(echo "$BUILD_PACKAGES" | jq -r 'keys[]' 2>/dev/null || echo "")
+              ALL_PACKAGES="$BUILD_PKGS"
+            fi
+            for PKG_JSON_VAR in "$LINT_PACKAGES" "$FORMAT_PACKAGES" "$TYPECHECK_PACKAGES"; do
+              if [ -n "$PKG_JSON_VAR" ] && [ "$PKG_JSON_VAR" != "[]" ]; then
+                PKG_NAMES=$(echo "$PKG_JSON_VAR" | jq -r '.[].name' 2>/dev/null || echo "")
+                if [ -n "$ALL_PACKAGES" ]; then
+                  ALL_PACKAGES=$(printf '%s\n%s' "$ALL_PACKAGES" "$PKG_NAMES" | sort -u)
+                else
+                  ALL_PACKAGES="$PKG_NAMES"
+                fi
+              fi
+            done
+
+            # Generate rows for each package
+            if [ -n "$ALL_PACKAGES" ]; then
+              echo "$ALL_PACKAGES" | while IFS= read -r pkg; do
+                [ -z "$pkg" ] && continue
+                # Get short package name (remove @vladzaharia/ prefix)
+                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
+
+                # Get build status
+                PKG_BUILD_STATUS=""
+                if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
+                  PKG_BUILD_STATUS=$(echo "$BUILD_PACKAGES" | jq -r --arg p "$pkg" '.[$p] // empty' 2>/dev/null || echo "")
+                fi
+                PKG_BUILD_ICON=$(if [ "$PKG_BUILD_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_BUILD_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get lint status
+                PKG_LINT_STATUS=""
+                if [ -n "$LINT_PACKAGES" ] && [ "$LINT_PACKAGES" != "[]" ]; then
+                  PKG_LINT_STATUS=$(echo "$LINT_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
+                fi
+                PKG_LINT_ICON=$(if [ "$PKG_LINT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_LINT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get format status
+                PKG_FORMAT_STATUS=""
+                if [ -n "$FORMAT_PACKAGES" ] && [ "$FORMAT_PACKAGES" != "[]" ]; then
+                  PKG_FORMAT_STATUS=$(echo "$FORMAT_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
+                fi
+                PKG_FORMAT_ICON=$(if [ "$PKG_FORMAT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_FORMAT_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                # Get typecheck status
+                PKG_TYPECHECK_STATUS=""
+                if [ -n "$TYPECHECK_PACKAGES" ] && [ "$TYPECHECK_PACKAGES" != "[]" ]; then
+                  PKG_TYPECHECK_STATUS=$(echo "$TYPECHECK_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
+                fi
+                PKG_TYPECHECK_ICON=$(if [ "$PKG_TYPECHECK_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_TYPECHECK_STATUS" ]; then echo "❌"; else echo "-"; fi)
+
+                echo "| $SHORT_PKG | $PKG_BUILD_ICON | $PKG_LINT_ICON | $PKG_FORMAT_ICON | $PKG_TYPECHECK_ICON |"
+              done
+            else
+              echo "| _No packages_ | - | - | - | - |"
+            fi
+            echo ""
+            echo "## 🧪 Test Results"
             echo ""
             echo "| Package | ✅ Passed | ❌ Failed | ⏭️ Skipped | 📊 Coverage |"
             echo "|---------|-----------|-----------|------------|-------------|"
@@ -334,69 +397,7 @@ jobs:
             echo ""
             echo "> 📈 For coverage delta and new code coverage, see the [Codecov Report](https://codecov.io/gh/$REPO/pull/${{ github.event.pull_request.number }})"
             echo ""
-            echo "# 🔨 Build Results"
-            echo ""
-            echo "| Package | Build | Lint | Format | Typecheck |"
-            echo "|---------|-------|------|--------|-----------|"
-
-            # Combine all package names from build, lint, format, typecheck
-            ALL_PACKAGES=""
-            if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
-              BUILD_PKGS=$(echo "$BUILD_PACKAGES" | jq -r 'keys[]' 2>/dev/null || echo "")
-              ALL_PACKAGES="$BUILD_PKGS"
-            fi
-            for PKG_JSON_VAR in "$LINT_PACKAGES" "$FORMAT_PACKAGES" "$TYPECHECK_PACKAGES"; do
-              if [ -n "$PKG_JSON_VAR" ] && [ "$PKG_JSON_VAR" != "[]" ]; then
-                PKG_NAMES=$(echo "$PKG_JSON_VAR" | jq -r '.[].name' 2>/dev/null || echo "")
-                if [ -n "$ALL_PACKAGES" ]; then
-                  ALL_PACKAGES=$(printf '%s\n%s' "$ALL_PACKAGES" "$PKG_NAMES" | sort -u)
-                else
-                  ALL_PACKAGES="$PKG_NAMES"
-                fi
-              fi
-            done
-
-            # Generate rows for each package
-            if [ -n "$ALL_PACKAGES" ]; then
-              echo "$ALL_PACKAGES" | while IFS= read -r pkg; do
-                [ -z "$pkg" ] && continue
-                # Get short package name (remove @vladzaharia/ prefix)
-                SHORT_PKG=$(echo "$pkg" | sed 's/@vladzaharia\///')
-
-                # Get build status
-                PKG_BUILD_STATUS=""
-                if [ -n "$BUILD_PACKAGES" ] && [ "$BUILD_PACKAGES" != "{}" ]; then
-                  PKG_BUILD_STATUS=$(echo "$BUILD_PACKAGES" | jq -r --arg p "$pkg" '.[$p] // empty' 2>/dev/null || echo "")
-                fi
-                PKG_BUILD_ICON=$(if [ "$PKG_BUILD_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_BUILD_STATUS" ]; then echo "❌"; else echo "-"; fi)
-
-                # Get lint status
-                PKG_LINT_STATUS=""
-                if [ -n "$LINT_PACKAGES" ] && [ "$LINT_PACKAGES" != "[]" ]; then
-                  PKG_LINT_STATUS=$(echo "$LINT_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
-                fi
-                PKG_LINT_ICON=$(if [ "$PKG_LINT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_LINT_STATUS" ]; then echo "❌"; else echo "-"; fi)
-
-                # Get format status
-                PKG_FORMAT_STATUS=""
-                if [ -n "$FORMAT_PACKAGES" ] && [ "$FORMAT_PACKAGES" != "[]" ]; then
-                  PKG_FORMAT_STATUS=$(echo "$FORMAT_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
-                fi
-                PKG_FORMAT_ICON=$(if [ "$PKG_FORMAT_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_FORMAT_STATUS" ]; then echo "❌"; else echo "-"; fi)
-
-                # Get typecheck status
-                PKG_TYPECHECK_STATUS=""
-                if [ -n "$TYPECHECK_PACKAGES" ] && [ "$TYPECHECK_PACKAGES" != "[]" ]; then
-                  PKG_TYPECHECK_STATUS=$(echo "$TYPECHECK_PACKAGES" | jq -r --arg p "$pkg" '.[] | select(.name == $p) | .status // empty' 2>/dev/null || echo "")
-                fi
-                PKG_TYPECHECK_ICON=$(if [ "$PKG_TYPECHECK_STATUS" == "success" ]; then echo "✅"; elif [ -n "$PKG_TYPECHECK_STATUS" ]; then echo "❌"; else echo "-"; fi)
-
-                echo "| $SHORT_PKG | $PKG_BUILD_ICON | $PKG_LINT_ICON | $PKG_FORMAT_ICON | $PKG_TYPECHECK_ICON |"
-              done
-            else
-              echo "| _No packages_ | - | - | - | - |"
-            fi
-
+            
             echo ""
             echo "# 🌐 DNS Changes"
             echo ""
@@ -445,7 +446,7 @@ jobs:
                     echo "| $action | $subdomain | $rectype | $old | $new |"
                   done
                 else
-                  echo "<h3>$domain</h3> (no changes)</summary>"
+                  echo "<summary><h3>$domain</h3> (no changes)</summary>"
                   echo ""
                   echo "_No changes to this domain._"
                 fi

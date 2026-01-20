@@ -57,15 +57,21 @@ jobs:
           mkdir -p test-results
           echo "0" > test-results/failure-count.txt
 
-          # Get all packages
-          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo") | .name')
+          # Get all workspace packages (exclude node_modules)
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo" and (.path | contains("node_modules") | not)) | .name')
 
           for PKG_NAME in $PACKAGES; do
             PKG_PATH=$(pnpm ls -r --json 2>/dev/null | jq -r --arg n "$PKG_NAME" '.[] | select(.name == $n) | .path')
             PKG_DIR=$(basename "$PKG_PATH")
-            
+
+            # Skip if path contains node_modules
+            if [[ "$PKG_PATH" == *"node_modules"* ]]; then
+              echo "⏭️ Skipping $PKG_NAME (node_modules)"
+              continue
+            fi
+
             echo "::group::Testing $PKG_NAME"
-            
+
             if [ -f "$PKG_PATH/package.json" ] && jq -e '.scripts.test' "$PKG_PATH/package.json" > /dev/null 2>&1; then
               set +e
               # Use default reporter (not verbose) to get coverage text output
@@ -111,12 +117,16 @@ jobs:
           TOTAL_LINES=0
           TOTAL_COVERED=0
 
-          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo") | .name')
+          # Get all workspace packages (exclude node_modules)
+          PACKAGES=$(pnpm ls -r --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "polaris-dns-monorepo" and (.path | contains("node_modules") | not)) | .name')
 
           for PKG_NAME in $PACKAGES; do
             PKG_PATH=$(pnpm ls -r --json 2>/dev/null | jq -r --arg n "$PKG_NAME" '.[] | select(.name == $n) | .path')
             PKG_DIR=$(basename "$PKG_PATH")
-            
+
+            # Skip if path contains node_modules
+            [[ "$PKG_PATH" == *"node_modules"* ]] && continue
+
             PASSED=0
             FAILED=0
             SKIPPED=0
