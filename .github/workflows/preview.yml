@@ -439,9 +439,20 @@ jobs:
           # Build domain summary (base domain -> add/modify/delete counts)
           DOMAIN_SUMMARY=""
           for base in $BASE_DOMAINS; do
-            ADD_COUNT=$(echo "$SORTED_DATA" | grep "^${base}|" | grep -c '|➕|' || echo 0)
-            MOD_COUNT=$(echo "$SORTED_DATA" | grep "^${base}|" | grep -c '|✏️|' || echo 0)
-            DEL_COUNT=$(echo "$SORTED_DATA" | grep "^${base}|" | grep -c '|🗑️|' || echo 0)
+            DOMAIN_ROWS=$(echo "$SORTED_DATA" | grep "^${base}|" || true)
+            if [ -n "$DOMAIN_ROWS" ]; then
+              ADD_COUNT=$(echo "$DOMAIN_ROWS" | grep -c '|➕|' || true)
+              MOD_COUNT=$(echo "$DOMAIN_ROWS" | grep -c '|✏️|' || true)
+              DEL_COUNT=$(echo "$DOMAIN_ROWS" | grep -c '|🗑️|' || true)
+            else
+              ADD_COUNT=0
+              MOD_COUNT=0
+              DEL_COUNT=0
+            fi
+            # Ensure counts are valid numbers (strip any whitespace/newlines)
+            ADD_COUNT=${ADD_COUNT:-0}
+            MOD_COUNT=${MOD_COUNT:-0}
+            DEL_COUNT=${DEL_COUNT:-0}
             DOMAIN_SUMMARY="${DOMAIN_SUMMARY}${base}|${ADD_COUNT}|${MOD_COUNT}|${DEL_COUNT}"$'\n'
           done
 
@@ -725,9 +736,12 @@ jobs:
                 echo "<details>"
                 if [ -n "$DOMAIN_CHANGES" ]; then
                   # Count changes for this domain
-                  ADDS=$(echo "$DOMAIN_CHANGES" | grep -c '|➕|' || echo 0)
-                  MODS=$(echo "$DOMAIN_CHANGES" | grep -c '|✏️|' || echo 0)
-                  DELS=$(echo "$DOMAIN_CHANGES" | grep -c '|🗑️|' || echo 0)
+                  ADDS=$(echo "$DOMAIN_CHANGES" | grep -c '|➕|' || true)
+                  MODS=$(echo "$DOMAIN_CHANGES" | grep -c '|✏️|' || true)
+                  DELS=$(echo "$DOMAIN_CHANGES" | grep -c '|🗑️|' || true)
+                  ADDS=${ADDS:-0}
+                  MODS=${MODS:-0}
+                  DELS=${DELS:-0}
                   TOTAL=$((ADDS + MODS + DELS))
                   echo "<summary><strong>$domain</strong> ($TOTAL change$( [ $TOTAL -ne 1 ] && echo 's'))</summary>"
                   echo ""
