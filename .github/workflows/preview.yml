@@ -226,89 +226,120 @@ jobs:
               TXT)
                 # SPF record: v=spf1 ...
                 if echo "$clean_val" | grep -q "^v=spf1"; then
-                  local result=""
-                  # Parse SPF mechanisms
+                  local spf_flags=""      # a, mx, ptr (simple flags)
+                  local spf_sources=""    # includes, ips, a:, mx:, exists:, redirect
+                  local spf_all=""        # the all qualifier
                   for part in $clean_val; do
                     case "$part" in
-                      v=spf1) result="**SPF v1**" ;;
-                      include:*) result="${result}<br>📨 include: \`${part#include:}\`" ;;
-                      ip4:*) result="${result}<br>🔢 IPv4: \`${part#ip4:}\`" ;;
-                      ip6:*) result="${result}<br>🔢 IPv6: \`${part#ip6:}\`" ;;
-                      a) result="${result}<br>📍 A record" ;;
-                      a:*) result="${result}<br>📍 A: \`${part#a:}\`" ;;
-                      mx) result="${result}<br>📬 MX record" ;;
-                      mx:*) result="${result}<br>📬 MX: \`${part#mx:}\`" ;;
-                      ptr) result="${result}<br>↩️ PTR" ;;
-                      ptr:*) result="${result}<br>↩️ PTR: \`${part#ptr:}\`" ;;
-                      exists:*) result="${result}<br>❓ exists: \`${part#exists:}\`" ;;
-                      redirect=*) result="${result}<br>➡️ redirect: \`${part#redirect=}\`" ;;
-                      +all) result="${result}<br>✅ **+all** (pass all)" ;;
-                      -all) result="${result}<br>❌ **-all** (fail all)" ;;
-                      ~all) result="${result}<br>⚠️ **~all** (softfail)" ;;
-                      \?all) result="${result}<br>❔ **?all** (neutral)" ;;
-                      *) [ -n "$part" ] && result="${result}<br>\`${part}\`" ;;
+                      v=spf1) ;;
+                      a) spf_flags="${spf_flags:+$spf_flags / }A" ;;
+                      mx) spf_flags="${spf_flags:+$spf_flags / }MX" ;;
+                      ptr) spf_flags="${spf_flags:+$spf_flags / }PTR" ;;
+                      a:*) spf_sources="${spf_sources:+$spf_sources / }A:\`${part#a:}\`" ;;
+                      mx:*) spf_sources="${spf_sources:+$spf_sources / }MX:\`${part#mx:}\`" ;;
+                      ptr:*) spf_sources="${spf_sources:+$spf_sources / }PTR:\`${part#ptr:}\`" ;;
+                      include:*) spf_sources="${spf_sources:+$spf_sources / }\`${part#include:}\`" ;;
+                      ip4:*) spf_sources="${spf_sources:+$spf_sources / }\`${part#ip4:}\`" ;;
+                      ip6:*) spf_sources="${spf_sources:+$spf_sources / }\`${part#ip6:}\`" ;;
+                      exists:*) spf_sources="${spf_sources:+$spf_sources / }exists:\`${part#exists:}\`" ;;
+                      redirect=*) spf_sources="${spf_sources:+$spf_sources / }redirect:\`${part#redirect=}\`" ;;
+                      +all) spf_all="\`+all\`" ;;
+                      -all) spf_all="\`-all\`" ;;
+                      ~all) spf_all="\`~all\`" ;;
+                      \?all) spf_all="\`?all\`" ;;
+                      *) [ -n "$part" ] && spf_sources="${spf_sources:+$spf_sources / }\`${part}\`" ;;
                     esac
                   done
-                  echo "$result"
+                  # Build compact output
+                  local spf_result="**SPF**"
+                  # Combine flags and sources on one line
+                  local spf_line=""
+                  [ -n "$spf_flags" ] && spf_line="$spf_flags"
+                  [ -n "$spf_sources" ] && spf_line="${spf_line:+$spf_line / }$spf_sources"
+                  [ -n "$spf_line" ] && spf_result="${spf_result}<br>${spf_line}"
+                  [ -n "$spf_all" ] && spf_result="${spf_result}<br>${spf_all}"
+                  echo "$spf_result"
                 # DKIM record: v=DKIM1; ...
                 elif echo "$clean_val" | grep -q "^v=DKIM1"; then
-                  local dkim_result="**DKIM v1**"
-                  # First pass: extract key type (default to RSA)
-                  local key_type="rsa"
-                  local public_key=""
+                  # Extract all DKIM components
+                  local dkim_k="" dkim_p="" dkim_t="" dkim_s="" dkim_h="" dkim_n=""
                   while IFS= read -r tag; do
                     tag=$(echo "$tag" | sed 's/^ *//' | sed 's/ *$//')
                     case "$tag" in
-                      k=*) key_type="${tag#k=}" ;;
-                      p=*) public_key="${tag#p=}" ;;
+                      k=*) dkim_k="${tag#k=}" ;;
+                      p=*) dkim_p="${tag#p=}" ;;
+                      t=*) dkim_t="${tag#t=}" ;;
+                      s=*) dkim_s="${tag#s=}" ;;
+                      h=*) dkim_h="${tag#h=}" ;;
+                      n=*) dkim_n="${tag#n=}" ;;
                     esac
                   done <<< "$(echo "$clean_val" | tr ';' '\n')"
-                  # Second pass: build result with key type shown inline with key
-                  while IFS= read -r tag; do
-                    tag=$(echo "$tag" | sed 's/^ *//' | sed 's/ *$//')
-                    case "$tag" in
-                      v=DKIM1|k=*|p=*) ;; # Handled separately
-                      t=*) dkim_result="${dkim_result}<br>🏷️ Flags: \`${tag#t=}\`" ;;
-                      s=*) dkim_result="${dkim_result}<br>📋 Service: \`${tag#s=}\`" ;;
-                      h=*) dkim_result="${dkim_result}<br>#️⃣ Hash: \`${tag#h=}\`" ;;
-                      n=*) dkim_result="${dkim_result}<br>📝 Notes: \`${tag#n=}\`" ;;
-                      *) [ -n "$tag" ] && dkim_result="${dkim_result}<br>\`${tag}\`" ;;
-                    esac
-                  done <<< "$(echo "$clean_val" | tr ';' '\n')"
-                  # Add key info at the end (key type + truncated key)
-                  local key_type_upper=$(echo "$key_type" | tr '[:lower:]' '[:upper:]')
-                  if [ -n "$public_key" ]; then
-                    if [ ${#public_key} -gt 20 ]; then
-                      dkim_result="${dkim_result}<br>🔐 ${key_type_upper} \`${public_key:0:16}...\`"
+                  # Build compact output
+                  local dkim_result="**DKIM**"
+                  # Flags line (t= and s= if present)
+                  local dkim_flags=""
+                  [ -n "$dkim_t" ] && dkim_flags="Flags:\`${dkim_t}\`"
+                  [ -n "$dkim_s" ] && dkim_flags="${dkim_flags:+$dkim_flags / }Service:\`${dkim_s}\`"
+                  [ -n "$dkim_flags" ] && dkim_result="${dkim_result}<br>${dkim_flags}"
+                  # Key line: hash / key type / key (consolidated)
+                  local dkim_key_line=""
+                  [ -n "$dkim_h" ] && dkim_key_line=$(echo "$dkim_h" | tr '[:lower:]' '[:upper:]')
+                  local key_type_upper=$(echo "${dkim_k:-rsa}" | tr '[:lower:]' '[:upper:]')
+                  dkim_key_line="${dkim_key_line:+$dkim_key_line / }${key_type_upper}"
+                  if [ -n "$dkim_p" ]; then
+                    if [ ${#dkim_p} -gt 20 ]; then
+                      dkim_key_line="${dkim_key_line} \`${dkim_p:0:16}...\`"
                     else
-                      dkim_result="${dkim_result}<br>🔐 ${key_type_upper} \`${public_key}\`"
+                      dkim_key_line="${dkim_key_line} \`${dkim_p}\`"
                     fi
                   fi
+                  [ -n "$dkim_key_line" ] && dkim_result="${dkim_result}<br>${dkim_key_line}"
+                  [ -n "$dkim_n" ] && dkim_result="${dkim_result}<br>Notes: ${dkim_n}"
                   echo "$dkim_result"
                 # DMARC record: v=DMARC1; ...
                 elif echo "$clean_val" | grep -q "^v=DMARC1"; then
-                  local dmarc_result="**DMARC v1**"
-                  # Parse DMARC tags (semicolon separated)
+                  # Extract all DMARC components
+                  local dmarc_p="" dmarc_sp="" dmarc_adkim="" dmarc_aspf=""
+                  local dmarc_pct="" dmarc_rua="" dmarc_ruf="" dmarc_fo="" dmarc_rf="" dmarc_ri=""
                   while IFS= read -r tag; do
                     tag=$(echo "$tag" | sed 's/^ *//' | sed 's/ *$//')
                     case "$tag" in
-                      v=DMARC1) ;; # Already handled
-                      p=none) dmarc_result="${dmarc_result}<br>📋 Policy: **none** (monitor)" ;;
-                      p=quarantine) dmarc_result="${dmarc_result}<br>📋 Policy: **quarantine**" ;;
-                      p=reject) dmarc_result="${dmarc_result}<br>📋 Policy: **reject**" ;;
-                      p=*) dmarc_result="${dmarc_result}<br>📋 Policy: \`${tag#p=}\`" ;;
-                      sp=*) dmarc_result="${dmarc_result}<br>📋 Subdomain: \`${tag#sp=}\`" ;;
-                      rua=*) dmarc_result="${dmarc_result}<br>📊 Aggregate reports: \`${tag#rua=}\`" ;;
-                      ruf=*) dmarc_result="${dmarc_result}<br>🔍 Forensic reports: \`${tag#ruf=}\`" ;;
-                      pct=*) dmarc_result="${dmarc_result}<br>📈 Percentage: \`${tag#pct=}%\`" ;;
-                      adkim=*) dmarc_result="${dmarc_result}<br>🔑 DKIM alignment: \`${tag#adkim=}\`" ;;
-                      aspf=*) dmarc_result="${dmarc_result}<br>📨 SPF alignment: \`${tag#aspf=}\`" ;;
-                      fo=*) dmarc_result="${dmarc_result}<br>📝 Failure options: \`${tag#fo=}\`" ;;
-                      rf=*) dmarc_result="${dmarc_result}<br>📄 Report format: \`${tag#rf=}\`" ;;
-                      ri=*) dmarc_result="${dmarc_result}<br>⏱️ Report interval: \`${tag#ri=}s\`" ;;
-                      *) [ -n "$tag" ] && dmarc_result="${dmarc_result}<br>\`${tag}\`" ;;
+                      p=*) dmarc_p="${tag#p=}" ;;
+                      sp=*) dmarc_sp="${tag#sp=}" ;;
+                      adkim=*) dmarc_adkim="${tag#adkim=}" ;;
+                      aspf=*) dmarc_aspf="${tag#aspf=}" ;;
+                      pct=*) dmarc_pct="${tag#pct=}" ;;
+                      rua=*) dmarc_rua="${tag#rua=}" ;;
+                      ruf=*) dmarc_ruf="${tag#ruf=}" ;;
+                      fo=*) dmarc_fo="${tag#fo=}" ;;
+                      rf=*) dmarc_rf="${tag#rf=}" ;;
+                      ri=*) dmarc_ri="${tag#ri=}" ;;
                     esac
                   done <<< "$(echo "$clean_val" | tr ';' '\n')"
+                  # Build compact output
+                  local dmarc_result="**DMARC**"
+                  # Policy line: p / sp / pct
+                  local dmarc_policy=""
+                  [ -n "$dmarc_p" ] && dmarc_policy="Policy:\`${dmarc_p}\`"
+                  [ -n "$dmarc_sp" ] && dmarc_policy="${dmarc_policy:+$dmarc_policy / }Subdomain:\`${dmarc_sp}\`"
+                  [ -n "$dmarc_pct" ] && dmarc_policy="${dmarc_policy:+$dmarc_policy / }${dmarc_pct}%"
+                  [ -n "$dmarc_policy" ] && dmarc_result="${dmarc_result}<br>${dmarc_policy}"
+                  # Alignment line: adkim / aspf
+                  local dmarc_align=""
+                  [ -n "$dmarc_adkim" ] && dmarc_align="DKIM:\`${dmarc_adkim}\`"
+                  [ -n "$dmarc_aspf" ] && dmarc_align="${dmarc_align:+$dmarc_align / }SPF:\`${dmarc_aspf}\`"
+                  [ -n "$dmarc_align" ] && dmarc_result="${dmarc_result}<br>${dmarc_align}"
+                  # Reports line: rua / ruf
+                  local dmarc_reports=""
+                  [ -n "$dmarc_rua" ] && dmarc_reports="rua:\`${dmarc_rua}\`"
+                  [ -n "$dmarc_ruf" ] && dmarc_reports="${dmarc_reports:+$dmarc_reports / }ruf:\`${dmarc_ruf}\`"
+                  [ -n "$dmarc_reports" ] && dmarc_result="${dmarc_result}<br>${dmarc_reports}"
+                  # Options line: fo / rf / ri
+                  local dmarc_opts=""
+                  [ -n "$dmarc_fo" ] && dmarc_opts="fo:\`${dmarc_fo}\`"
+                  [ -n "$dmarc_rf" ] && dmarc_opts="${dmarc_opts:+$dmarc_opts / }rf:\`${dmarc_rf}\`"
+                  [ -n "$dmarc_ri" ] && dmarc_opts="${dmarc_opts:+$dmarc_opts / }ri:\`${dmarc_ri}s\`"
+                  [ -n "$dmarc_opts" ] && dmarc_result="${dmarc_result}<br>${dmarc_opts}"
                   echo "$dmarc_result"
                 else
                   # Other TXT records: show as-is
