@@ -6,7 +6,7 @@
 
 import { createDomain, CLOUDFLARE, NO_REGISTRAR } from "../../lib/domain.js";
 import { createTXTRecord } from "../../lib/record.js";
-import { createFastmailRecords } from "../../mail/fastmail.js";
+import { createCloudflareEmailRecords } from "../../mail/cloudflare.js";
 
 // =============================================================================
 // Zone Definition
@@ -29,8 +29,8 @@ export function registerSpunkDog(): void {
     // Replace with actual DID when available
     createTXTRecord("_atproto", "did=did:plc:REPLACE_WITH_ACTUAL_DID"),
 
-    // Mail (Fastmail) - for future use
-    ...createFastmailRecords({ domain: DOMAIN }),
+    // Mail (Cloudflare Email Routing)
+    ...createCloudflareEmailRecords(),
 
     // No website - ignore root records
     IGNORE_NAME("@", "A,CNAME,AAAA")
