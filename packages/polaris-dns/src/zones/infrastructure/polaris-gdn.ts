@@ -42,7 +42,7 @@ export function registerPolarisGdn(): void {
     ),
 
     // Cloudflare Pages
-    createCNAMERecord("charge", "charging.pages.dev.", { proxy: "on" }),
+    createCNAMERecord("charge", "charging.pages.dev.", { proxy: "off" }),
 
     // Mail (Cloudflare Email Routing)
     ...createCloudflareEmailRecords(),

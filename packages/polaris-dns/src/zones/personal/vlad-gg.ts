@@ -30,7 +30,7 @@ export function registerVladGG(): void {
     },
 
     // Website (Netlify)
-    createARecord("@", "75.2.60.5", { proxy: "on" }),
+    createARecord("@", "75.2.60.5", { proxy: "off" }),
     createCNAMERecord("www", "vladgg.netlify.app."),
     createCNAMERecord("bb", "bb-vlad-gg.netlify.app."),
 
@@ -38,7 +38,6 @@ export function registerVladGG(): void {
     createCNAMERecord("api", "vladgg-api.fly.dev."),
 
     // Services
-    createCNAMERecord("sticky", "tun.azure.plrs.im.", { proxy: "on" }), // Blinko notes
     createCNAMERecord("pass", "gw.sea.plrs.im."), // Vaultwarden
     createCNAMERecord("plan", "gw.sea.plrs.im."), // Plane Project Management
 
