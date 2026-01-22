@@ -33,12 +33,12 @@ export function registerPolarisExpress(): void {
     // Cloudflare Pages - EV Charging site
     // Note: Root domain uses ALIAS/CNAME flattening via Cloudflare
     // The @ record is managed by Cloudflare for Pages integration
-    createCNAMERecord("www", "charging.pages.dev.", { proxy: "on" }),
+    createCNAMERecord("www", "charging.pages.dev."),
 
     // EV Charging Services (via Azure tunnel)
-    createCNAMERecord("ocpp", servers.pangolin.hostname + ".", { proxy: "on" }), // StEvE OCPP server
-    createCNAMERecord("billing", servers.pangolin.hostname + ".", { proxy: "on" }), // Lago Billing API
-    createCNAMERecord("manage", servers.pangolin.hostname + ".", { proxy: "on" }), // ExpressSync
+    createCNAMERecord("ocpp", servers.pangolin.hostname + "."), // StEvE OCPP server
+    createCNAMERecord("billing", servers.pangolin.hostname + "."), // Lago Billing API
+    createCNAMERecord("manage", servers.pangolin.hostname + "."), // ExpressSync
 
     // Mail (Cloudflare Email Routing)
     ...createCloudflareEmailRecords(),

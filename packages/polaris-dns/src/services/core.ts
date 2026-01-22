@@ -16,7 +16,7 @@ import { createARecord, createCNAMERecord } from "../lib/record.js";
  * Convert a service definition to DNS records
  */
 export function serviceToRecords(service: ServiceDefinition): DomainModifier[] {
-  const { subdomain, server = "greenwood", routing = "direct", ip, cname, proxy = true } = service;
+  const { subdomain, server = "greenwood", routing = "direct", ip, cname, proxy = false } = service;
 
   // Custom IP address
   if (ip) {
