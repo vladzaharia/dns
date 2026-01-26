@@ -271,7 +271,7 @@
     "access": "public"
   },
   "dependencies": {
-    "zod": "^4.3.5"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@vladzaharia/dns-config": "workspace:*",
