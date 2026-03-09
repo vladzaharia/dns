@@ -114,8 +114,8 @@ importers:
         specifier: ^10.3.0
         version: 10.3.0
       '@fast-check/vitest':
-        specifier: ^0.2.4
-        version: 0.2.4(vitest@4.0.18)
+        specifier: ^0.3.0
+        version: 0.3.0(vitest@4.0.18)
       '@stryker-mutator/core':
         specifier: ^9.6.0
         version: 9.6.0(@types/node@25.3.5)
@@ -769,8 +769,8 @@ packages:
     resolution: {integrity: sha512-It0Sne6P3szg7JIi6CgKbvTZoMjxBZhcv91ZrqrNuaZQfB5WoqYYbzCUOq89YR+VY8juY9M1vDWmDDa2TzfXCw==}
     engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0, npm: '>=10'}
 
-  '@fast-check/vitest@0.2.4':
-    resolution: {integrity: sha512-Ilcr+JAIPhb1s6FRm4qoglQYSGXXrS+zAupZeNuWAA3qHVGDA1d1Gb84Hb/+otL3GzVZjFJESg5/1SfIvrgssA==}
+  '@fast-check/vitest@0.3.0':
+    resolution: {integrity: sha512-mXxAu7DJtzwSUeOMecZibq/403b8uX1/dWWXXCBgb+j9ERWuN9Hvr6usId+9ivdQ+tJl8H6o+CMv71BmjaENRQ==}
     peerDependencies:
       vitest: ^1 || ^2 || ^3 || ^4
 
@@ -3914,7 +3914,7 @@ snapshots:
 
   '@faker-js/faker@10.3.0': {}
 
-  '@fast-check/vitest@0.2.4(vitest@4.0.18)':
+  '@fast-check/vitest@0.3.0(vitest@4.0.18)':
     dependencies:
       fast-check: 4.5.3
       vitest: 4.0.18(@types/node@25.3.5)(@vitest/ui@4.0.18)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
