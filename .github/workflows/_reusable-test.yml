@@ -279,7 +279,7 @@ jobs:
 
       - name: Test Report
         if: always() && github.event_name == 'pull_request'
-        uses: dorny/test-reporter@v2.5.0
+        uses: dorny/test-reporter@v2.6.0
         continue-on-error: true
         with:
           name: Test Results
