@@ -120,8 +120,8 @@ importers:
         specifier: ^9.6.0
         version: 9.6.0(@types/node@25.6.0)
       '@stryker-mutator/vitest-runner':
-        specifier: ^9.6.0
-        version: 9.6.0(@stryker-mutator/core@9.6.0(@types/node@25.6.0))(vitest@4.1.2)
+        specifier: ^9.6.1
+        version: 9.6.1(@stryker-mutator/core@9.6.0(@types/node@25.6.0))(vitest@4.1.2)
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
@@ -1416,6 +1416,10 @@ packages:
     resolution: {integrity: sha512-kJEEwOVoWDXGEIXuM+9efT6LSJ7nyxnQQvjEoKg8GSZXbDUjfD0tqA0aBD06U1SzQLKCM7ffjgPffr154MHZKw==}
     engines: {node: '>=20.0.0'}
 
+  '@stryker-mutator/api@9.6.1':
+    resolution: {integrity: sha512-g8VNoFWQWbx0pdal3Vt8jVCZW+v3sc3gi94iI0GVtVgUGTqphAjJF6EAruPTx0lqvtonsaAxn5TD36hcG1d6Wg==}
+    engines: {node: '>=20.0.0'}
+
   '@stryker-mutator/core@9.6.0':
     resolution: {integrity: sha512-oSbw01l6HXHt0iW9x5fQj7yHGGT8ZjCkXSkI7Bsu0juO7Q6vRMXk7XcvKpCBgRgzKXi1osg8+iIzj7acHuxepQ==}
     engines: {node: '>=20.0.0'}
@@ -1428,11 +1432,14 @@ packages:
   '@stryker-mutator/util@9.6.0':
     resolution: {integrity: sha512-gw7fJOFNHEj9inAEOodD9RrrMEMhZmWJ46Ww/kDJAXlSsBBmdwCzeomNLngmLTvgp14z7Tfq85DHYwvmNMdOxA==}
 
-  '@stryker-mutator/vitest-runner@9.6.0':
-    resolution: {integrity: sha512-/zyELz5jTDAiH0Hr23G6KSnBFl9XV+vn0T0qUAk4sPqJoP5NVm9jjpgt9EBACS/VTkVqSvXqBid4jmESPx11Sg==}
+  '@stryker-mutator/util@9.6.1':
+    resolution: {integrity: sha512-Lk/ALVctJjFv1vvwR+CFoKzDCWvsBlq7flDUnmnpuwTrGbm156EdZD1Jjq4o8KdOap0ezUZqQNE9OAI1m2+pUQ==}
+
+  '@stryker-mutator/vitest-runner@9.6.1':
+    resolution: {integrity: sha512-eyUHTCf3Ui+SUn/tpFJwzw6MV391kyBLZk/cDHFUfKFELqKMLbvd7e81axArlApKqO6cOnLfrxlwED+2SRN0ow==}
     engines: {node: '>=14.18.0'}
     peerDependencies:
-      '@stryker-mutator/core': 9.6.0
+      '@stryker-mutator/core': 9.6.1
       vitest: '>=2.0.0'
 
   '@types/chai@5.2.3':
@@ -2692,8 +2699,14 @@ packages:
   mutation-testing-metrics@3.7.2:
     resolution: {integrity: sha512-ichXZSC4FeJbcVHYOWzWUhNuTJGogc0WiQol8lqEBrBSp+ADl3fmcZMqrx0ogInEUiImn+A8JyTk6uh9vd25TQ==}
 
+  mutation-testing-metrics@3.7.3:
+    resolution: {integrity: sha512-B8QrP0ZomErzTPNlhrzKWPNBln+3afwBZPHv0Q7N8wZZTYxMptzb/Gdm3ExXVmioVYrtZAtsDs7W/T/b2AixOQ==}
+
   mutation-testing-report-schema@3.7.2:
     resolution: {integrity: sha512-fN5M61SDzIOeJyatMOhGPLDOFz5BQIjTNPjo4PcHIEUWrejO4i4B5PFuQ/2l43709hEsTxeiXX00H73WERKcDw==}
+
+  mutation-testing-report-schema@3.7.3:
+    resolution: {integrity: sha512-BHm3MYq+ckO+t5CtlG8zpqxc75rdJCkxVlE+fGuGJM3F7tNCQ/OW2N+TQVHN3BHsYa84+BFc6g3AwDYkUsw2MA==}
 
   mute-stream@3.0.0:
     resolution: {integrity: sha512-dkEJPVvun4FryqBmZ5KhDo0K9iDXAwn08tMLDinNdRBNPcYEDiWYysLcc6k3mjTMlbP9KyylvRpd4wFtwrT9rw==}
@@ -4574,6 +4587,13 @@ snapshots:
       tslib: 2.8.1
       typed-inject: 5.0.0
 
+  '@stryker-mutator/api@9.6.1':
+    dependencies:
+      mutation-testing-metrics: 3.7.3
+      mutation-testing-report-schema: 3.7.3
+      tslib: 2.8.1
+      typed-inject: 5.0.0
+
   '@stryker-mutator/core@9.6.0(@types/node@25.6.0)':
     dependencies:
       '@inquirer/prompts': 8.3.0(@types/node@25.6.0)
@@ -4625,11 +4645,14 @@ snapshots:
 
   '@stryker-mutator/util@9.6.0': {}
 
-  '@stryker-mutator/vitest-runner@9.6.0(@stryker-mutator/core@9.6.0(@types/node@25.6.0))(vitest@4.1.2)':
+  '@stryker-mutator/util@9.6.1': {}
+
+  '@stryker-mutator/vitest-runner@9.6.1(@stryker-mutator/core@9.6.0(@types/node@25.6.0))(vitest@4.1.2)':
     dependencies:
-      '@stryker-mutator/api': 9.6.0
+      '@stryker-mutator/api': 9.6.1
       '@stryker-mutator/core': 9.6.0(@types/node@25.6.0)
-      '@stryker-mutator/util': 9.6.0
+      '@stryker-mutator/util': 9.6.1
+      semver: 7.7.4
       tslib: 2.8.1
       vitest: 4.1.2(@types/node@25.6.0)(@vitest/ui@4.1.2)(vite@7.3.1(@types/node@25.6.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.3))
 
@@ -5997,7 +6020,13 @@ snapshots:
     dependencies:
       mutation-testing-report-schema: 3.7.2
 
+  mutation-testing-metrics@3.7.3:
+    dependencies:
+      mutation-testing-report-schema: 3.7.3
+
   mutation-testing-report-schema@3.7.2: {}
+
+  mutation-testing-report-schema@3.7.3: {}
 
   mute-stream@3.0.0: {}
 
