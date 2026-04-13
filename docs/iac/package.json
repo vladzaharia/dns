@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@vladzaharia/dns-config": "workspace:*",
-    "typedoc": "^0.28.18",
+    "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0",
     "vitepress": "^1.6.4"
   }
