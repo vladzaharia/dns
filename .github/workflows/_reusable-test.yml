@@ -35,7 +35,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4.2.0
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -279,7 +279,7 @@ jobs:
 
       - name: Test Report
         if: always() && github.event_name == 'pull_request'
-        uses: dorny/test-reporter@v2.5.0
+        uses: dorny/test-reporter@v3.0.0
         continue-on-error: true
         with:
           name: Test Results
@@ -289,7 +289,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: always()
-        uses: codecov/codecov-action@v5.5.2
+        uses: codecov/codecov-action@v6.0.0
         continue-on-error: true
         with:
           files: "**/coverage/lcov.info"
