@@ -69,8 +69,8 @@ importers:
   packages/dnscontrol-download:
     dependencies:
       tar:
-        specifier: ^7.5.13
-        version: 7.5.13
+        specifier: ^7.5.15
+        version: 7.5.15
       tsx:
         specifier: ^4.19.2
         version: 4.21.0
@@ -3072,8 +3072,8 @@ packages:
     resolution: {integrity: sha512-1MOpMXuhGzGL5TTCZFItxCc0AARf1EZFQkGqMm7ERKj8+Hgr5oLvJOVFcC+lRmR8hCe2S3jC4T5D7Vg/d7/fhA==}
     engines: {node: '>=6'}
 
-  tar@7.5.13:
-    resolution: {integrity: sha512-tOG/7GyXpFevhXVh8jOPJrmtRpOTsYqUIkVdVooZYJS/z8WhfQUX8RJILmeuJNinGAMSu1veBr4asSHFt5/hng==}
+  tar@7.5.15:
+    resolution: {integrity: sha512-dzGK0boVlC4W5QFuQN1EFSl3bIDYsk7Tj40U6eIBnK2k/8ml7TZ5agbI5j5+qnoVcAA+rNtBml8SEiLxZpNqRQ==}
     engines: {node: '>=18'}
 
   terser-webpack-plugin@5.4.0:
@@ -6365,7 +6365,7 @@ snapshots:
 
   tapable@2.3.2: {}
 
-  tar@7.5.13:
+  tar@7.5.15:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
