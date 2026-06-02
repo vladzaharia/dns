@@ -60,7 +60,7 @@
     "fast-check": "^4.8.0",
     "fishery": "^2.4.0",
     "run-script-os": "^1.1.6",
-    "ts-loader": "^9.5.7",
+    "ts-loader": "^9.6.0",
     "vitest": "^4.1.7",
     "webpack": "^5.107.2",
     "webpack-cli": "^6.0.1",
