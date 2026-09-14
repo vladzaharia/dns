@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "tar": "^7.5.20",
-    "tsx": "^4.23.1"
+    "tsx": "^4.23.13"
   },
   "devDependencies": {
     "@vladzaharia/dns-config": "workspace:*"
